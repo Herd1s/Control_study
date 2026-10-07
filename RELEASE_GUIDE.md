@@ -4,6 +4,8 @@
 
 当前本地证据见 [0.2.0 验证记录](docs/VALIDATION_0.2.0.md)；未完成的分发验收明确列出，不能由源码测试通过推断。
 
+2026-10-07 已在当前开发机完成真实 0.1.0 payload 安装、0.2.0 覆盖升级、安装后 GUI/CLI 验证、卸载及学生文件保留检查，安装器已实际生成。干净 Windows 机器和真实远端 Release 更新链仍待验收。
+
 ## 本地构建
 
 使用 Windows x64、Python 3.11–3.13（当前验证使用 3.13）和已有的 Inno Setup 6。基础开发环境包含 desktop、dev、packaging extras；训练依赖单独安装。
