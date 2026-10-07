@@ -15,7 +15,7 @@
 | L26训练与验证 | 后端已验，操作步骤只需手动确认、缺零训练基线入口 | 增加实际未learn策略包+5练习回合基线；训练事件含seed/实际步数/预算；不同seed规则要求1与2都有实际结果，重复seed1不通过。此前三seed长训练证据继续有效 | 零训练基线、事件规则已验 |
 | L27模型包与继续训练 | 只有目录输入、缺来源摘要与奖励改动链 | 新增异步本地模型目录，核验真实模型/metadata hash，显示seed、实际/请求步数、奖励、续训来源，按模型hash+metadatahash+报告snapshot指纹关联验证/保留报告，可选择验证出处；同奖励继续、新奖励新训 | 核心/索引/实际Qt选择已验 |
 | 训练任务退出与恢复 | 原QProcess只能随GUI正常停止，无法真正脱离并恢复 | GUI训练改用持久化detached runner，request/state/events/STOP独立登记；关闭可停止保存、保留任务、取消。重启可看见/恢复监控/停止。身份使用PID+创建时间，只写专属STOP，不杀裸PID | 真实父解释器退出后继续≥256步，再开GUI停止保存已验 |
-| L28保留集与比较 | RL保留集只能CLI，比较表4列，只有单模型动画 | GUI选择完整验证report冻结模型→20保留回合；错误模型/不完整验证拒绝。表格8项指标；报告只读播放器由评价代理实现同case双画布/共同时间轴/曲线，短回合不补长；步骤需真实compared=True | 冻结/模型拒绝实际已验；双报告由评价代理验收 |
+| L28保留集与比较 | RL保留集只能CLI，比较表4列，只有单模型动画 | GUI选择完整验证report冻结模型→20保留回合；错误模型/不完整验证拒绝。表格8项指标；报告只读播放器由评价代理实现同case双画布/共同时间轴/曲线，短回合不补长；步骤需真实compared=True | 冻结/模型拒绝、双报告与根主窗L28实际集成已验 |
 | L29固定策略鲁棒性 | 原只有PD单seed手动场景，不能作为方法公平对照 | 新面板冻结PD四增益与PPO，同5练习初态×7因素×2方法=70回合，因素为基线/20或40ms观测延迟/角度噪声/质量±10%/1N外力0.1s；每方法同case显式spec hash一致。保存源码参数/模型身份/全部失败/轨迹与物理指标；独立研究不混标准成绩 | 核心、同噪声逐字节对照、实际Qt70回合已验 |
 | L30真实接口映射 | 原模板依赖教师手工接口JSON | 实际Isaac单环境manager读取观测[1,10,33]/8动作/dt.02；观测左右关节交替，动作左4右4，不能想当然当同顺序。JSON含scale/offset/clip/history/单位/commit/sourcehash；模板读取并拒绝CartPole4维/1动作 | TITA代理实际headless+UI已验 |
 | L31仿真回放与导出 | ONNX+PT实际导出已验，缺接口表闭环 | 新接口表含训练/回放配置差异，真实导出与接口证据配套；保持烟测/策略性能两类结论，不重跑长训练 | TITA代理源码+真实UI已验 |
@@ -28,7 +28,7 @@
 2. `logs/rl-021-panel-validation/evidence.json`：真实Qt启动外部doctor和最终PD/PPO七因素70回合，14行实际结果及review_key事件；本次训练步数0。
 3. 35项相关契约/课程/奖励/鲁棒性测试通过（Gym仅无界观测声明2警告）；同公式离线/在线奖励相等，两种CSV不改源；方法同spec同噪声时同控制器CSV逐字节相同；取消评价不算完整。
 4. `logs/tita-interface-panel-validation/result.json`：TITA代理真实QProcess→interfaceSaved→4cases/18trace模拟gate，18项测试通过；原生窗口截图已由代理目检。
-5. 0.2.0三根seed×25,600步长训练证据仍引用原记录，不重复训练。上述均为0.2.1源码工作区证据；新的wheel/冻结包尚需重建和冷安装验收。
+5. 0.2.0三根seed×25,600步长训练证据仍引用原记录，不重复训练。上述均为0.2.1源码工作区证据；最终发行wheel、冻结GUI、真实0.2.0→0.2.1升级和CI证据已补于[0.2.1验证](VALIDATION_0.2.1.md)，不与这些早期源码记录混称。
 6. 现有TrainingPanel实际QProcess回归与奖励面板合计14项通过（含256步训练、再256步续训、20例评价、模型回放、停止保存）；另一个新进程确认32课可加载，导入三个RL教学面板不导入torch。原生截图`logs/rl-021-panel-validation/robustness-native.png`已目检中文和控件。
 7. 训练切换为持久化runner后，原训练/续训/评价/回放与新任务/目录后端合计13项回归通过；目录Qt选择补测3项通过。`logs/persistent-training-021-validation/evidence.json`归档真实父GUI进程退出→任务继续→新GUI恢复→333步正常停止保存、模型目录3个包/2份实际报告及Qt选择；没有为这次索引探针重新训练。`model-catalog-native.png`已目检。
 8. `tests/test_training_window_close.py`真实点击主窗口QMessageBox的取消/保留/停止三个按钮，1项通过（9.04s）；`logs/persistent-training-021-validation/window-close-evidence.json`记录取消后仍运行且无STOP、保留后新主窗口重连同任务、停止请求后异步保存并退出，关闭调用分别约20/50/30ms。此次专测启动阶段关闭，实际0步正常保存stopped模型；持续运行333步的证据是上一项，不混称。
