@@ -12,6 +12,7 @@ from uuid import uuid4
 from control_lab import __version__
 from control_lab.evaluation.protocol import canonical_hash
 from .env_factory import environment_contract
+from .rewards import reward_config_from_contract
 
 SCHEMA_VERSION = 1
 
@@ -75,7 +76,7 @@ def atomic_json(path: Path, value: dict):
 
 
 def save_artifact(model, destination, *, training: dict, reward_id: str, status: str,
-                  lineage: dict | None = None) -> Path:
+                  lineage: dict | None = None, reward_config=None) -> Path:
     destination = Path(destination).resolve()
     if destination.exists():
         raise FileExistsError(f"Model package already exists: {destination}")
@@ -88,7 +89,7 @@ def save_artifact(model, destination, *, training: dict, reward_id: str, status:
     model.save(str(policy))
     if not policy.is_file():
         raise RuntimeError("Training library did not produce policy.zip")
-    contract = environment_contract(reward_id)
+    contract = environment_contract(reward_id, reward_config)
     metadata = {"schema_version": SCHEMA_VERSION, "created_at": datetime.now(timezone.utc).isoformat(),
                 "algorithm": "PPO", "policy": "MlpPolicy", "device": "cpu", "status": status,
                 "model_file": "policy.zip", "model_sha256": file_sha256(policy),
@@ -124,7 +125,7 @@ def validate_artifact(directory, *, require_runtime=False) -> dict:
     if metadata.get("status") not in {"completed", "stopped", "checkpoint"}:
         raise ValueError("Model package was not completed")
     contract = metadata.get("environment", {})
-    expected_contract = environment_contract(contract.get("reward_id"))
+    expected_contract = environment_contract(contract.get("reward_id"), reward_config_from_contract(contract))
     if contract != expected_contract or metadata.get("environment_hash") != canonical_hash(expected_contract):
         raise ValueError("Model observation/action/physics/reward contract is incompatible")
     model_file = metadata.get("model_file")

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L25",
   "title": "环境接口与第一次训练准备",
   "summary": "terminated与truncated有什么区别？",
@@ -35,12 +35,14 @@
     },
     {
       "id": "step_02",
-      "title": "外部实验准备",
-      "instruction": "手动执行一次reset，确认初态非零；执行一步0 N，再看返回值。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "点击“检查环境”，读取实际reset非零初态、动作映射和返回值示例。检查不训练PPO。",
+      "activity": "experiment",
+      "evidence": "外部环境实际检查通过后继续。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "external.verified",
+        "field": "kind",
+        "equals": "training_runtime"
       },
       "hints": [
         "检查环境返回的五个值。",
@@ -50,12 +52,13 @@
     },
     {
       "id": "step_03",
-      "title": "外部实验准备",
-      "instruction": "运行一次超过角度边界的实验，再运行参考控制器到500步，区别倒下和时间上限。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "保存我的解释",
+      "instruction": "在环境检查结果中对照零推力倒下与参考控制运行500步：写出terminated和truncated的不同。",
+      "activity": "predict",
+      "evidence": "根据真实运行结果解释两个结束标志。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "prediction.submitted",
+        "field": "value"
       },
       "hints": [
         "检查环境返回的五个值。",
@@ -65,12 +68,13 @@
     },
     {
       "id": "step_04",
-      "title": "外部实验准备",
-      "instruction": "查看归一化动作-1、0、1分别变成-10、0、10 N；用代码断言映射只发生一次。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "保存我的解释",
+      "instruction": "读取实际动作 −1、0、1 对应 −10、0、10 N 的表，写下为什么不能再乘一次10。",
+      "activity": "predict",
+      "evidence": "提交动作单位与缩放解释。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "prediction.submitted",
+        "field": "value"
       },
       "hints": [
         "检查环境返回的五个值。",
@@ -80,12 +84,14 @@
     },
     {
       "id": "step_05",
-      "title": "外部实验准备",
-      "instruction": "对课程环境执行官方接口检查，再进行256步短运行，检查保存/停止通路。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "点击“运行256步通路检查”，检查模型保存路径；也可以试“停止并保存”并查看stopped记录，随后再完整运行一次256步。",
+      "activity": "experiment",
+      "evidence": "实际256步检查完成并保存模型，不能把环境检测当训练完成。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "training.completed",
+        "field": "step_count",
+        "min": 256
       },
       "hints": [
         "检查环境返回的五个值。",
@@ -95,10 +101,10 @@
     },
     {
       "id": "step_06",
-      "title": "外部实验准备",
-      "instruction": "在没有训练依赖的基础版上检查友好提示，确认前22课仍能打开。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "查看实际结果",
+      "instruction": "教师可暂填一个不存在的解释器路径，确认友好错误和其他课程仍可打开；随后恢复正确路径。无需卸载已有环境。",
+      "activity": "observe",
+      "evidence": "根据实际错误提示确认观察，不把缺依赖测试当成功训练。",
       "completion": {
         "event": "step.acknowledged"
       },

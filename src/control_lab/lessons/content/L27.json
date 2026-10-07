@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 3,
   "lesson_id": "L27",
   "title": "保存、回放、继续训练与奖励对照",
   "summary": "保存policy.zip是否足够复现？",
@@ -20,12 +20,12 @@
   "steps": [
     {
       "id": "step_01",
-      "title": "外部实验准备",
-      "instruction": "关闭训练进程，重新从磁盘加载模型，验证其不依赖编辑器里残留的变量。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "打开“本地模型目录”，比较模型hash、seed、实际/请求步数、奖励版本及评价出处，选择已保存模型包，再点击“回放验证用例”；推理在新进程从磁盘加载，未使用编辑器变量。",
+      "activity": "experiment",
+      "evidence": "实际回放完成后继续。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "model.loaded"
       },
       "hints": [
         "首先比对模型元数据。",
@@ -35,10 +35,10 @@
     },
     {
       "id": "step_02",
-      "title": "外部实验准备",
-      "instruction": "检查模型包中的观察顺序、动作倍率、环境hash和奖励版本，故意给一个不匹配的配置，确认软件拒绝加载。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "查看实际结果",
+      "instruction": "读取模型摘要及metadata.json；复制模型包到新测试目录后，故意改副本的观察声明，确认校验拒绝，再回到完整原包。",
+      "activity": "observe",
+      "evidence": "只修改测试副本；观察拒绝信息后确认，勿破坏原模型。",
       "completion": {
         "event": "step.acknowledged"
       },
@@ -50,12 +50,14 @@
     },
     {
       "id": "step_03",
-      "title": "外部实验准备",
-      "instruction": "用同一组验证用例比较训练结束时与重新加载后的结果；检查是否误开了探索噪声。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "重新载入原包，点击独立验证；与训练结束时的同协议报告比较。",
+      "activity": "experiment",
+      "evidence": "实际完整验证后继续。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "comparison.saved",
+        "field": "split",
+        "equals": "validation"
       },
       "hints": [
         "首先比对模型元数据。",
@@ -65,12 +67,13 @@
     },
     {
       "id": "step_04",
-      "title": "外部实验准备",
-      "instruction": "如果使用观测归一化，保存统计并在评估时冻结；缺少统计时明确报错。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "保存我的解释",
+      "instruction": "查看observation_normalization=none。初版没有运行统计；如果声明其他归一化方式，加载器会明确拒绝，而不会猜测统计。",
+      "activity": "predict",
+      "evidence": "解释为什么模型参数之外还需要预处理契约。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "prediction.submitted",
+        "field": "value"
       },
       "hints": [
         "首先比对模型元数据。",
@@ -80,12 +83,23 @@
     },
     {
       "id": "step_05",
-      "title": "外部实验准备",
-      "instruction": "从一个检查点继续训练，同时另开一次从零训练；区分“继续”与“从零”。不保证中断恢复后与不间断训练逐位相同。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "从已选模型点击“继续训练”；另点“开始训练”从零训练，两次均保存到新目录。核对父模型指纹和实际追加步数。",
+      "activity": "experiment",
+      "evidence": "分别完成一次继续和一次从零训练，不能把两次新训都当继续。",
       "completion": {
-        "event": "step.acknowledged"
+        "all": [
+          {
+            "event": "training.completed",
+            "field": "resumed",
+            "equals": true
+          },
+          {
+            "event": "training.completed",
+            "field": "resumed",
+            "equals": false
+          }
+        ]
       },
       "hints": [
         "首先比对模型元数据。",
@@ -95,12 +109,14 @@
     },
     {
       "id": "step_06",
-      "title": "外部实验准备",
-      "instruction": "选择L24一个奖励改动做独立对照，保持预算、训练seed组和环境分布不变。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "点击“载入L24奖励版本”选择reward.json，保持预算和训练seed组，点击开始训练；新奖励只独立新训，不能冒充继续旧实验。",
+      "activity": "experiment",
+      "evidence": "真实使用自定义版本训练成功后继续；模型元数据保留完整声明。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "training.completed",
+        "field": "reward_custom",
+        "equals": true
       },
       "hints": [
         "首先比对模型元数据。",
@@ -110,12 +126,14 @@
     },
     {
       "id": "step_07",
-      "title": "外部实验准备",
-      "instruction": "在验证集上选定最终候选，冻结模型和配置；此时仍不打开保留测试集。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "用验证集挑选最终候选；保存该模型的完整验证report.json，L28保留测试会检查这个报告的冻结指纹。",
+      "activity": "experiment",
+      "evidence": "实际验证后保留报告，不提前打开保留集。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "comparison.saved",
+        "field": "split",
+        "equals": "validation"
       },
       "hints": [
         "首先比对模型元数据。",

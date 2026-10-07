@@ -1,6 +1,6 @@
 # ControlLab 0.1.0 历史验证记录
 
-本文仅保存 0.1.0 的测试证据与当时范围，不代表 0.2.0 当前功能。新版本证据见 [0.2.0 验证记录](VALIDATION_0.2.0.md)，当前实现见 [实现审计](IMPLEMENTATION_AUDIT.md)，新功能见 [0.2.0 发布说明草稿](RELEASE_NOTES_0.2.0.md)。
+本文仅保存 0.1.0 的测试证据与当时范围。版本验证分别见 [0.2.0](VALIDATION_0.2.0.md) 与 [0.2.1](VALIDATION_0.2.1.md)，本轮变更见 [0.2.1 发布说明](RELEASE_NOTES_0.2.1.md)。
 
 验证日期：2026-10-07。环境：Windows x64、Python 3.13.5、项目独立 `.venv`。
 

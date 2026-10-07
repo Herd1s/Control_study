@@ -2,12 +2,15 @@
 from __future__ import annotations
 
 import codecs
+import hashlib
+import json
+import uuid
 from dataclasses import replace
 from pathlib import Path
 
 from PySide6.QtCore import QProcess, QProcessEnvironment, QTimer, Signal
 from PySide6.QtWidgets import (
-    QApplication, QFileDialog, QFrame, QHBoxLayout, QLabel, QLineEdit,
+    QApplication, QDialog, QFileDialog, QFrame, QHBoxLayout, QLabel, QLineEdit,
     QPlainTextEdit, QPushButton, QVBoxLayout,
 )
 
@@ -15,12 +18,19 @@ from control_lab.integrations.tita_profile import (
     TitaProfile, build_command, load_profile, parse_inspection_output,
     save_profile, write_run_record,
 )
+from control_lab.integrations.tita_interface import (
+    check_policy_compatibility, interface_summary, load_interface,
+)
+from control_lab.integrations.tita_safety import run_safety_experiment
 
 
 class TitaPanel(QFrame):
     statusChanged = Signal(str)
     inspectionFinished = Signal(dict)
     runFinished = Signal(dict)
+    interfaceSaved = Signal(dict)
+    safetyValidated = Signal(dict)
+    compatibilityChecked = Signal(dict)
 
     def __init__(self, data_dir, parent=None):
         super().__init__(parent)
@@ -33,6 +43,15 @@ class TitaPanel(QFrame):
         self._cancelled = False
         self._did_time_out = False
         self._inspection = None
+        self._interface_path = None
+        latest = self.data_dir / "tita/interfaces/latest.json"
+        if latest.is_file():
+            try:
+                candidate = Path(json.loads(latest.read_text(encoding="utf-8"))["report_path"])
+                load_interface(candidate)
+                self._interface_path = candidate
+            except (OSError, ValueError, KeyError, TypeError):
+                pass
         try:
             self.profile = load_profile(self.data_dir)
         except (OSError, ValueError, TypeError):
@@ -66,13 +85,18 @@ class TitaPanel(QFrame):
             layout.addLayout(row)
             self.path_fields[key] = field
         self.buttons = {}
-        for modes in (("inspect", "registry"), ("smoke", "stop"), ("play", "export")):
+        for modes in (("inspect", "registry"), ("interface", "view_interface"),
+                      ("safety", "compatibility"), ("smoke", "stop"), ("play", "export")):
             row = QHBoxLayout()
             labels = {"inspect": "检查环境", "registry": "核对运行时任务", "smoke": "低资源仿真检查",
-                      "stop": "停止外部进程", "play": "1 个机器人回放", "export": "导出模型"}
+                      "stop": "停止外部进程", "play": "1 个机器人回放", "export": "导出模型",
+                      "interface": "生成真实接口表", "view_interface": "查看已保存接口表",
+                      "safety": "运行模拟停止实验", "compatibility": "检查策略兼容性"}
             for mode in modes:
                 button = QPushButton(labels[mode])
-                button.clicked.connect(self.stop if mode == "stop" else lambda _checked=False, task=mode: self.start(task))
+                action = {"stop": self.stop, "view_interface": self.show_interface,
+                          "safety": self.run_safety, "compatibility": self.check_compatibility}.get(mode)
+                button.clicked.connect(action or (lambda _checked=False, task=mode: self.start(task)))
                 self.buttons[mode] = button
                 row.addWidget(button)
             layout.addLayout(row)
@@ -93,6 +117,76 @@ class TitaPanel(QFrame):
         self._timeout = QTimer(self)
         self._timeout.setSingleShot(True)
         self._timeout.timeout.connect(self._timed_out)
+
+    def _require_interface(self):
+        if self._interface_path is None:
+            raise ValueError("请先点击“生成真实接口表”；这会启动一个外部无界面仿真读取实际配置，不训练模型。")
+        return load_interface(self._interface_path)
+
+    def show_interface(self, checked=False):
+        try:
+            report = self._require_interface()
+        except (ValueError, OSError) as exc:
+            self._set_status(str(exc))
+            return
+        dialog = QDialog(self)
+        dialog.setWindowTitle("TITA 实际接口表与训练/回放差异")
+        dialog.resize(920, 680)
+        layout = QVBoxLayout(dialog)
+        view = QPlainTextEdit(interface_summary(report))
+        view.setReadOnly(True)
+        view.setAccessibleName("TITA 实际接口表")
+        layout.addWidget(view)
+        path = QLineEdit(str(self._interface_path))
+        path.setReadOnly(True)
+        path.setAccessibleName("TITA 接口表保存路径")
+        layout.addWidget(path)
+        copy = QPushButton("复制路径供 L30/L32 脚本读取")
+        copy.clicked.connect(lambda: QApplication.clipboard().setText(str(self._interface_path)))
+        layout.addWidget(copy)
+        self._interface_dialog = dialog
+        dialog.show()
+
+    def run_safety(self, checked=False):
+        if self.running:
+            return
+        try:
+            self._require_interface()
+            path, report = run_safety_experiment(self._interface_path,
+                self.data_dir / "tita/safety" / uuid.uuid4().hex)
+            self.output.setPlainText(json.dumps(report, ensure_ascii=False, indent=2))
+            self._set_status(f"模拟执行器实验：{sum(c['passed'] for c in report['cases'])}/4 项通过。报告：{path}。未测试真实电机或 ROS 通信。")
+            if report["passed"]:
+                self.safetyValidated.emit(dict(report_path=str(path),
+                    report_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                    hardware_control=False, report=report))
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            self._set_status(f"实验未完成：{exc}")
+
+    def check_compatibility(self, checked=False, *, metadata_path=None):
+        try:
+            interface = self._require_interface()
+            if metadata_path is None:
+                filename, _ = QFileDialog.getOpenFileName(self, "选择模型包的 JSON 元数据（不加载模型）", "", "JSON (*.json)")
+                if not filename:
+                    return
+                metadata_path = Path(filename)
+            metadata = json.loads(Path(metadata_path).read_text(encoding="utf-8"))
+            if not isinstance(metadata, dict):
+                raise ValueError("模型元数据必须是 JSON 对象")
+            report = check_policy_compatibility(interface, metadata)
+            report.update(metadata_path=str(Path(metadata_path).resolve()),
+                          metadata_sha256=hashlib.sha256(Path(metadata_path).read_bytes()).hexdigest())
+            folder = self.data_dir / "tita/compatibility"
+            folder.mkdir(parents=True, exist_ok=True)
+            path = folder / f"{uuid.uuid4().hex}.json"
+            path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+            self.output.setPlainText(json.dumps(report, ensure_ascii=False, indent=2))
+            self._set_status(("元数据匹配；还不能代表策略性能。" if report["compatible"] else "已拒绝不兼容模型；未反序列化或执行策略。") + f"记录：{path}")
+            self.compatibilityChecked.emit(dict(report=report, compatible=report["compatible"],
+                report_path=str(path), hardware_control=False))
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            self._set_status(f"兼容性检查未完成：{exc}")
 
     @property
     def running(self):
@@ -200,7 +294,7 @@ class TitaPanel(QFrame):
                   else "completed" if exit_code == 0 and exit_status == QProcess.ExitStatus.NormalExit
                   else "error")
         report = None
-        if command.mode == "inspect" and exit_code == 0:
+        if command.mode == "inspect" and status == "completed":
             try:
                 report = parse_inspection_output(self._output)
                 self._inspection = report
@@ -208,6 +302,19 @@ class TitaPanel(QFrame):
             except ValueError as exc:
                 status = "error"
                 self._set_status(str(exc))
+        if command.mode == "interface" and status == "completed":
+            try:
+                path = Path(command.arguments[-1])
+                interface = load_interface(path)
+                self._interface_path = path
+                pointer = self.data_dir / "tita/interfaces/latest.json"
+                pointer.write_text(json.dumps({"report_path": str(path)}, ensure_ascii=False), encoding="utf-8")
+                self.output.setPlainText(interface_summary(interface) + "\n\n已保存：" + str(path))
+                self.interfaceSaved.emit(dict(report_path=str(path), report_sha256=interface["interface_sha256"],
+                                             hardware_control=False, report=interface))
+            except (OSError, ValueError, TypeError, KeyError) as exc:
+                status = "error"
+                self._set_status(f"接口表未保存或验证失败：{exc}")
         if self._stream is not None:
             tail = self._decoder.decode(b"", final=True)
             if tail:

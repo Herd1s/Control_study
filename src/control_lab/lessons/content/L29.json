@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 2,
+  "content_version": 4,
   "lesson_id": "L29",
   "title": "延迟、噪声和模型变化",
   "summary": "电脑卡顿与传感器延迟有什么区别？",
@@ -28,12 +28,23 @@
   "steps": [
     {
       "id": "step_01",
-      "title": "观察",
-      "instruction": "固定已冻结控制器，重跑基准组。",
-      "activity": "observe",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "先在实验台探索并写预测；随后打开成组实验，冻结一个PPO模型和PD的a/b/c/d参数，运行相同条件对照：2种方法×7因素×5固定练习初态，共70回合，不训练。手动单初态实验用于理解，不替代成组公平比较。",
+      "activity": "experiment",
+      "evidence": "真实PD/PPO组已完成，双方每个case的显式场景hash一致。",
       "completion": {
-        "event": "step.acknowledged"
+        "all": [
+          {
+            "event": "robustness.completed",
+            "field": "status",
+            "equals": "completed"
+          },
+          {
+            "event": "robustness.completed",
+            "field": "paired_specs_verified",
+            "equals": true
+          }
+        ]
       },
       "hints": [
         "每次只打开一个因素。",
@@ -43,12 +54,33 @@
     },
     {
       "id": "step_02",
-      "title": "留下记录",
-      "instruction": "在实验初始条件中分别选“观测延迟一步”和“观测延迟两步”，其他因素保持关闭；运行并保存记录。分别对应20/40 ms。延迟队列在回合开始用初始观测填充，真实摆杆继续正常运动。",
-      "activity": "record",
-      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "title": "完成实际实验",
+      "instruction": "点击PD/PPO的20ms与40ms观测延迟结果，对照各自原始组。两种方法必须使用同一5初态和同样的延迟队列初值；打开完整报告查看失败回合。",
+      "activity": "experiment",
+      "evidence": "查看双方完成的延迟组，解释延迟增长对两种方法的影响。",
       "completion": {
-        "event": "experiment.saved"
+        "all": [
+          {
+            "event": "robustness.reviewed",
+            "field": "review_key",
+            "equals": "pd:observation_delay_1"
+          },
+          {
+            "event": "robustness.reviewed",
+            "field": "review_key",
+            "equals": "ppo:observation_delay_1"
+          },
+          {
+            "event": "robustness.reviewed",
+            "field": "review_key",
+            "equals": "pd:observation_delay_2"
+          },
+          {
+            "event": "robustness.reviewed",
+            "field": "review_key",
+            "equals": "ppo:observation_delay_2"
+          }
+        ]
       },
       "hints": [
         "每次只打开一个因素。",
@@ -58,12 +90,33 @@
     },
     {
       "id": "step_03",
-      "title": "观察",
-      "instruction": "选择“仅角度测量噪声”，这会关闭延迟；同一初态运行后，切换真实角度和测量角度进行比较。",
-      "activity": "observe",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "分别查看两种方法的角度噪声组和外力脉冲组。噪声seed相同；外力在2秒施加1N持续0.1秒，与传感器噪声分开测试。真值不是带噪读数，提前失败也保留。",
+      "activity": "experiment",
+      "evidence": "查看双方的噪声与外力组真实结果。",
       "completion": {
-        "event": "step.acknowledged"
+        "all": [
+          {
+            "event": "robustness.reviewed",
+            "field": "review_key",
+            "equals": "pd:measurement_theta_noise"
+          },
+          {
+            "event": "robustness.reviewed",
+            "field": "review_key",
+            "equals": "ppo:measurement_theta_noise"
+          },
+          {
+            "event": "robustness.reviewed",
+            "field": "review_key",
+            "equals": "pd:external_force_pulse"
+          },
+          {
+            "event": "robustness.reviewed",
+            "field": "review_key",
+            "equals": "ppo:external_force_pulse"
+          }
+        ]
       },
       "hints": [
         "每次只打开一个因素。",
@@ -73,12 +126,33 @@
     },
     {
       "id": "step_04",
-      "title": "观察",
-      "instruction": "分别选择“仅杆质量 −10%”与“仅杆质量 +10%”，不改变控制器。每组都关闭噪声和延迟，保存为独立测试组；这些是鲁棒性练习，不能和标准 balance-v1 混记成绩。",
-      "activity": "observe",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "查看PD/PPO的杆质量−10%与+10%两组，比较完成率、最差回合、角度误差与用力。除质量之外所有条件完全相同；本研究不混记为balance-v1成绩。",
+      "activity": "experiment",
+      "evidence": "查看两种方法的两个质量组后继续。",
       "completion": {
-        "event": "step.acknowledged"
+        "all": [
+          {
+            "event": "robustness.reviewed",
+            "field": "review_key",
+            "equals": "pd:pole_mass_minus10"
+          },
+          {
+            "event": "robustness.reviewed",
+            "field": "review_key",
+            "equals": "ppo:pole_mass_minus10"
+          },
+          {
+            "event": "robustness.reviewed",
+            "field": "review_key",
+            "equals": "pd:pole_mass_plus10"
+          },
+          {
+            "event": "robustness.reviewed",
+            "field": "review_key",
+            "equals": "ppo:pole_mass_plus10"
+          }
+        ]
       },
       "hints": [
         "每次只打开一个因素。",
@@ -104,12 +178,13 @@
     },
     {
       "id": "step_06",
-      "title": "修改代码",
-      "instruction": "可选重新训练加入随机化，但必须用新验证集及未暴露的测试组评价，不能覆盖原基准结果。",
-      "activity": "code",
-      "evidence": "在你的代码副本中修改本步骤要求的一处内容。",
+      "title": "保存我的解释",
+      "instruction": "选修设计：若将来训练加入随机化，写下因素分布与新的验证/测试集方案。当前版本没有随机化训练按钮；本步只交设计草案，不声称已训练或已迁移。",
+      "activity": "predict",
+      "evidence": "提交随机化实验设计，或明确写下本次跳过原因；不伪造训练结果。",
       "completion": {
-        "event": "code.edited"
+        "event": "prediction.submitted",
+        "field": "value"
       },
       "hints": [
         "每次只打开一个因素。",
@@ -137,7 +212,7 @@
   "template": "templates/l29_exercise.py",
   "solution": "solutions/l29_exercise.py",
   "requires": [
-    "robustness_scenario"
+    "rl_runtime"
   ],
   "availability": "built_in",
   "editor_kind": "controller",
@@ -147,5 +222,5 @@
     "电脑卡顿与传感器延迟有什么区别？",
     "保存真实观察并说明本次结论的适用条件。"
   ],
-  "notes": "**前置/时长：** L28、L20；60分钟。一次只加一个因素。\n\n**操作步骤：**\n\n1. 固定已冻结控制器，重跑基准组。\n2. 分别加入1步、2步观察延迟，保持其他因素关闭，记录延迟对应20/40 ms。\n3. 关闭延迟，只加角度测量噪声；分开看真实角度和读数。\n4. 关闭噪声，只调整一个物理参数，例如杆质量±10%；标为新测试组。\n5. 先写预测，再比较数据，解释失败是否来自观测滞后、噪声或动力学变化。\n6. 可选重新训练加入随机化，但必须用新验证集及未暴露的测试组评价，不能覆盖原基准结果。\n\n**代码练习：** 用队列理解延迟，队列长度、初始填充规则写进配置；该逻辑放测量适配器，不写进每个学生控制器。L29只介绍设计草案，未实现前不让学生自行拼接可能错一步的队列。\n\n**误解/验收：** 仿真跑慢不等于传感器延迟；参数随机化不保证解决所有实物差异。提交“因素—预测—结果—解释”表和完整场景配置。\n\n**界面/代码：** 增加一个因子选择和一个强度参数，其余高级参数折叠；`L29.json`、测量/延迟包装器、鲁棒性协议。DEV-R07，M7。\n\n当前软件入口：实验初始条件下拉框提供基线、观测延迟20/40ms、仅角度噪声、杆质量0.09/0.11kg及额外的动作延迟40ms。每次选择都会重新开始独立配置。"
+  "notes": "0.2.1：实验台可作单因素感受；成组实验才用于PD/PPO公平比较。冻结模型与PD四个增益，2方法×7因素×5显式练习初态=70回合；双方逐例spec hash必须一致，测量噪声seed固定2026。报告保存方法身份、PD参数/源码、逐例spec/轨迹、全部失败和物理指标，不训练，不读保留集。外力组2秒施加1N持续0.1秒，与噪声/延迟/质量分别运行。随机化训练仍为选修设计草案，本版没有训练随机化入口，不把草案当训练完成。"
 }

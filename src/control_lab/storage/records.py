@@ -9,8 +9,13 @@ from pathlib import Path
 from uuid import uuid4
 
 
-def save_recording(root, lesson_id, spec, rows, *, code=None, status="paused", error=None):
-    folder = Path(root) / "runs" / f"{datetime.now():%Y%m%d_%H%M%S}_{lesson_id}_{uuid4().hex[:8]}"
+def save_recording(root, lesson_id, spec, rows, *, code=None, status="paused", error=None,
+                   destination=None, provenance=None):
+    from control_lab import __version__
+    from control_lab.core.scenario import configuration_hash
+    from control_lab.inputs.velocity import VelocityController
+    folder = (Path(destination) if destination is not None else
+              Path(root) / "runs" / f"{datetime.now():%Y%m%d_%H%M%S}_{lesson_id}_{uuid4().hex[:8]}")
     folder.mkdir(parents=True, exist_ok=False)
     source_hash = None
     if code is not None:
@@ -33,10 +38,17 @@ def save_recording(root, lesson_id, spec, rows, *, code=None, status="paused", e
             flattened.update({key: value for key, value in row.get("diagnostics", {}).items() if key in fields})
             writer.writerow(flattened)
     report = {"schema_version": 1, "kind": "interactive_experiment", "lesson_id": lesson_id,
+              "control_lab_version": __version__, "configuration_hash": configuration_hash(spec),
               "created_at": datetime.now(timezone.utc).isoformat(), "status": status, "error": error,
               "spec": asdict(spec), "steps": len(rows), "controller_sha256": source_hash,
               "input_modes": sorted({row["input_mode"] for row in rows}),
               "timing": "before_state precedes the action; true/observed state and simulation_time_s follow it",
               "scored_benchmark": False}
+    if "velocity_mps" in report["input_modes"]:
+        report["input_assistance"] = {"kind": "velocity-proportional-v1",
+                                      "gain_n_per_m_s": VelocityController().gain,
+                                      "force_limit_n": spec.force_limit_n}
+    if provenance is not None:
+        report["reproduction"] = dict(provenance)
     (folder / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
     return folder

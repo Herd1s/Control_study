@@ -121,7 +121,7 @@ class DesktopInteractionTests(unittest.TestCase):
         window = self.window
         self.enter_code("def control(state, dt):\n    return 2.0\n")
         initial_x = window.state[0]
-        self.assertTrue(window.editor.isReadOnly())
+        self.assertFalse(window.editor.isReadOnly())  # live run keeps its immutable source snapshot
         self.wait_until(lambda: len(window.chart.history) >= 3)
         self.assertEqual(window.last_output, 2)
         self.assertEqual(window.applied_force, 2)
@@ -134,10 +134,9 @@ class DesktopInteractionTests(unittest.TestCase):
 
     def test_velocity_code_accelerates_toward_target_instead_of_setting_velocity(self):
         window = self.window
-        self.click(window.nav_buttons[2])
-        # Change the real combo box using its keyboard interaction.
-        window.output_mode.setFocus()
-        QTest.keyClick(window.output_mode, Qt.Key.Key_Down)
+        window.lesson_combo.setCurrentIndex(window.lesson_combo.findData("L11"))
+        # Target velocity is introduced in L11; force lessons retain Newton units.
+        self.assertFalse(window.output_mode.isEnabled())
         self.assertEqual(window.output_mode.currentIndex(), 1)
         initial_velocity = window.state[1]
         self.enter_code("def control(state, dt):\n    return 0.2\n")

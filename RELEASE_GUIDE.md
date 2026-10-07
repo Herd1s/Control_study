@@ -1,8 +1,8 @@
 # ControlLab Windows 发布指南
 
-当前代码版本为 0.2.0，唯一版本来源是 `src/control_lab/__init__.py` 的 `__version__`；wheel、安装器与 CI 从这里读取。默认更新仓库为 [Herd1s/Control_study](https://github.com/Herd1s/Control_study)。修改源码、添加远程仓库和本地构建都不会发布版本。
+当前代码版本为 0.2.1，唯一版本来源是 `src/control_lab/__init__.py` 的 `__version__`；wheel、安装器与 CI 从这里读取。默认更新仓库为 [Herd1s/Control_study](https://github.com/Herd1s/Control_study)。修改源码、添加远程仓库和本地构建都不会发布版本。
 
-当前本地证据见 [0.2.0 验证记录](docs/VALIDATION_0.2.0.md)；未完成的分发验收明确列出，不能由源码测试通过推断。
+当前本地证据见 [0.2.1 验证记录](docs/VALIDATION_0.2.1.md)；已完成的上一版安装和 CI 证据见 [0.2.0 验证记录](docs/VALIDATION_0.2.0.md)；未完成的分发验收明确列出，不能由源码测试通过推断。
 
 2026-10-07 已在当前开发机完成真实 0.1.0 payload 安装、0.2.0 覆盖升级、安装后 GUI/CLI 验证、卸载及学生文件保留检查，安装器已实际生成。干净 Windows 机器和真实远端 Release 更新链仍待验收。
 
@@ -24,7 +24,7 @@
 | `dist\ControlLab\ControlLab.exe` | 桌面课堂入口 |
 | `dist\ControlLab\ControlLabCLI.exe` | 命令行入口，与 GUI 共用 `_internal` |
 | `dist\ControlLab\runtime` | 学生独立 CPU 训练环境的安装材料 |
-| `dist\installer\ControlLab-Setup-0.2.0.exe` | 按用户安装与覆盖升级 |
+| `dist\installer\ControlLab-Setup-0.2.1.exe` | 按用户安装与覆盖升级 |
 
 便携包必须包含整个 `dist\ControlLab`，而非两个 exe。基础安装包不包含 PyTorch 或 Isaac Sim。`runtime\setup-rl.ps1` 首次运行需要现成的 Python 和网络，训练环境存入系统文档目录，不随安装目录被替换。
 
@@ -46,15 +46,15 @@
 
 [release.yml](.github/workflows/release.yml) 只接受手动触发或 `v*` 标签推送。普通分支提交不构建发布版。工作流使用已有 Inno 编译器，依次运行测试、构建、冻结 CLI 验证，再生成：
 
-- `ControlLab-Setup-0.2.0.exe`
-- `ControlLab-Portable-0.2.0-windows-x64.zip`
+- `ControlLab-Setup-0.2.1.exe`
+- `ControlLab-Portable-0.2.1-windows-x64.zip`
 - `SHA256SUMS`（每行 `sha256值  文件名`，UTF-8 无 BOM）
 
-手动触发且 `create_draft=false` 时只上传 Actions 产物。标签触发或显式请求 `create_draft=true` 时创建 **草稿 Release**，仍需维护者验收后发布；标签必须与源码版本一致，例如 `v0.2.0`。手动创建草稿还要求填入已存在的 `release_tag`，且所选提交必须与该标签一致。工作流不会代建标签。
+手动触发且 `create_draft=false` 时只上传 Actions 产物。标签触发或显式请求 `create_draft=true` 时创建 **草稿 Release**，仍需维护者验收后发布；标签必须与源码版本一致，例如 `v0.2.1`。手动创建草稿还要求填入已存在的 `release_tag`，且所选提交必须与该标签一致。工作流不会代建标签。
 
 此工作流只安装基础桌面开发环境；需要独立 RL 解释器的测试会在缺少该环境时跳过。CI 基础测试通过不能替代独立 CPU 训练、模型保存与重载验收。
 
-首次使用需由维护者将代码推到仓库并触发工作流；本地生成文件不代表 GitHub 上已有版本。先下载产物完成验收，再决定是否公开草稿。不要覆盖已发布版本的文件或用同一标签发布不同构建，应递增版本。
+仓库已连接，v0.2.0 已实际完成 GitHub Actions 构建与草稿产物核验；新版本仍需单独触发工作流并检查结果。本地生成文件不代表 GitHub 上已有对应版本。先下载产物完成验收，再决定是否公开草稿。不要覆盖已发布版本的文件或用同一标签发布不同构建，应递增版本。
 
 ## 应用内更新契约
 

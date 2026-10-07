@@ -9,7 +9,7 @@ from typing import Callable
 from control_lab.core.types import integer, finite_number
 from .artifacts import atomic_json, save_artifact, validate_artifact
 from .env_factory import make_training_env
-from .rewards import REWARD_SPECS
+from .rewards import resolve_reward_config, reward_config_from_contract
 
 
 @dataclass(frozen=True)
@@ -26,6 +26,7 @@ class TrainConfig:
     batch_size: int = 64
     learning_rate: float = 3e-4
     n_epochs: int = 10
+    reward_config: dict | None = None
 
     def __post_init__(self):
         object.__setattr__(self, "output_dir", Path(self.output_dir).expanduser().resolve())
@@ -33,13 +34,43 @@ class TrainConfig:
                              ("progress_interval", 1), ("n_steps", 2), ("batch_size", 2), ("n_epochs", 1)):
             object.__setattr__(self, key, integer(getattr(self, key), key, minimum))
         rate = finite_number(self.learning_rate, "learning_rate")
-        if rate <= 0 or self.reward_id not in REWARD_SPECS:
+        if rate <= 0:
             raise ValueError("Invalid learning rate or reward version")
+        object.__setattr__(self, "reward_config", resolve_reward_config(self.reward_id, self.reward_config))
         object.__setattr__(self, "learning_rate", rate)
         for key in ("stop_file", "resume_from"):
             value = getattr(self, key)
             if value is not None:
                 object.__setattr__(self, key, Path(value).expanduser().resolve())
+
+
+def create_untrained_baseline(output_dir, *, seed=0, reward_id="survival-v1", reward_config=None, stop_file=None):
+    """Save an initialized, never-updated PPO policy and its five practice rollouts."""
+    from stable_baselines3 import PPO
+    import torch
+    from .evaluate import evaluate_model
+    output = Path(output_dir).resolve()
+    if output.exists():
+        raise FileExistsError("基线目录已存在，不覆盖原记录")
+    config = TrainConfig(output, total_timesteps=256, seed=seed, reward_id=reward_id, reward_config=reward_config)
+    output.mkdir(parents=True, exist_ok=False)
+    torch.set_num_threads(1)
+    env = make_training_env(seed, reward_id, config.reward_config)
+    try:
+        model = PPO("MlpPolicy", env, device="cpu", seed=seed, n_steps=1024, batch_size=64,
+                    policy_kwargs={"net_arch": [64, 64]}, verbose=0)
+        artifact = save_artifact(model, output/"artifact", reward_id=reward_id, reward_config=config.reward_config,
+            status="checkpoint", training={"seed": seed, "requested_timesteps": 0, "actual_timesteps": 0,
+                "hyperparameters": {"n_steps": 1024, "batch_size": 64, "net_arch": [64, 64]},
+                "note": "Initialized policy baseline, model.learn was never called."})
+    finally:
+        env.close()
+    report = evaluate_model(artifact, split="practice", output_dir=output/"evaluation", stop_file=stop_file)
+    if not report.get("is_complete", True):
+        from .evaluate import StopRequested
+        raise StopRequested()
+    return {"artifact": str(artifact), "report": str(output/"evaluation/report.json"),
+            "aggregate": report["aggregate"], "training_steps": 0}
 
 
 def train(config: TrainConfig, *, progress_callback: Callable[[dict], None] | None = None) -> Path:
@@ -53,7 +84,7 @@ def train(config: TrainConfig, *, progress_callback: Callable[[dict], None] | No
     if config.output_dir.exists():
         raise FileExistsError(f"Training will not overwrite an existing directory: {config.output_dir}")
     parent_metadata = validate_artifact(config.resume_from, require_runtime=True) if config.resume_from else None
-    if parent_metadata and parent_metadata["environment"]["reward_id"] != config.reward_id:
+    if parent_metadata and reward_config_from_contract(parent_metadata["environment"]) != config.reward_config:
         raise ValueError("Resuming with a different reward requires a separately declared experiment")
     config.output_dir.mkdir(parents=True, exist_ok=False)
     stop_file = config.stop_file or config.output_dir / "STOP"
@@ -74,12 +105,12 @@ def train(config: TrainConfig, *, progress_callback: Callable[[dict], None] | No
                        "learning_rate": config.learning_rate, "n_epochs": config.n_epochs,
                        "net_arch": [64, 64], "device": "cpu", "n_envs": 1,
                        "observation_normalization": "none"}
-    request = {"seed": config.seed, "reward_id": config.reward_id,
+    request = {"seed": config.seed, "reward_id": config.reward_id, "reward_config": config.reward_config,
                "requested_timesteps": config.total_timesteps, "hyperparameters": hyperparameters,
                "stop_file": str(stop_file), "resume_from": str(config.resume_from) if config.resume_from else None}
     atomic_json(config.output_dir / "request.json", request)
     torch.set_num_threads(1)
-    env = Monitor(make_training_env(config.seed, config.reward_id))
+    env = Monitor(make_training_env(config.seed, config.reward_id, config.reward_config))
     model = None
     status = "completed"
     initial_timesteps = 0
@@ -103,7 +134,7 @@ def train(config: TrainConfig, *, progress_callback: Callable[[dict], None] | No
             if additional > 0 and additional % config.checkpoint_interval == 0:
                 target = save_artifact(self.model, config.output_dir / "checkpoints" / f"step-{self.num_timesteps:09d}",
                                        training=training_metadata(), reward_id=config.reward_id,
-                                       status="checkpoint", lineage=lineage)
+                                       status="checkpoint", lineage=lineage, reward_config=config.reward_config)
                 emit("checkpoint", step_count=int(self.num_timesteps), path=str(target))
             if stop_file.exists():
                 status = "stopped"
@@ -137,8 +168,12 @@ def train(config: TrainConfig, *, progress_callback: Callable[[dict], None] | No
             except KeyboardInterrupt:
                 status = "stopped"
         target = save_artifact(model, config.output_dir / "artifact", training=training_metadata(),
-                               reward_id=config.reward_id, status=status, lineage=lineage)
-        emit(status, status=status, step_count=int(model.num_timesteps), path=str(target))
+                               reward_id=config.reward_id, status=status, lineage=lineage,
+                               reward_config=config.reward_config)
+        emit(status, status=status, step_count=int(model.num_timesteps), path=str(target),
+             additional_steps=int(model.num_timesteps)-initial_timesteps, requested_steps=config.total_timesteps,
+             seed=config.seed, reward_id=config.reward_id,
+             reward_custom=config.reward_id not in ("survival-v1", "balanced-v1"), resumed=bool(config.resume_from))
         atomic_json(config.output_dir / "result.json", {"status": status, "artifact": str(target),
                     "step_count": int(model.num_timesteps), "finished_at": datetime.now(timezone.utc).isoformat()})
         return target

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 3,
   "lesson_id": "L23",
   "title": "从“写规则”到“让程序尝试”",
   "summary": "随机动作是在学习吗？",
@@ -51,12 +51,15 @@
     },
     {
       "id": "step_03",
-      "title": "留下记录",
-      "instruction": "运行5个完整回合，记录每次存活步数，保留倒下的回合。",
-      "activity": "record",
-      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "title": "完成实际实验",
+      "instruction": "使用同一初态与固定动作seed演示，运行并保存5个完整回合；记录每次步数。它们可能完全相同，这说明可复现，不是5次独立随机训练。正式随机基线需另记录每回合动作seed。",
+      "activity": "experiment",
+      "evidence": "保存5份真实轨迹；未达到时长也保留，不把一次保存当5回合。",
       "completion": {
-        "event": "experiment.saved"
+        "event": "experiment.saved",
+        "field": "is_complete",
+        "equals": true,
+        "min_count": 5
       },
       "hints": [
         "先指出观测和动作。",
@@ -134,7 +137,7 @@
   "availability": "built_in",
   "editor_kind": "controller",
   "reflection": "随机动作是在学习吗？",
-  "reference_answer": "不是。随机策略只是选择动作的规则，没有根据奖励更新；环境提供状态转移，策略决定动作。",
+  "reference_answer": "不是。随机策略只是选择动作的规则，没有根据奖励更新；环境提供状态转移，策略决定动作。 同一初态和reset中相同随机seed会重现同一轨迹；重复记录不是独立随机样本。",
   "objectives": [
     "随机动作是在学习吗？",
     "保存真实观察并说明本次结论的适用条件。"

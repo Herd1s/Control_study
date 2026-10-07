@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L17",
   "title": "一直差一点怎么办——用单车速度场景认识积分 I",
   "summary": "积分怎样抵消持续负载？",
@@ -34,6 +34,11 @@
         "先看目标速度与实际速度的差。",
         "持续误差会不断积累。",
         "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ],
+      "visible_signals": [
+        "v",
+        "target_v",
+        "force"
       ]
     },
     {
@@ -49,6 +54,11 @@
         "先看目标速度与实际速度的差。",
         "持续误差会不断积累。",
         "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ],
+      "visible_signals": [
+        "v",
+        "target_v",
+        "force"
       ]
     },
     {
@@ -64,6 +74,11 @@
         "先看目标速度与实际速度的差。",
         "持续误差会不断积累。",
         "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ],
+      "visible_signals": [
+        "v",
+        "target_v",
+        "force"
       ]
     },
     {
@@ -79,6 +94,12 @@
         "先看目标速度与实际速度的差。",
         "持续误差会不断积累。",
         "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ],
+      "visible_signals": [
+        "v",
+        "target_v",
+        "integral",
+        "force"
       ]
     },
     {
@@ -94,6 +115,12 @@
         "先看目标速度与实际速度的差。",
         "持续误差会不断积累。",
         "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ],
+      "visible_signals": [
+        "v",
+        "target_v",
+        "integral",
+        "force"
       ]
     },
     {
@@ -109,6 +136,12 @@
         "先看目标速度与实际速度的差。",
         "持续误差会不断积累。",
         "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ],
+      "visible_signals": [
+        "v",
+        "target_v",
+        "integral",
+        "force"
       ]
     },
     {
@@ -124,6 +157,12 @@
         "先看目标速度与实际速度的差。",
         "持续误差会不断积累。",
         "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ],
+      "visible_signals": [
+        "v",
+        "target_v",
+        "integral",
+        "force"
       ]
     },
     {
@@ -140,6 +179,12 @@
         "先看目标速度与实际速度的差。",
         "持续误差会不断积累。",
         "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ],
+      "visible_signals": [
+        "v",
+        "target_v",
+        "integral",
+        "force"
       ]
     }
   ],

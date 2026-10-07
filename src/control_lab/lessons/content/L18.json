@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L18",
   "title": "力量已经用尽，为何还在积累——积分饱和与条件积分",
   "summary": "输出饱和时哪些积分应暂停，哪些应保留？",
@@ -101,11 +101,13 @@
     {
       "id": "step_06",
       "title": "留下记录",
-      "instruction": "对比无保护、仅积分限幅、条件积分三种方案，记录降低目标后的超调和恢复时间。",
+      "instruction": "点击上方“对照三种积分保护方式”，用同一初态与目标计划运行无保护、积分限幅、条件积分。查看实际超调、恢复时间和冻结区间；未恢复会明确标为未达到。",
       "activity": "record",
-      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "evidence": "完成同一组条件下的三方案试验，保存真实对照报告后继续。",
       "completion": {
-        "event": "experiment.saved"
+        "event": "sweep.completed",
+        "field": "kind",
+        "equals": "pi"
       },
       "hints": [
         "比较未限幅请求与执行器实际力。",

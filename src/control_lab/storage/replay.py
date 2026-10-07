@@ -7,7 +7,7 @@ import math
 from pathlib import Path
 import zipfile
 
-from control_lab.core.scenario import ForcePulse, ScenarioConfig, TargetChange
+from control_lab.core.scenario import ForcePulse, ScenarioConfig, TargetChange, configuration_hash
 from control_lab.core.types import EpisodeSpec, State
 
 
@@ -34,6 +34,8 @@ def load_recording(folder):
     scene["disturbances"] = tuple(ForcePulse(**pulse) for pulse in scene.get("disturbances", ()))
     scene["target_schedule"] = tuple(TargetChange(**change) for change in scene.get("target_schedule", ()))
     spec = EpisodeSpec(scenario=ScenarioConfig(**scene), **config)
+    if report.get("configuration_hash") and report["configuration_hash"] != configuration_hash(spec):
+        raise ValueError("实验配置 hash 不匹配，配置可能已改变。")
     rows = []
     names = ("x", "v", "theta", "omega")
 

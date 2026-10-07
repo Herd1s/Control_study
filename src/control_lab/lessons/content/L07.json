@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L07",
   "title": "条件判断与死区",
   "summary": "死区内返回0是否会让车立即停止？",
@@ -70,11 +70,13 @@
     {
       "id": "step_04",
       "title": "观察",
-      "instruction": "在中心测试默认 `return 0.0`，确认两个条件都不成立时仍返回有效动作。",
+      "instruction": "在“用这个状态试算一次”中依次选择左侧、中心和右侧。检查同一份代码分别返回 +1、0、−1 N，并观察高亮的执行分支。这些试算不会推进当前小车。",
       "activity": "observe",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "evidence": "使用同一份代码完成三个位置的试算，返回值均符合本课任务后继续。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "code.probed",
+        "field": "all_cases_correct",
+        "equals": true
       },
       "hints": [
         "检查位置落在哪个区间。",

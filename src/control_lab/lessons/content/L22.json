@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L22",
   "title": "我的第一个控制项目——交付、解释与展示",
   "summary": "你的控制器证据能支持什么，不能支持什么？",
@@ -70,9 +70,19 @@
       "title": "留下记录",
       "instruction": "冻结代码与参数，运行正式协议；如果失败，提交失败证据和修正假设，允许重新学习，但不得把失败记录删除后只呈现最好一回合。",
       "activity": "record",
-      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "evidence": "运行并保留一份有控制器指纹的完整开发验证报告。",
       "completion": {
-        "event": "experiment.saved"
+        "all": [
+          {
+            "event": "comparison.saved",
+            "field": "split",
+            "equals": "validation"
+          },
+          {
+            "event": "comparison.saved",
+            "field": "controller_sha256"
+          }
+        ]
       },
       "hints": [
         "先冻结代码与参数。",
@@ -98,11 +108,13 @@
     {
       "id": "step_06",
       "title": "观察",
-      "instruction": "导出项目包，把 README、源码、参数、协议、报告、轨迹和一段简短回放放在一起；请另一位同学按说明复现。",
-      "activity": "observe",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "instruction": "点击‘导出课程项目’，勾选至少三种不同方案的同条件练习/验证报告，补充解释并导出ZIP。包内包含README、源码、参数、协议和可回放轨迹；请同学按命令复算。",
+      "activity": "record",
+      "evidence": "实际导出包含至少三种方法的项目ZIP；同伴讲解单独验收。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "project.exported",
+        "field": "method_count",
+        "min": 3
       },
       "hints": [
         "先冻结代码与参数。",

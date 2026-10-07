@@ -15,11 +15,23 @@ from control_lab.controllers._common import finite_number, positive, state_value
 
 
 class FunctionControllerAdapter:
-    def __init__(self, control, reset=None):
+    def __init__(self, control, reset=None, diagnostics=None):
         if not callable(control) or (reset is not None and not callable(reset)):
             raise TypeError("control and optional reset must be callable")
         self.control = control
         self.reset_hook = reset
+        if diagnostics is not None and not callable(diagnostics):
+            raise TypeError("optional diagnostics must be callable")
+        self.diagnostics_hook = diagnostics
+
+    @property
+    def diagnostics(self):
+        parts = self.diagnostics_hook() if self.diagnostics_hook is not None else {}
+        if not isinstance(parts, dict):
+            raise TypeError("diagnostics() must return a dictionary")
+        allowed = {"p_n", "d_n", "i_n", "centering_n", "unsaturated_n", "applied_n", "integral", "frozen"}
+        return {key: value if key == "frozen" and isinstance(value, bool) else finite_number(value, key)
+                for key, value in parts.items() if key in allowed}
 
     def reset(self):
         if self.reset_hook is not None:
@@ -73,7 +85,8 @@ def controller_from_source(source: str | bytes, filename="<student_controller>")
     try:
         exec(compile(data, str(filename), "exec"), module.__dict__)
         if callable(getattr(module, "control", None)):
-            controller = FunctionControllerAdapter(module.control, getattr(module, "reset", None))
+            controller = FunctionControllerAdapter(module.control, getattr(module, "reset", None),
+                                                   getattr(module, "diagnostics", None))
         elif callable(getattr(module, "Controller", None)):
             controller = LegacyControllerAdapter(module.Controller())
         else:

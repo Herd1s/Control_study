@@ -13,6 +13,10 @@ EVENTS = frozenset({
     "step.acknowledged", "comparison.saved", "training.started", "training.completed",
     "model.loaded", "external.verified", "artifact.saved", "answer.checked",
     "signal.analysis.completed", "signal.kick.completed",
+    "code.probed", "centering.reached",
+    "reward.analysis.completed", "reward.configuration.saved", "robustness.completed", "baseline.saved",
+    "robustness.reviewed",
+    "sweep.completed", "evaluation.replayed", "comparison.completed", "project.exported",
 })
 
 

@@ -13,6 +13,8 @@ class LessonStep:
     completion: dict
     activity: str = "observe"
     evidence: str = ""
+    visible_signals: tuple[str, ...] | None = None
+    show_chart: bool | None = None
 
 
 @dataclass(frozen=True)

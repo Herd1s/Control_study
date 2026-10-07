@@ -20,6 +20,15 @@ try {
     $wheelFile = Join-Path $projectRoot ('build\runtime-wheel\control_lab-' + $appVersion + '-py3-none-any.whl')
     Copy-Item -LiteralPath $wheelFile -Destination $runtimeBundle
     Copy-Item -LiteralPath 'setup-rl.ps1','requirements-rl-lock.txt' -Destination $runtimeBundle
+    $runtimeManifest = [ordered]@{
+        schema_version = 1
+        app_version = $appVersion
+        wheel_filename = Split-Path -Leaf $wheelFile
+        wheel_sha256 = (Get-FileHash -LiteralPath $wheelFile -Algorithm SHA256).Hash.ToLowerInvariant()
+    }
+    $runtimeManifest | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $runtimeBundle 'runtime-manifest.json') -Encoding utf8
+    & (Join-Path $runtimeBundle 'setup-rl.ps1') -ValidateOnly
+    if (-not $?) { throw 'Packaged runtime manifest verification failed.' }
     Write-Host 'Portable application: dist\ControlLab (distribute the whole folder).'
     if ($Installer) {
         if (-not $Iscc) {

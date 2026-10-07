@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L05",
   "title": "让第一条推力指令动起来",
   "summary": "return 1.0和return 0.0各意味着什么？",
@@ -39,11 +39,13 @@
     {
       "id": "step_02",
       "title": "运行实验",
-      "instruction": "预测 `return 1.0` 的推力方向，再运行一个短观察片段，例如 0.2 秒后自动暂停。",
+      "instruction": "预测return 1.0的推力方向，点击“运行0.2秒并暂停”。软件执行恰好10个物理步后暂停，保留这一段轨迹。",
       "activity": "experiment",
-      "evidence": "运行这份代码，观察本次动作和结果。",
+      "evidence": "完成上面的真实操作后继续；需要时可先跳过。",
       "completion": {
-        "event": "code.run"
+        "event": "simulation.paused",
+        "field": "reason",
+        "equals": "short_segment"
       },
       "hints": [
         "先看动作模式的单位。",
@@ -54,11 +56,13 @@
     {
       "id": "step_03",
       "title": "运行实验",
-      "instruction": "重新扶正，仅把 `1.0` 改为 `-1.0`，重复同样时长，比较运动方向。",
+      "instruction": "只把1.0改为−1.0，再点“运行0.2秒并暂停”；它会重置到相同初态后运行相同步数，比较方向。",
       "activity": "experiment",
-      "evidence": "运行这份代码，观察本次动作和结果。",
+      "evidence": "完成上面的真实操作后继续；需要时可先跳过。",
       "completion": {
-        "event": "code.run"
+        "event": "simulation.paused",
+        "field": "reason",
+        "equals": "short_segment"
       },
       "hints": [
         "先看动作模式的单位。",

@@ -65,8 +65,15 @@ def load_lessons(resource_root: str | Path | None = None) -> list[Lesson]:
             if len(hints) != 3 or not str(item.get("instruction", "")).strip():
                 raise ValueError("每步需要操作说明和三层提示")
             validate_rule(item.get("completion"))
+            step_signals = _strings(item["visible_signals"], "step.visible_signals") if "visible_signals" in item else None
+            if step_signals is not None and set(step_signals) - set(signals):
+                raise ValueError("步骤显示字段必须来自本课信号")
+            show_chart = item.get("show_chart")
+            if show_chart is not None and type(show_chart) is not bool:
+                raise ValueError("show_chart 必须是布尔值")
             steps.append(LessonStep(item["id"], item.get("title", "动手试试"), item["instruction"], hints,
-                                    item["completion"], item.get("activity", "observe"), item.get("evidence", "")))
+                                    item["completion"], item.get("activity", "observe"), item.get("evidence", ""),
+                                    step_signals, show_chart))
         if not steps or len({s.id for s in steps}) != len(steps):
             raise ValueError("课内步骤缺失或ID重复")
         lessons.append(Lesson(ident, data["title"], data.get("summary", ""), duration,

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L04",
   "title": "角度不等于角速度",
   "summary": "同角度不同角速度，下一步一样吗？",
@@ -34,7 +34,11 @@
         "先观察杆顶朝哪边运动。",
         "倾斜方向不等于转动方向。",
         "theta>0且omega<0代表向右倾但正在回正。"
-      ]
+      ],
+      "visible_signals": [
+        "theta"
+      ],
+      "show_chart": false
     },
     {
       "id": "step_02",
@@ -49,7 +53,11 @@
         "先观察杆顶朝哪边运动。",
         "倾斜方向不等于转动方向。",
         "theta>0且omega<0代表向右倾但正在回正。"
-      ]
+      ],
+      "visible_signals": [
+        "theta"
+      ],
+      "show_chart": false
     },
     {
       "id": "step_03",
@@ -64,22 +72,34 @@
         "先观察杆顶朝哪边运动。",
         "倾斜方向不等于转动方向。",
         "theta>0且omega<0代表向右倾但正在回正。"
-      ]
+      ],
+      "visible_signals": [
+        "theta",
+        "omega"
+      ],
+      "show_chart": true
     },
     {
       "id": "step_04",
       "title": "观察",
-      "instruction": "播放两段同角度、不同角速度的预置片段，暂停比较箭头和读数。",
+      "instruction": "播放下方两段同角度、不同角速度的预置片段；用共同时间游标暂停比较，点“记录这一帧的对照”。",
       "activity": "observe",
-      "evidence": "在需要观察的时刻暂停，保留当前画面。",
+      "evidence": "完成上面的面板操作后继续；需要时可以先跳过。",
       "completion": {
-        "event": "simulation.paused"
+        "event": "answer.checked",
+        "field": "kind",
+        "equals": "paired_inspection"
       },
       "hints": [
         "先观察杆顶朝哪边运动。",
         "倾斜方向不等于转动方向。",
         "theta>0且omega<0代表向右倾但正在回正。"
-      ]
+      ],
+      "visible_signals": [
+        "theta",
+        "omega"
+      ],
+      "show_chart": true
     },
     {
       "id": "step_05",
@@ -94,22 +114,34 @@
         "先观察杆顶朝哪边运动。",
         "倾斜方向不等于转动方向。",
         "theta>0且omega<0代表向右倾但正在回正。"
-      ]
+      ],
+      "visible_signals": [
+        "theta",
+        "omega"
+      ],
+      "show_chart": true
     },
     {
       "id": "step_06",
       "title": "观察",
-      "instruction": "点开“代码里如何表示”，看一次 5° 与约 0.0873 rad 的对应；不要求心算换算。",
+      "instruction": "在下方“代码里如何表示？”中把5°换算为弧度，观察约0.0873 rad；不要求心算换算。",
       "activity": "observe",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "evidence": "完成上面的面板操作后继续；需要时可以先跳过。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "answer.checked",
+        "field": "kind",
+        "equals": "angle_conversion"
       },
       "hints": [
         "先观察杆顶朝哪边运动。",
         "倾斜方向不等于转动方向。",
         "theta>0且omega<0代表向右倾但正在回正。"
-      ]
+      ],
+      "visible_signals": [
+        "theta",
+        "omega"
+      ],
+      "show_chart": true
     },
     {
       "id": "step_07",
@@ -125,7 +157,12 @@
         "先观察杆顶朝哪边运动。",
         "倾斜方向不等于转动方向。",
         "theta>0且omega<0代表向右倾但正在回正。"
-      ]
+      ],
+      "visible_signals": [
+        "theta",
+        "omega"
+      ],
+      "show_chart": true
     },
     {
       "id": "reflection",
@@ -141,7 +178,12 @@
         "先观察杆顶朝哪边运动。",
         "倾斜方向不等于转动方向。",
         "theta>0且omega<0代表向右倾但正在回正。"
-      ]
+      ],
+      "visible_signals": [
+        "theta",
+        "omega"
+      ],
+      "show_chart": true
     }
   ],
   "template": null,

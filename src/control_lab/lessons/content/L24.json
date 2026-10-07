@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L24",
   "title": "奖励：把目标写成反馈",
   "summary": "重新计分是否让旧策略学会新行为？",
@@ -22,12 +22,12 @@
   "steps": [
     {
       "id": "step_01",
-      "title": "观察",
-      "instruction": "先使用基准存活奖励：每个有效step返回1，观察回报随回合长度变化。",
-      "activity": "observe",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "从L23的保存记录中选择一份trajectory.csv。点击“重新计分并比较”，读存活奖励列；每一步为1，因此总分等于实际步数。",
+      "activity": "experiment",
+      "evidence": "实际生成奖励报告后继续；不会重跑小车。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "reward.analysis.completed"
       },
       "hints": [
         "先看这一步有没有更新策略。",
@@ -37,12 +37,13 @@
     },
     {
       "id": "step_02",
-      "title": "留下记录",
-      "instruction": "对同一份已保存轨迹，分别计算角度偏差、位置偏差和用力；这一步不重新训练。",
-      "activity": "record",
-      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "title": "保存我的解释",
+      "instruction": "用同一轨迹对照存活、角度、位置和用力分量；打开曲线报告，指出哪些项为正、哪些项扣分。",
+      "activity": "predict",
+      "evidence": "写下每项鼓励或惩罚什么，再保存解释。",
       "completion": {
-        "event": "experiment.saved"
+        "event": "prediction.submitted",
+        "field": "value"
       },
       "hints": [
         "先看这一步有没有更新策略。",
@@ -52,13 +53,14 @@
     },
     {
       "id": "step_03",
-      "title": "先预测",
-      "instruction": "用下列示例奖励给两份轨迹重新计分，解释为什么排序可能变化。",
-      "activity": "predict",
-      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "title": "完成实际实验",
+      "instruction": "选择第二份已保存轨迹，点击“重新计分并比较”。对照两份轨迹在相同奖励声明下的排序，回合长度也要一起看。",
+      "activity": "experiment",
+      "evidence": "选择两份真实CSV并成功保存分析，不能只提交文字代替重计分。",
       "completion": {
-        "event": "prediction.submitted",
-        "field": "value"
+        "event": "reward.analysis.completed",
+        "field": "trajectories",
+        "min": 2
       },
       "hints": [
         "先看这一步有没有更新策略。",
@@ -68,12 +70,12 @@
     },
     {
       "id": "step_04",
-      "title": "观察",
-      "instruction": "把用力惩罚增大10倍，预测小动作策略可能更受偏爱。",
-      "activity": "observe",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "将基准用力权重0.02增大到0.2，为新配置填写新的版本名，重新计分；检查用力惩罚项是否恰为原来的10倍。",
+      "activity": "experiment",
+      "evidence": "实际重新计算；新权重不改变原来的状态和动作。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "reward.analysis.completed"
       },
       "hints": [
         "先看这一步有没有更新策略。",
@@ -83,12 +85,13 @@
     },
     {
       "id": "step_05",
-      "title": "观察",
-      "instruction": "区分“修改评分后旧轨迹变分”与“策略真的学会新行为”：重新计分本身不会更新策略。",
-      "activity": "observe",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "保存我的解释",
+      "instruction": "解释重新计分为何没有更新策略参数，并指出两条轨迹各自的源文件。",
+      "activity": "predict",
+      "evidence": "保存你的解释。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "prediction.submitted",
+        "field": "value"
       },
       "hints": [
         "先看这一步有没有更新策略。",
@@ -98,13 +101,12 @@
     },
     {
       "id": "step_06",
-      "title": "先预测",
-      "instruction": "为奖励配置取一个新版本号，把每一项的目的写下来，暂不选择最复杂公式。",
-      "activity": "predict",
-      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "title": "完成实际实验",
+      "instruction": "点击“保存版本供L27训练”。记下reward.json路径、奖励名称和每项权重；后续从零训练使用同一份声明。",
+      "activity": "experiment",
+      "evidence": "只有奖励配置实际保存成功才继续。",
       "completion": {
-        "event": "prediction.submitted",
-        "field": "value"
+        "event": "reward.configuration.saved"
       },
       "hints": [
         "先看这一步有没有更新策略。",
@@ -135,10 +137,10 @@
   "availability": "built_in",
   "editor_kind": "script",
   "reflection": "重新计分是否让旧策略学会新行为？",
-  "reference_answer": "不会，只改变同一轨迹的评分；真正改变策略需要训练。不同奖励下原始回报不能直接横比。",
+  "reference_answer": "不会，只改变同一轨迹的评分；真正改变策略需要训练。不同奖励下原始回报不能直接横比。 本页只读真实动作后状态和实际推力；奖励版本及权重会原样用于后续训练。不同奖励回报的数值不共用同一排名尺度。",
   "objectives": [
     "重新计分是否让旧策略学会新行为？",
     "保存真实观察并说明本次结论的适用条件。"
   ],
-  "notes": "**前置/时长：** L23、L10；60分钟。新概念为即时奖励、累计回报、任务指标。\n\n**教师提问：** “只奖励杆站着，会不会允许小车一直向边缘跑？只惩罚用力，会不会让程序选择什么都不做？”\n\n**操作步骤：**\n\n1. 先使用基准存活奖励：每个有效step返回1，观察回报随回合长度变化。\n2. 对同一份已保存轨迹，分别计算角度偏差、位置偏差和用力；这一步不重新训练。\n3. 用下列示例奖励给两份轨迹重新计分，解释为什么排序可能变化。\n4. 把用力惩罚增大10倍，预测小动作策略可能更受偏爱。\n5. 区分“修改评分后旧轨迹变分”与“策略真的学会新行为”：重新计分本身不会更新策略。\n6. 为奖励配置取一个新版本号，把每一项的目的写下来，暂不选择最复杂公式。\n\n**教师计算示例（无量纲比例，候选权重，尚未校准）：**\n\n```python\ndef reward_parts(state, force_n):\n    angle_cost = 0.6 * (state[\"theta\"] / 0.20944) ** 2\n    position_cost = 0.2 * (state[\"x\"] / 2.4) ** 2\n    effort_cost = 0.02 * (force_n / 10.0) ** 2\n    return 1.0 - angle_cost - position_cost - effort_cost\n```\n\n**观察/误解：** 高训练回报不自动等于小角度/省力；奖励定义不同的两次训练不能直接比较回报数值。保留统一物理指标单独比较。奖励函数不能借用未来状态或控制器拿不到的隐含答案。\n\n**提示/验收：** 从“一项奖励鼓励什么”提示到两条轨迹手算，再提供公式。学生提交奖励说明、两种计分表和一个可能钻空子的行为。无需证明这组权重最优。\n\n**界面/代码：** 奖励拆分图按需展开，不在第一课显示；`L24.json`、`rl/rewards.py`、`evaluation/rescore.py`为拟增。DEV-R02；在课程页明确“仅重算分数，未训练”。"
+  "notes": "0.2.1操作：左侧奖励实验页可读取课堂或评价的trajectory.csv，导出分量表、累计曲线、JSON和CSV。保存的reward.json可载入L27；训练与离线计分共用归一化公式。\n\n**前置/时长：** L23、L10；60分钟。新概念为即时奖励、累计回报、任务指标。\n\n**教师提问：** “只奖励杆站着，会不会允许小车一直向边缘跑？只惩罚用力，会不会让程序选择什么都不做？”\n\n**操作步骤：**\n\n1. 先使用基准存活奖励：每个有效step返回1，观察回报随回合长度变化。\n2. 对同一份已保存轨迹，分别计算角度偏差、位置偏差和用力；这一步不重新训练。\n3. 用下列示例奖励给两份轨迹重新计分，解释为什么排序可能变化。\n4. 把用力惩罚增大10倍，预测小动作策略可能更受偏爱。\n5. 区分“修改评分后旧轨迹变分”与“策略真的学会新行为”：重新计分本身不会更新策略。\n6. 为奖励配置取一个新版本号，把每一项的目的写下来，暂不选择最复杂公式。\n\n**教师计算示例（无量纲比例，候选权重，尚未校准）：**\n\n```python\ndef reward_parts(state, force_n):\n    angle_cost = 0.6 * (state[\"theta\"] / 0.20944) ** 2\n    position_cost = 0.2 * (state[\"x\"] / 2.4) ** 2\n    effort_cost = 0.02 * (force_n / 10.0) ** 2\n    return 1.0 - angle_cost - position_cost - effort_cost\n```\n\n**观察/误解：** 高训练回报不自动等于小角度/省力；奖励定义不同的两次训练不能直接比较回报数值。保留统一物理指标单独比较。奖励函数不能借用未来状态或控制器拿不到的隐含答案。\n\n**提示/验收：** 从“一项奖励鼓励什么”提示到两条轨迹手算，再提供公式。学生提交奖励说明、两种计分表和一个可能钻空子的行为。无需证明这组权重最优。\n\n**界面/代码：** 奖励拆分图按需展开，不在第一课显示；`L24.json`、`rl/rewards.py`、`evaluation/rescore.py`为拟增。DEV-R02；在课程页明确“仅重算分数，未训练”。"
 }

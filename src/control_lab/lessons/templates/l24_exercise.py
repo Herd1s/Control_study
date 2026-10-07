@@ -1,36 +1,27 @@
-"""给一份真实CSV轨迹重新计分，不会修改或训练策略。"""
+"""同轨迹重计分，并保存可用于L27训练的奖励声明。"""
 import argparse
-import csv
-import json
+from pathlib import Path
 
-def reward_parts(state, force_n, effort_weight=0.02):
-    return {
-        "survival": 1.0,
-        "angle": -0.6 * (state["theta"] / 0.20943951023931956) ** 2,
-        "position": -0.2 * (state["x"] / 2.4) ** 2,
-        "effort": -effort_weight * (force_n / 10.0) ** 2,
-    }
+# 练习：只改用力权重，为新定义取新名字；内置版本名不能覆盖。
+MY_REWARD = {"schema_version": 1, "reward_id": "my-reward-v1", "version": 1,
+             "alive": 1.0, "angle": 0.6, "position": 0.2, "effort": 0.02}
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("trajectory", help="已保存的trajectory.csv")
-    parser.add_argument("--effort-weight", type=float, default=0.02)
-    args = parser.parse_args()
-    def read(row, names):
-        for name in names:
-            if name in row:
-                return float(row[name])
-        raise ValueError("CSV缺少列: " + "/".join(names))
-    totals = dict(survival=0.0, angle=0.0, position=0.0, effort=0.0)
-    with open(args.trajectory, encoding="utf-8-sig", newline="") as handle:
-        for row in csv.DictReader(handle):
-            state = {"theta": read(row, ("true_theta", "true_theta_rad", "theta", "theta_rad")),
-                     "x": read(row, ("true_x", "true_x_m", "x", "x_m"))}
-            force = read(row, ("actuator_force_n", "applied_force", "force_n", "force"))
-            for key, value in reward_parts(state, force, args.effort_weight).items():
-                totals[key] += value
-    print(json.dumps({"parts": totals, "return": sum(totals.values()),
-                      "note": "同一轨迹重计分，未重新训练"}, ensure_ascii=False, indent=2))
+    parser.add_argument("trajectories", nargs="+", type=Path, help="1–2份trajectory.csv")
+    parser.add_argument("--output-dir", required=True, type=Path, help="新的输出目录")
+    args = parser.parse_args(argv)
+    from control_lab.rl.rewards import resolve_reward_config, normalize_reward_config
+    from control_lab.rl.reward_analysis import analyze_rewards
+    from control_lab.rl.artifacts import atomic_json
+    config = normalize_reward_config(MY_REWARD)
+    result = analyze_rewards(args.trajectories, [resolve_reward_config("survival-v1"),
+        resolve_reward_config("balanced-v1"), config], args.output_dir)
+    config_path = args.output_dir / "my_reward.json"
+    atomic_json(config_path, config)
+    print("曲线和分量报告：", result["html"])
+    print("供L27载入的声明：", config_path)
+    print("这里只重新计分；未改变原始轨迹，也未训练策略。")
 
 if __name__ == "__main__":
     main()

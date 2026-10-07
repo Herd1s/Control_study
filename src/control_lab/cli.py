@@ -9,6 +9,7 @@ from pathlib import Path
 import platform
 import sys
 import json
+import math
 from datetime import datetime
 
 from control_lab import __version__
@@ -26,6 +27,13 @@ def nonnegative_int(value: str) -> int:
     result = int(value)
     if result < 0:
         raise argparse.ArgumentTypeError("must be nonnegative")
+    return result
+
+
+def positive_float(value: str) -> float:
+    result = float(value)
+    if not math.isfinite(result) or result <= 0:
+        raise argparse.ArgumentTypeError("must be finite and positive")
     return result
 
 
@@ -105,7 +113,19 @@ def make_parser() -> argparse.ArgumentParser:
     evaluate.add_argument("--model-dir", type=Path)
     evaluate.add_argument("--split", choices=["practice", "validation", "held_out"], default="validation")
     evaluate.add_argument("--frozen-controller-sha256")
+    evaluate.add_argument("--validation-report", type=Path, help="complete model validation report authorizing the held-out check")
+    evaluate.add_argument("--execution-timeout", type=positive_float, default=.5, help="student initialization/reset/action timeout in seconds")
+    evaluate.add_argument("--stop-file", type=Path, help="stop gracefully when this file exists (default: output-dir/STOP)")
     evaluate.add_argument("--output-dir", type=Path)
+    reproduce = commands.add_parser("run-recording", help="recompute a GUI experiment from its saved source, spec and input mode")
+    reproduce.add_argument("recording", type=Path)
+    reproduce.add_argument("--output-dir", type=Path, help="new output directory; never overwrites an existing path")
+    reproduce.add_argument("--execution-timeout", type=positive_float, default=.5)
+    scan = commands.add_parser("sweep", help="repeat explicit P/PI classroom conditions; not a scored balance benchmark")
+    scan.add_argument("--kind", choices=["p", "pi"], default="p")
+    scan.add_argument("--gains", default="0,20,40,60,100", help="2-12 comma-separated Kp values for P")
+    scan.add_argument("--condition", choices=["primary", "check"], default="primary")
+    scan.add_argument("--output-dir", required=True, type=Path)
     compare = commands.add_parser("compare", help="compare complete reports with identical benchmark conditions")
     compare.add_argument("reports", nargs="+", type=Path)
     compare.add_argument("--output", type=Path)
@@ -114,6 +134,7 @@ def make_parser() -> argparse.ArgumentParser:
     train.add_argument("--steps", type=positive_int, default=25600)
     train.add_argument("--seed", type=nonnegative_int, default=0)
     train.add_argument("--reward", choices=["survival-v1", "balanced-v1"], default="survival-v1")
+    train.add_argument("--reward-config", type=Path, help="explicit normalized reward configuration JSON")
     return parser
 
 
@@ -144,8 +165,28 @@ def main(argv: list[str] | None = None) -> int:
             return desktop_main(["--lesson", args.id])
         if args.command == "train":
             from control_lab.rl.train import TrainConfig, train
-            train(TrainConfig(args.output_dir, total_timesteps=args.steps, seed=args.seed, reward_id=args.reward))
+            from control_lab.rl.rewards import load_reward_config
+            reward_config = load_reward_config(args.reward_config) if args.reward_config else None
+            train(TrainConfig(args.output_dir, total_timesteps=args.steps, seed=args.seed,
+                              reward_id=reward_config["reward_id"] if reward_config else args.reward,
+                              reward_config=reward_config))
             return 0
+        if args.command == "run-recording":
+            from control_lab.evaluation.reproduce import reproduce_recording
+            output = args.output_dir or user_data_dir() / "runs" / (datetime.now().strftime("%Y%m%d_%H%M%S_%f") + "_reproduced")
+            report = reproduce_recording(args.recording, output_dir=output, execution_timeout=args.execution_timeout)
+            print(json.dumps({"report": str(output / "report.json"), "status": report["status"],
+                              **report["reproduction"]}, ensure_ascii=False), flush=True)
+            return (130 if report["status"] == "cancelled" else 1 if report["error"] else
+                    0 if report["reproduction"]["matches_saved_trajectory"] else 2)
+        if args.command == "sweep":
+            from control_lab.evaluation.control_experiments import teaching_scan
+            report = teaching_scan(args.kind, gains=[float(value) for value in args.gains.split(",")],
+                                   condition=args.condition, output_dir=args.output_dir,
+                                   cancel_requested=(args.output_dir / "STOP").exists)
+            print(json.dumps({"report": str(args.output_dir / "scan.json"), "status": report["status"],
+                              "candidate_count": len(report["candidates"])}, ensure_ascii=False), flush=True)
+            return 130 if report["status"] == "cancelled" else 0
         if args.command == "compare":
             from control_lab.evaluation import compare_reports
             report = compare_reports(json.loads(path.read_text(encoding="utf-8")) for path in args.reports)
@@ -162,16 +203,17 @@ def main(argv: list[str] | None = None) -> int:
             if args.model_dir:
                 from control_lab.rl.evaluate import evaluate_model
                 report = evaluate_model(args.model_dir, split=args.split, output_dir=output,
-                                        frozen_controller_sha256=args.frozen_controller_sha256)
+                                        frozen_controller_sha256=args.frozen_controller_sha256,
+                                        validation_report=args.validation_report)
             else:
                 from control_lab.evaluation import evaluate, load_protocol
                 from control_lab.controllers import ZeroController
                 from control_lab.controllers.reference_pid import Controller as Reference
-                from control_lab.inputs.adapters import controller_from_source
+                from control_lab.inputs.isolated import IsolatedControllerAdapter
                 if args.controller == "student":
                     path = (args.controller_file or default_controller_file()).resolve()
                     source = path.read_bytes()
-                    factory = lambda: controller_from_source(source, path)
+                    factory = lambda: IsolatedControllerAdapter(source, path, execution_timeout=args.execution_timeout)
                 elif args.controller == "zero":
                     factory = ZeroController
                 else:
@@ -182,9 +224,11 @@ def main(argv: list[str] | None = None) -> int:
                 report = evaluate(factory, load_protocol(args.protocol, split=args.split), output_dir=output,
                                   controller_name=args.controller, allow_held_out=bool(args.frozen_controller_sha256),
                                   expected_controller_sha256=args.frozen_controller_sha256,
+                                  cancel_requested=(args.stop_file or output / "STOP").exists,
                                   progress_callback=lambda done, total, episode: print(f"{done}/{total} {episode['case_id']}: {episode['episode_steps']} steps", flush=True))
-            print(json.dumps({"report": str(output / "report.json"), **report["aggregate"]}, ensure_ascii=False), flush=True)
-            return 1 if report["aggregate"]["controller_errors"] else 0
+            print(json.dumps({"report": str(output / "report.json"), "status": report.get("status", "completed"),
+                              **(report["aggregate"] or {})}, ensure_ascii=False), flush=True)
+            return 130 if report.get("status") == "cancelled" else 1 if report["aggregate"]["controller_errors"] else 0
         if args.controller_file is not None and args.controller != "student":
             parser.error("--controller-file requires --controller student")
         from control_lab.runner import RunConfig, run_experiment

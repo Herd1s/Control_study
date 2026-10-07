@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L15",
   "title": "看见倾倒速度——从 P 到 PD",
   "summary": "同角度不同omega，D怎样改变动作？",
@@ -27,16 +27,22 @@
     {
       "id": "step_01",
       "title": "观察",
-      "instruction": "并排暂停两次场景：角度均为 `0.05 rad`，角速度分别为 `+0.15` 与 `-0.15 rad/s`。学生用箭头表示下一瞬间的趋势。",
+      "instruction": "在下方并排对照中将游标放在0秒：角度均为0.05 rad，角速度分别为+0.15与−0.15 rad/s。观察趋势箭头，点“记录这一帧的对照”。",
       "activity": "observe",
-      "evidence": "在需要观察的时刻暂停，保留当前画面。",
+      "evidence": "完成上面的面板操作后继续；需要时可以先跳过。",
       "completion": {
-        "event": "simulation.paused"
+        "event": "answer.checked",
+        "field": "kind",
+        "equals": "paired_inspection"
       },
       "hints": [
         "先判断正在越倒越快还是回正。",
         "D利用角速度区分相同角度。",
         "return 60*theta + 12*omega。"
+      ],
+      "visible_signals": [
+        "theta",
+        "omega"
       ]
     },
     {
@@ -52,6 +58,10 @@
         "先判断正在越倒越快还是回正。",
         "D利用角速度区分相同角度。",
         "return 60*theta + 12*omega。"
+      ],
+      "visible_signals": [
+        "theta",
+        "omega"
       ]
     },
     {
@@ -68,6 +78,10 @@
         "先判断正在越倒越快还是回正。",
         "D利用角速度区分相同角度。",
         "return 60*theta + 12*omega。"
+      ],
+      "visible_signals": [
+        "theta",
+        "omega"
       ]
     },
     {
@@ -83,6 +97,10 @@
         "先判断正在越倒越快还是回正。",
         "D利用角速度区分相同角度。",
         "return 60*theta + 12*omega。"
+      ],
+      "visible_signals": [
+        "theta",
+        "omega"
       ]
     },
     {
@@ -99,6 +117,13 @@
         "先判断正在越倒越快还是回正。",
         "D利用角速度区分相同角度。",
         "return 60*theta + 12*omega。"
+      ],
+      "visible_signals": [
+        "theta",
+        "omega",
+        "p",
+        "d",
+        "force"
       ]
     },
     {
@@ -114,6 +139,13 @@
         "先判断正在越倒越快还是回正。",
         "D利用角速度区分相同角度。",
         "return 60*theta + 12*omega。"
+      ],
+      "visible_signals": [
+        "theta",
+        "omega",
+        "p",
+        "d",
+        "force"
       ]
     },
     {
@@ -130,6 +162,13 @@
         "先判断正在越倒越快还是回正。",
         "D利用角速度区分相同角度。",
         "return 60*theta + 12*omega。"
+      ],
+      "visible_signals": [
+        "theta",
+        "omega",
+        "p",
+        "d",
+        "force"
       ]
     },
     {
@@ -146,6 +185,13 @@
         "先判断正在越倒越快还是回正。",
         "D利用角速度区分相同角度。",
         "return 60*theta + 12*omega。"
+      ],
+      "visible_signals": [
+        "theta",
+        "omega",
+        "p",
+        "d",
+        "force"
       ]
     }
   ],

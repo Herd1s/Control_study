@@ -3,12 +3,13 @@ from pathlib import Path
 import threading
 
 from PySide6.QtCore import QThread, Signal
-from PySide6.QtWidgets import (QFormLayout, QHBoxLayout, QLabel, QLineEdit, QMessageBox,
+from PySide6.QtWidgets import (QComboBox, QFormLayout, QHBoxLayout, QLabel, QLineEdit, QMessageBox,
                                QPlainTextEdit, QProgressBar, QPushButton, QVBoxLayout, QWidget)
 
 from control_lab import __version__
 from control_lab.updates.download import download_release
-from control_lab.updates.installer import verify_cached_installer
+from control_lab.updates.installer import (list_cached_installers, read_cached_installer_log,
+                                          verify_cached_installer)
 from control_lab.updates.releases import (RepositoryConfig, ReleaseClient, UpdateCancelled,
                                          load_config, save_config)
 
@@ -78,6 +79,23 @@ class UpdatesPanel(QWidget):
         self.download_button.clicked.connect(self.download_update)
         self.install_button.clicked.connect(self.request_installation)
         self.cancel_button.clicked.connect(self.cancel)
+        recovery_note = QLabel("安装未完成时，可查看本机日志并重新校验已下载的安装包。只有缓存清单和文件 SHA256 一致的安装包才可重试；不会自动执行。")
+        recovery_note.setWordWrap(True)
+        layout.addWidget(recovery_note)
+        self.cache_combo = QComboBox()
+        self.cache_combo.setAccessibleName("本地安装包恢复列表")
+        layout.addWidget(self.cache_combo)
+        recovery_row = QHBoxLayout()
+        self.refresh_cache_button = QPushButton("重新核对本地安装包")
+        self.retry_install_button = QPushButton("重试所选安装包…")
+        self.view_log_button = QPushButton("查看安装日志")
+        for button in (self.refresh_cache_button, self.retry_install_button, self.view_log_button):
+            recovery_row.addWidget(button)
+        layout.addLayout(recovery_row)
+        self.refresh_cache_button.clicked.connect(self.refresh_cache)
+        self.retry_install_button.clicked.connect(self.retry_cached_installation)
+        self.view_log_button.clicked.connect(self.view_installer_log)
+        self.cache_combo.currentIndexChanged.connect(self._update_buttons)
         self.status_label = QLabel("尚未配置发布仓库。填写发布者和仓库名后，再主动检查。")
         self.status_label.setWordWrap(True)
         layout.addWidget(self.status_label)
@@ -116,6 +134,37 @@ class UpdatesPanel(QWidget):
         self.cancel_button.setEnabled(busy)
         self.owner_edit.setEnabled(not busy)
         self.repo_edit.setEnabled(not busy)
+        entry = self.cache_combo.currentData()
+        self.cache_combo.setEnabled(not busy)
+        self.refresh_cache_button.setEnabled(not busy and not self._closing)
+        self.retry_install_button.setEnabled(not busy and not self._closing and bool(entry and entry["verified"]))
+        self.view_log_button.setEnabled(not busy and bool(entry and entry["log_paths"]))
+
+    def refresh_cache(self):
+        if self.running:
+            return
+        self.status_label.setText("正在重新读取本地缓存并计算 SHA256；不会访问网络或执行安装包。")
+        self.progress_bar.setRange(0, 0)
+        self._start("recovery", lambda cancel, progress: list_cached_installers(self.cache_dir, cancel_event=cancel))
+
+    def retry_cached_installation(self):
+        entry = self.cache_combo.currentData()
+        if self.running or not entry or not entry["verified"]:
+            return
+        self._installer = Path(entry["installer_path"])
+        self.request_installation()
+
+    def view_installer_log(self):
+        entry = self.cache_combo.currentData()
+        if not entry or not entry["log_paths"]:
+            return
+        try:
+            path = entry["log_paths"][0]
+            self.release_notes.setPlainText(f"最近一次安装日志：{path}\n（最多显示末尾 128 KiB；所有尝试日志保存在同一目录）\n\n" +
+                                           read_cached_installer_log(path, self.cache_dir))
+            self.status_label.setText("显示安装日志。安装器启动记录不代表安装成功；可结合日志决定是否重试。")
+        except (OSError, ValueError, RuntimeError) as exc:
+            self._failed(str(exc))
 
     def _source_changed(self):
         self._release = None
@@ -167,7 +216,15 @@ class UpdatesPanel(QWidget):
 
     def _result(self, result):
         self.progress_bar.setRange(0, 100)
-        if self._operation == "check":
+        if self._operation == "recovery":
+            self.cache_combo.clear()
+            labels = {"verified": "已校验，未启动", "unconfirmed": "安装结果尚未确认", "completed": "已确认完成", "invalid": "校验失败"}
+            for entry in result:
+                label = f"{entry['version']} · {entry['repository']} · {labels[entry['status']]}"
+                self.cache_combo.addItem(label, entry)
+            self.status_label.setText(f"找到 {len(result)} 份缓存记录，{sum(e['verified'] for e in result)} 份重新校验通过。选择记录后可查看日志或主动重试。")
+            self.release_notes.setPlainText("\n".join(f"{e['folder']}\n{e['error'] or labels[e['status']]}" for e in result))
+        elif self._operation == "check":
             self._release = result
             if result is None:
                 self.status_label.setText("该仓库暂无比当前版本更新的正式版本。")
@@ -210,7 +267,7 @@ class UpdatesPanel(QWidget):
         except Exception as exc:
             self._failed(str(exc))
             return
-        answer = QMessageBox.question(self, "安装更新", f"准备安装 {release.version}。\n软件将先保存作业、停止实验并退出，然后打开安装向导。\n安装完成后，可在向导中选择打开软件。\n是否继续？",
+        answer = QMessageBox.question(self, "安装更新", f"准备安装 {release.version}，来源 {release.repository.full_name}（当前 {__version__}）。\n缓存包可能是较早版本，请确认选择。\n软件将先保存作业、停止实验并退出，然后打开安装向导。\n安装完成后，可在向导中选择打开软件。\n是否继续？",
                                       QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                                       QMessageBox.StandardButton.No)
         if answer == QMessageBox.StandardButton.Yes:

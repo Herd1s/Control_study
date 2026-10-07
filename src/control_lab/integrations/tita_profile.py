@@ -168,8 +168,8 @@ def validate_paths(profile, *, checkpoint=False):
 
 
 def build_command(profile, mode, data_dir, *, run_tag=None):
-    if mode not in ("inspect", "registry", "smoke", "play", "export"):
-        raise ValueError("only inspect, registry, smoke, play and export are supported")
+    if mode not in ("inspect", "interface", "registry", "smoke", "play", "export"):
+        raise ValueError("only inspect, interface, registry, smoke, play and export are supported")
     validate_paths(profile, checkpoint=mode in ("play", "export"))
     if mode != "inspect" and not profile.omniverse_eula_accepted:
         raise ValueError("外部仿真环境尚未记录 NVIDIA 许可接受信息，请先完成该环境的许可设置。")
@@ -182,6 +182,12 @@ def build_command(profile, mode, data_dir, *, run_tag=None):
     root = Path(profile.ddt_root)
     if mode == "inspect":
         arguments = ("-u", "-c", PROFILE_PROBE, json.dumps(asdict(profile), ensure_ascii=False))
+    elif mode == "interface":
+        from .tita_interface import INTERFACE_PROBE
+        output = Path(data_dir).resolve() / "tita/interfaces" / tag / "interface.json"
+        if output.exists():
+            raise FileExistsError(output)
+        arguments = ("-u", "-c", INTERFACE_PROBE, json.dumps(asdict(profile), ensure_ascii=False), str(output))
     elif mode == "registry":
         script = root / "scripts/list_envs.py"
         if not script.is_file():

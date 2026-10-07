@@ -1,8 +1,7 @@
-"""Synchronous CPU evaluator for trusted controllers and frozen scenarios.
+"""Frozen-case evaluator with incremental evidence and explicit cancellation.
 
-Every case, including a controller error, receives a report. The desktop runs
-untrusted/possibly stalled edits in its separate timeout worker; this API does
-not promise to interrupt arbitrary Python code inside act().
+Trusted library/RL factories execute in process. Local student source must use
+IsolatedControllerAdapter (the CLI default); arbitrary factory code is trusted.
 """
 import csv
 from dataclasses import asdict, is_dataclass
@@ -10,6 +9,7 @@ from datetime import datetime, timezone
 import hashlib
 import inspect
 import json
+import os
 from pathlib import Path
 import numpy as np
 import sys
@@ -104,9 +104,8 @@ def _state_row(prefix, state):
 
 
 def evaluate(controller_factory, protocol=None, *, output_dir=None, controller_name=None,
-             allow_held_out=False, expected_controller_sha256=None, progress_callback=None):
-    from control_lab.core.session import EpisodeSession
-
+             allow_held_out=False, expected_controller_sha256=None, progress_callback=None,
+             cancel_requested=None):
     protocol = protocol or load_protocol()
     if protocol.split == "held_out" and (not allow_held_out or not expected_controller_sha256):
         raise ValueError("Held-out evaluation requires allow_held_out=True and a frozen expected_controller_sha256 from validation")
@@ -132,13 +131,55 @@ def evaluate(controller_factory, protocol=None, *, output_dir=None, controller_n
     if output is not None and bundle is not None:
         (output / "controller_snapshot.json").write_text(json.dumps(bundle, ensure_ascii=False, indent=2), encoding="utf-8")
     episodes = []
+    created_at = datetime.now(timezone.utc).isoformat()
+
+    def persist(status):
+        report = dict(schema_version=1, control_lab_version=__version__,
+                      created_at_utc=created_at, status=status,
+                      is_complete=status == "completed", requested_episodes=len(protocol.cases),
+                      protocol_id=protocol.protocol_id, protocol_hash=protocol.protocol_hash,
+                      cases_hash=protocol.cases_hash, split=protocol.split,
+                      input_mode=protocol.definition["input_mode"],
+                      observation_contract=protocol.definition["observation"],
+                      reward_id=protocol.definition["reward_id"], metrics_version=METRICS_VERSION,
+                      controller=controller_name or getattr(controller_factory, "__name__", "controller"),
+                      controller_sha256=identity, controller_configuration=bundle["configuration"] if bundle else None,
+                      episodes=list(episodes), aggregate=aggregate_metrics(episodes) if episodes else None,
+                      trajectory_timing="true state is post-action; observation is the pre-action controller input",
+                      held_out_authorized=bool(allow_held_out and protocol.split == "held_out"))
+        if output is not None:
+            temporary = output / "report.json.tmp"
+            temporary.write_text(json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
+            os.replace(temporary, output / "report.json")
+        return report
+
+    persist("running")
+    try:
+        return _evaluate_cases(controller, construction_error, protocol, output, episodes,
+                               progress_callback, cancel_requested, persist)
+    except KeyboardInterrupt:
+        return persist("cancelled")
+    finally:
+        close = getattr(controller, "close", None)
+        if callable(close):
+            close()
+
+
+def _evaluate_cases(controller, construction_error, protocol, output, episodes,
+                    progress_callback, cancel_requested, persist):
+    from control_lab.core.session import EpisodeSession
+    cancelled = False
     for case_index, case in enumerate(protocol.cases):
+        if cancel_requested is not None and cancel_requested():
+            return persist("cancelled")
         rows, session, error, end_reason = [], None, construction_error, "controller_error" if construction_error else None
         try:
             if error is None:
                 session = EpisodeSession(protocol.spec_for(case))
                 controller.reset()
                 while not session.finished:
+                    if cancel_requested is not None and cancel_requested():
+                        raise KeyboardInterrupt
                     observed = session.observed_state
                     # All library controllers and adapters accept the internal State.
                     # Bare legacy classes are supplied a copy of the original sequence.
@@ -151,6 +192,7 @@ def evaluate(controller_factory, protocol=None, *, output_dir=None, controller_n
                     else:
                         force = controller.act(argument, session.dt)
                     requested = finite_number(force, "controller force")
+                    diagnostics = getattr(controller, "diagnostics", None)
                     result = session.step(requested)
                     row = dict(step_id=result.step_id, time_s=result.simulation_time_s,
                                **_state_row("true_", result.true_state),
@@ -160,7 +202,6 @@ def evaluate(controller_factory, protocol=None, *, output_dir=None, controller_n
                                disturbance_force_n=result.disturbance_force_n,
                                net_force_n=result.net_force_n, reward=result.reward,
                                terminated=result.terminated, truncated=result.truncated)
-                    diagnostics = getattr(controller, "diagnostics", None)
                     if diagnostics:
                         for key, value in diagnostics.items():
                             row["controller_" + key] = value
@@ -168,7 +209,12 @@ def evaluate(controller_factory, protocol=None, *, output_dir=None, controller_n
                     end_reason = result.end_reason
         except (Exception, SystemExit) as exc:
             error = dict(type=type(exc).__name__, message=str(exc))
+            if getattr(exc, "phase", None):
+                error["phase"] = exc.phase
             end_reason = "controller_error"
+        except KeyboardInterrupt:
+            cancelled = True
+            end_reason = "cancelled"
         finally:
             if session is not None:
                 session.close()
@@ -178,6 +224,8 @@ def evaluate(controller_factory, protocol=None, *, output_dir=None, controller_n
                                   force_limit_n=protocol.definition["force_limit_n"],
                                   end_reason=end_reason, error=error)
         episode = dict(case.as_dict(), **metrics)
+        if hasattr(controller, "worker_generation"):
+            episode["worker_generation"] = controller.worker_generation
         if output is not None:
             case_dir = output / case.case_id
             case_dir.mkdir()
@@ -188,20 +236,13 @@ def evaluate(controller_factory, protocol=None, *, output_dir=None, controller_n
                 writer.writerows(rows)
             episode["trajectory_file"] = str(Path(case.case_id) / "trajectory.csv")
         episodes.append(episode)
+        persist("cancelled" if cancelled else "running")
+        if cancelled:
+            break
         if progress_callback is not None:
-            progress_callback(case_index + 1, len(protocol.cases), episode)
-    report = dict(schema_version=1, control_lab_version=__version__,
-                  created_at_utc=datetime.now(timezone.utc).isoformat(),
-                  protocol_id=protocol.protocol_id, protocol_hash=protocol.protocol_hash,
-                  cases_hash=protocol.cases_hash, split=protocol.split,
-                  input_mode=protocol.definition["input_mode"],
-                  observation_contract=protocol.definition["observation"],
-                  reward_id=protocol.definition["reward_id"], metrics_version=METRICS_VERSION,
-                  controller=controller_name or getattr(controller_factory, "__name__", "controller"),
-                  controller_sha256=identity, controller_configuration=bundle["configuration"] if bundle else None,
-                  episodes=episodes, aggregate=aggregate_metrics(episodes),
-                  trajectory_timing="true state is post-action; observation is the pre-action controller input",
-                  held_out_authorized=bool(allow_held_out and protocol.split == "held_out"))
-    if output is not None:
-        (output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
-    return report
+            try:
+                progress_callback(case_index + 1, len(protocol.cases), episode)
+            except KeyboardInterrupt:
+                cancelled = True
+                break
+    return persist("cancelled" if cancelled else "completed")

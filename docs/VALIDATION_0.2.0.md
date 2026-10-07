@@ -53,8 +53,65 @@ Gymnasium 与 Stable-Baselines3 环境检查均通过，仅有观测空间正负
 
 最终机器记录为 `logs/installer-test-v020/report.json`，状态 `passed`；编译、安装、卸载和程序 stdout/stderr 均保存在同一目录。本次只卸载了预检后创建的隔离测试安装，没有删除用户文档目录。测试使用非交互安装参数验证文件与注册表行为，未替代人工向导操作验收。
 
+## 冻结 GUI 的真实操作与进程生命周期
+
+追加验证直接运行已构建的 `dist/ControlLab/ControlLab.exe`，SHA256 为 `47ac4d375f26cfbd171ad41f899ed8beb1a583dd435eae56aa71bc638880ba93`。使用 Windows UI Automation 的 InvokePattern/ValuePattern 操作原有按钮和输入框，没有修改产品源码、增加测试入口或直接调用窗口内部方法。每次使用独立的临时学习目录。
+
+### L19：同模块的新回合与 reset
+
+通过现有代码编辑器输入可记录 PID/回调次数的学生函数，实际点击运行、暂停、“新回合 · 保留代码”和单步。等待软件保存真实的回合重置确认事件后再单步，避免将自动化调用返回误当作 UI 处理完成。
+
+| 学生程序 | 实际结果 |
+| --- | --- |
+| 无 `reset()` | 模块仅载入一次、worker PID 不变；第一回合从计数 1 开始，暂停时为 10，新回合首动作计数为 11 |
+| 有 `reset()` | 模块仅载入一次、worker PID 不变；启动与新回合合计调用 reset 两次，两次相同初态的首动作计数均为 1 |
+| 第二次 `reset()` 抛出异常 | GUI 显示具体错误，运行按钮恢复、同模块新回合按钮停用，没有继续调用 control 或悄悄推进新回合 |
+
+三条路径关闭窗口后均未遗留学生 worker。证据为 `logs/frozen-native-qa/lifecycle-final/lifecycle-result.json`，各目录另存真实回调 JSONL、学生代码快照、进度与实验报告。首轮脚本因未等待异步 UI 重置确认而失败，其记录保留，但不作为产品缺陷或通过证据。
+
+### 冻结 GUI → 独立 wheel 运行时 → 策略重载与回放
+
+在原有 L27 页面输入已验证的非 editable `logs/wheel-runtime-test/Scripts/python.exe` 和先前 256 步烟测模型目录，实际点击“检查环境”“独立验证 · 20 回合”“回放验证用例”。进程检查确认三次操作使用三个不同 PID，执行路径均为指定外部 Python，命令均为 `-m control_lab.rl.service` 的对应子命令。
+
+- 环境检查从实际 GUI 日志返回 Python 3.13.5、PyTorch 2.9.1+cpu、SB3 2.9.0 与正确外部解释器路径。
+- 模型重新载入后完成 20 个固定验证用例，无控制器错误；平均 37.95 步、最差 28 步、完整回合 0/20。这是短训模型的通路验收，不是稳定平衡证据。
+- 独立回放进程实际推进 `validation-100` 至第 34 步、因角度越界结束；GUI 收到状态并打开策略回放窗口，截图已检查。
+- 关闭 GUI 后三个外部任务均已结束，没有遗留训练/推理进程。
+
+证据为 `logs/frozen-native-qa/rl-final-v2/result.json`、真实 GUI 日志、20 回合报告与 `replay-window.png`。首轮脚本只在自动化树顶层寻找有父窗口的 Qt 对话框，导致选择器超时；改为后代选择器后通过，没有改动产品包。以上均未运行保留测试集。
+
+## GitHub 云端构建与草稿资产核对
+
+GitHub 恢复后，`main` 与 `v0.2.0` 指向 `773509117c9685175e1731f0e437a9db9461fbd3`。[Actions 运行 37647006563](https://github.com/Herd1s/Control_study/actions/runs/37647006563) 于 2026-10-07 15:52:15 UTC 完成，Windows job 和全部执行步骤成功。云端日志显示 **166 passed、2 skipped、34 subtests passed**；CI 基础环境未安装可选 RL 运行时，这两项跳过不能替代前文的独立 RL 验证。云端还运行了冻结 CLI doctor、32 课资源检查和固定 validation 用例评估。
+
+[Release API 记录 405924361](https://api.github.com/repos/Herd1s/Control_study/releases/405924361) 确认 `tag_name=v0.2.0`、`draft=true`、`published_at=null`，三份资产均为 `uploaded`。本次没有发布草稿。下载同一次 CI 的 artifact `11494419268` 后，在本地逐字节计算 SHA256；内部 `SHA256SUMS` 与实际文件、Release API 的 digest 三方一致：
+
+| 云端资产 | 字节数 | SHA256 |
+| --- | ---: | --- |
+| ControlLab-Portable-0.2.0-windows-x64.zip | 83,171,581 | `edd942eb58c0077ddc3fe454122b2031076f7ee35b2166cc6e60fe13bddca7d9` |
+| ControlLab-Setup-0.2.0.exe | 53,021,491 | `c5863435eb46b21b2a9b8077aab46ce7329bf3b8aba033c283572d20050a8cf6` |
+| SHA256SUMS | 203 | `6ea5ff35e91ef773c41b41dc16086b3fb50910ce311f89309a693b10e8840888` |
+
+CI artifact ZIP 的 SHA256 为 `8b1903b90aec7cefa9e9dc59d2fd21879ee7c28c4686fab1047c6eaaecc7e4c5`，与 GitHub artifact digest 一致。本地证据：`logs/github-ci-validation/verification.json`。云端重新构建的文件与前文开发机安装验收文件哈希不同，因此另做了下面的独立安装验收。草稿下载入口仍不公开，普通客户端不会发现它；未演练公开 Release 至安装完成的更新链。
+
+### CI 安装器字节的独立安装与去除开发环境路径验收
+
+从已校验 artifact 直接取出 SHA256 为 `c5863435…a8cf6` 的真实 CI 安装器，再次检查 HKCU/HKLM 的 32/64 位 AppID 注册均不存在，才安装到 `logs/github-ci-validation/installed-test/app`。安装退出成功，同一 AppID 注册指向该隔离目录，`installation.json` 正确记录 0.2.0 安装完成。
+
+启动冻结 CLI/GUI 的子进程前，清除 Python、虚拟环境、Conda、Qt 和 Isaac 相关环境变量，并将 PATH 限制为 `C:\WINDOWS\System32;C:\WINDOWS`；工作目录是独立空目录。没有重命名、删除或卸载开发机的 Python。
+
+- 安装目录内 CLI 的 doctor、32 课资源读取、20 个固定 validation 用例实际运行成功；所有 desktop 依赖从该安装目录 `_internal` 加载。
+- 使用 Windows UI Automation 操作原有 GUI 编辑器和“运行代码”按钮，输入可记录进程信息的学生函数；真实 worker 执行了 34 次控制调用。
+- worker 的 `sys.executable` 与进程命令行指向安装目录 `ControlLab.exe --multiprocessing-fork`；实际加载的 `python313.dll`、`python3.DLL` 均来自安装目录 `_internal`。
+- worker 的 `sys.path` 全部位于安装目录，`control_lab`、NumPy、Gymnasium 的模块路径均指向安装副本，没有开发源码或外部 Python 路径。冻结运行时只向最小 PATH 补入本安装包的依赖目录。
+- 正常关闭 GUI 后 worker 已结束；再次核对注册目录后，只卸载本次隔离副本，AppID 注册与应用 EXE 均已清理，学习记录保留。
+
+证据与完整日志位于 `logs/github-ci-validation/installed-test/report.json`、`native-worker-result.json`、`worker-environment.json`。这一结果验证了 CI 安装副本不依赖开发 Python 的可执行文件、模块搜索路径或 DLL；仍不替代一台全新 Windows 机器的系统组件兼容性验收。
+
+这份验证对应已提交的 0.2.0；当前尚未提交、待完整验收与重新打包的教学功能补全不包含在该草稿中。
+
 ## 尚未验证的边界
 
-当前开发机的冻结运行和隔离目录安装，不等于无 Python 的干净 Windows 机器验收。真实 GitHub Release 下载至安装完成的更新链、GitHub Actions 云端执行、安装被中断后的恢复和 Windows 代码签名均需单独验证或配置。源码测试中的更新下载异常、取消和坏哈希拒绝属于可重复的本地模拟测试。
+当前开发机的冻结运行和隔离目录安装，不等于无 Python 的干净 Windows 机器验收。真实 GitHub Release 下载至安装完成的更新链、安装被中断后的恢复和 Windows 代码签名均需单独验证或配置。GitHub Actions 云端构建已按上文实际通过。源码测试中的更新下载异常、取消和坏哈希拒绝属于可重复的本地模拟测试。
 
 短 PPO 训练与模型保存成功不等于稳定平衡；应查看独立验证报告及不同训练种子的差异。本轮未用保留测试集调参，未进行 TITA 实机控制。

@@ -158,3 +158,40 @@ def test_installer_launch_failure_has_no_completion_claim(tmp_path):
         launch_installer(path, tmp_path / 'cache', popen=unavailable)
     assert path.is_file()  # Verified file remains available for a deliberate retry.
     assert not (path.parent / 'handoff.json').exists()
+
+
+def test_recovery_only_lists_manifested_cache_and_rehashes_each_file(tmp_path):
+    from control_lab.updates.installer import list_cached_installers, read_cached_installer_log
+    cache=tmp_path/'cache'
+    first=download_release(release(),cache,transport=Transport())
+    second=download_release(release(),cache,transport=Transport())
+    launch_installer(first,cache,popen=lambda *a,**k:SimpleNamespace(pid=20))
+    handoff=json.loads((first.parent/'handoff.json').read_text())
+    log=Path(handoff['log_file']);log.write_text('installer interrupted; files unchanged',encoding='utf-8')
+    second.write_bytes(b'X'*len(PAYLOAD))
+    arbitrary=cache/'manual';arbitrary.mkdir();(arbitrary/'ControlLab-Setup-9.9.9.exe').write_bytes(PAYLOAD)
+    entries=list_cached_installers(cache)
+    assert len(entries)==2
+    valid=next(e for e in entries if e['verified'])
+    assert valid['status']=='unconfirmed' and valid['installer_path']==str(first)
+    assert valid['log_paths']==[str(log)]
+    assert read_cached_installer_log(log,cache).startswith('installer interrupted')
+    invalid=next(e for e in entries if not e['verified'])
+    assert '校验失败' in invalid['error']
+    outside=tmp_path/'installer.log';outside.write_text('outside')
+    with pytest.raises(UpdateError):read_cached_installer_log(outside,cache)
+    cancel=threading.Event();cancel.set()
+    with pytest.raises(UpdateCancelled):list_cached_installers(cache,cancel_event=cancel)
+
+
+def test_retry_keeps_old_attempt_log_and_never_claims_completion(tmp_path):
+    from control_lab.updates.installer import list_cached_installers
+    path=download_release(release(),tmp_path/'cache',transport=Transport())
+    launch_installer(path,tmp_path/'cache',popen=lambda *a,**k:SimpleNamespace(pid=30))
+    old=json.loads((path.parent/'handoff.json').read_text())
+    Path(old['log_file']).write_text('first attempt stopped')
+    launch_installer(path,tmp_path/'cache',popen=lambda *a,**k:SimpleNamespace(pid=31))
+    new=json.loads((path.parent/'handoff.json').read_text())
+    assert new['log_file']!=old['log_file'] and new['completed'] is False
+    assert Path(old['log_file']).read_text()=='first attempt stopped'
+    assert list_cached_installers(tmp_path/'cache')[0]['status']=='unconfirmed'

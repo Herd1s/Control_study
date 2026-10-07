@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L03",
   "title": "位置不等于速度",
   "summary": "位置为正时速度一定为正吗？",
@@ -33,7 +33,11 @@
         "分开看在哪里和往哪走。",
         "正负位置和正负速度独立。",
         "在右侧向左移动时暂停，记录x与v。"
-      ]
+      ],
+      "visible_signals": [
+        "x"
+      ],
+      "show_chart": false
     },
     {
       "id": "step_02",
@@ -48,7 +52,11 @@
         "分开看在哪里和往哪走。",
         "正负位置和正负速度独立。",
         "在右侧向左移动时暂停，记录x与v。"
-      ]
+      ],
+      "visible_signals": [
+        "x"
+      ],
+      "show_chart": false
     },
     {
       "id": "step_03",
@@ -63,7 +71,12 @@
         "分开看在哪里和往哪走。",
         "正负位置和正负速度独立。",
         "在右侧向左移动时暂停，记录x与v。"
-      ]
+      ],
+      "visible_signals": [
+        "x",
+        "v"
+      ],
+      "show_chart": false
     },
     {
       "id": "step_04",
@@ -78,12 +91,17 @@
         "分开看在哪里和往哪走。",
         "正负位置和正负速度独立。",
         "在右侧向左移动时暂停，记录x与v。"
-      ]
+      ],
+      "visible_signals": [
+        "x",
+        "v"
+      ],
+      "show_chart": false
     },
     {
       "id": "step_05",
       "title": "先预测",
-      "instruction": "观看两个预置短回放：都经过中心，一个向左、一个向右；先判断速度符号再揭示读数。",
+      "instruction": "播放下方两个经过中心的预置片段，先写下速度方向，再点“揭示读数”核对。",
       "activity": "predict",
       "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
       "completion": {
@@ -94,7 +112,12 @@
         "分开看在哪里和往哪走。",
         "正负位置和正负速度独立。",
         "在右侧向左移动时暂停，记录x与v。"
-      ]
+      ],
+      "visible_signals": [
+        "x",
+        "v"
+      ],
+      "show_chart": true
     },
     {
       "id": "step_06",
@@ -110,22 +133,34 @@
         "分开看在哪里和往哪走。",
         "正负位置和正负速度独立。",
         "在右侧向左移动时暂停，记录x与v。"
-      ]
+      ],
+      "visible_signals": [
+        "x",
+        "v"
+      ],
+      "show_chart": true
     },
     {
       "id": "step_07",
       "title": "观察",
-      "instruction": "完成三张预测卡：右侧向左、左侧向右、中心静止，分别填位置和速度的符号。",
+      "instruction": "完成下方三张预测卡：右侧向左、左侧向右、中心静止，分别选择位置和速度的符号。答错可以重做。",
       "activity": "observe",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "evidence": "完成上面的面板操作后继续；需要时可以先跳过。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "answer.checked",
+        "field": "correct_count",
+        "min": 2
       },
       "hints": [
         "分开看在哪里和往哪走。",
         "正负位置和正负速度独立。",
         "在右侧向左移动时暂停，记录x与v。"
-      ]
+      ],
+      "visible_signals": [
+        "x",
+        "v"
+      ],
+      "show_chart": true
     },
     {
       "id": "reflection",
@@ -141,7 +176,12 @@
         "分开看在哪里和往哪走。",
         "正负位置和正负速度独立。",
         "在右侧向左移动时暂停，记录x与v。"
-      ]
+      ],
+      "visible_signals": [
+        "x",
+        "v"
+      ],
+      "show_chart": true
     }
   ],
   "template": null,

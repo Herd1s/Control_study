@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L08",
   "title": "反馈函数与固定 dt",
   "summary": "慢放会不会改变dt？",
@@ -76,11 +76,13 @@
     {
       "id": "step_04",
       "title": "观察",
-      "instruction": "阅读下面的速度反馈例子，先试算正速度和负速度对应的推力方向。",
+      "instruction": "阅读速度反馈例子，在试算卡分别选择−0.5和+0.5 m/s，检查推力分别为+1和−1 N。试算只调用一次代码，不推进主实验。",
       "activity": "observe",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "evidence": "完成上面的真实操作后继续；需要时可先跳过。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "code.probed",
+        "field": "all_cases_correct",
+        "equals": true
       },
       "hints": [
         "单步查看输入和输出。",

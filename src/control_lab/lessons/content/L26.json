@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L26",
   "title": "用PPO训练第一个策略",
   "summary": "训练步数增长是否证明已经会平衡？",
@@ -35,12 +35,12 @@
     },
     {
       "id": "step_02",
-      "title": "外部实验准备",
-      "instruction": "保存训练前随机/未训练策略的5回合回放作为起点。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "点击“保存未训练策略·5回合起点”，生成从未调用learn的初始PPO模型及5个固定练习回合；保存失败，不挑最好一次。",
+      "activity": "experiment",
+      "evidence": "真实保存0训练步模型与5回合起点报告后继续。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "baseline.saved"
       },
       "hints": [
         "先核对环境与动作契约。",
@@ -50,12 +50,14 @@
     },
     {
       "id": "step_03",
-      "title": "外部实验准备",
-      "instruction": "用根seed=0启动一个小预算训练，观察环境步数增长和训练状态，不每一步绘制所有环境。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "保持存活奖励，seed设为0，以小预算开始训练；观察步数和状态，等待完成并保存模型。",
+      "activity": "experiment",
+      "evidence": "训练进程实际完成才继续；可正常停止后另开新实验。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "training.completed",
+        "field": "seed",
+        "equals": 0
       },
       "hints": [
         "先核对环境与动作契约。",
@@ -65,12 +67,14 @@
     },
     {
       "id": "step_04",
-      "title": "外部实验准备",
-      "instruction": "完成后在验证用例100–119上运行确定性策略；保存模型和报告。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "点击“独立验证·20回合”，在100–119用例运行确定性策略，保存全部结果。",
+      "activity": "experiment",
+      "evidence": "完整验证报告返回后继续。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "comparison.saved",
+        "field": "split",
+        "equals": "validation"
       },
       "hints": [
         "先核对环境与动作契约。",
@@ -80,12 +84,12 @@
     },
     {
       "id": "step_05",
-      "title": "外部实验准备",
-      "instruction": "保持配置不变增加训练预算，例如从25,600到102,400步，说明步数是起步预算，不是成功保证。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "保持配置和seed不变，增加训练预算，例如25,600→102,400，另开新实验；记录预算不保证成功。",
+      "activity": "experiment",
+      "evidence": "实际完成新的训练；教师/学生核对仅预算变化。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "training.completed"
       },
       "hints": [
         "先核对环境与动作契约。",
@@ -95,12 +99,23 @@
     },
     {
       "id": "step_06",
-      "title": "外部实验准备",
+      "title": "完成实际实验",
       "instruction": "用seed=1、2独立重复，比较结果是否一致；不要只展示最好的一次。 本软件的一次CPU校准中，同样训练25,600步，seed0/1/2在20个验证回合中分别完成3/0/20回合；前两组主要因小车越界结束。这说明杆角度小不等于已经回中，单个好seed也不能代表所有训练。你的实验需保留自己的真实结果。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "activity": "experiment",
+      "evidence": "分别完成seed1与seed2的独立训练，保留全部模型与验证报告。",
       "completion": {
-        "event": "step.acknowledged"
+        "all": [
+          {
+            "event": "training.completed",
+            "field": "seed",
+            "equals": 1
+          },
+          {
+            "event": "training.completed",
+            "field": "seed",
+            "equals": 2
+          }
+        ]
       },
       "hints": [
         "先核对环境与动作契约。",
@@ -110,12 +125,13 @@
     },
     {
       "id": "step_07",
-      "title": "外部实验准备",
-      "instruction": "记录若未学会时应先检查动作缩放、初值、终止和奖励，再调整算法参数。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "保存我的解释",
+      "instruction": "若模型失败，先查动作缩放、初态、结束条件和奖励，再决定是否调整算法参数；记录一个真实失败。",
+      "activity": "predict",
+      "evidence": "提交失败分析，不以手动确认代替实验。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "prediction.submitted",
+        "field": "value"
       },
       "hints": [
         "先核对环境与动作契约。",

@@ -56,6 +56,11 @@ class SimulationCanvas(QWidget):
         self.show_pole = True
         self.show_observations = False
         self.show_force = False
+        self.show_angle = False
+        self.show_trend = False
+        self.disturbance_force = 0.0
+        self.disturbance_caption = "外部轻推"
+        self.center_band_m = 0.0
         self.fell = False
         self.tail = deque(maxlen=35)
         self._last_tip = None
@@ -193,6 +198,28 @@ class SimulationCanvas(QWidget):
         pivot = QPointF(cart.center().x(), cart.top() + 2)
         length = min(155.0, height * 0.35)
         tip = QPointF(pivot.x() + math.sin(self.state[2]) * length, pivot.y() - math.cos(self.state[2]) * length)
+        if self.center_band_m > 0:
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(QColor(40, 140, 115, 28))
+            painter.drawRect(QRectF(self.x_to_screen(-self.center_band_m), rail_y - 48,
+                2 * self.center_band_m * scale, 58))
+        if self.show_pole and self.show_angle:
+            painter.setPen(QPen(QColor("#9AAF9D"), 1, Qt.PenStyle.DashLine))
+            painter.drawLine(pivot, pivot + QPointF(0, -length - 12))
+            painter.setPen(QPen(TEAL, 2))
+            radius = min(55., length * .65)
+            painter.drawArc(QRectF(pivot.x() - radius, pivot.y() - radius, radius * 2, radius * 2),
+                90 * 16, round(-math.degrees(self.state[2]) * 16))
+        if self.show_pole and self.show_trend and abs(self.state[3]) > .005:
+            direction = 1 if self.state[3] > 0 else -1
+            tangent = QPointF(math.cos(self.state[2]), math.sin(self.state[2]))
+            start = tip + QPointF(0, -18)
+            end = start + tangent * (direction * 30)
+            painter.setPen(QPen(QColor("#AC7A51"), 2))
+            painter.drawLine(start, end)
+            normal = QPointF(-tangent.y(), tangent.x())
+            painter.drawLine(end, end - tangent * (direction * 6) + normal * 4)
+            painter.drawLine(end, end - tangent * (direction * 6) - normal * 4)
         if self.show_pole:
             painter.setPen(QPen(QColor("#C97737"), 10, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
             painter.drawLine(pivot, tip)
@@ -241,6 +268,16 @@ class SimulationCanvas(QWidget):
             painter.drawLine(end, end + QPointF(-direction * 7, 5))
             painter.setFont(QFont("Microsoft YaHei UI", 10))
             painter.drawText(QRectF(min(start.x(), end.x()) - 10, start.y() - 30, abs(end.x() - start.x()) + 20, 24), Qt.AlignmentFlag.AlignCenter, f"{self.force:+.1f} N")
+        if abs(self.disturbance_force) > .001:
+            direction = 1 if self.disturbance_force > 0 else -1
+            start = QPointF(cart.center().x() - direction * 110, cart.center().y() - 48)
+            end = start + QPointF(direction * 55, 0)
+            painter.setPen(QPen(ORANGE, 3))
+            painter.drawLine(start, end)
+            painter.drawLine(end, end + QPointF(-direction * 7, -5))
+            painter.drawLine(end, end + QPointF(-direction * 7, 5))
+            painter.drawText(QRectF(start.x() - 48, start.y() - 29, 155, 24), Qt.AlignmentFlag.AlignCenter,
+                             f"{self.disturbance_caption} {self.disturbance_force:+g} N")
 
 
 class SignalChart(QWidget):

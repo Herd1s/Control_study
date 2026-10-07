@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L12",
   "title": "写第一条角度反馈规则，走向 P",
   "summary": "P规则读什么，为什么正角度给正力？",
@@ -55,11 +55,13 @@
     {
       "id": "step_03",
       "title": "观察",
-      "instruction": "在“试算一次”卡输入 `theta=+0.02 rad`，预测约 +0.2 N；再用 −0.02 rad 预测相反动作。",
+      "instruction": "在试算卡依次选择theta=+0.02和−0.02 rad，先预测，再核对本课gain=10时应返回+0.2和−0.2 N。",
       "activity": "observe",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "evidence": "完成上面的真实操作后继续；需要时可先跳过。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "code.probed",
+        "field": "all_cases_correct",
+        "equals": true
       },
       "hints": [
         "回忆手动接杆的方向。",

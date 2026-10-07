@@ -99,11 +99,11 @@
     {
       "id": "step_06",
       "title": "运行实验",
-      "instruction": "运行一个“向右偏却继续向右推的位置回中规则”，它能运行但逻辑不符合任务；用输入输出试算定位。",
+      "instruction": "这段位置回中规则可能能运行却方向不对。在试算卡选择右侧+0.3 m，查看实际推力与目标−1 N；据此定位逻辑问题。",
       "activity": "experiment",
-      "evidence": "运行这份代码，观察本次动作和结果。",
+      "evidence": "完成上面的真实操作后继续；需要时可先跳过。",
       "completion": {
-        "event": "code.run"
+        "event": "code.probed"
       },
       "hints": [
         "先读第一条相关报错。",

@@ -8,6 +8,7 @@ access, NOT a security sandbox. Terminating the worker does not undo side effect
 from __future__ import annotations
 
 import math
+import linecache
 import multiprocessing
 from multiprocessing.connection import Connection
 from multiprocessing.process import BaseProcess
@@ -122,7 +123,7 @@ def _send_worker_error(connection: Connection, exc: BaseException) -> None:
         pass
 
 
-def _code_worker(connection: Connection, code: str) -> None:
+def _code_worker(connection: Connection, code: str, trace_lines: bool = False) -> None:
     """Top-level spawn target, also importable by a frozen Windows executable."""
     try:
         connection.send(("booted", time.monotonic()))
@@ -130,6 +131,7 @@ def _code_worker(connection: Connection, code: str) -> None:
         module.__file__ = "<student_controller>"
         sys.modules[module.__name__] = module
         namespace = module.__dict__
+        linecache.cache["<student_controller>"] = (len(code), None, code.splitlines(keepends=True), "<student_controller>")
         exec(compile(code, "<student_controller>", "exec"), namespace)
         control = namespace.get("control")
         diagnostics = namespace.get("diagnostics")
@@ -159,7 +161,19 @@ def _code_worker(connection: Connection, code: str) -> None:
             _, request_id, observation, dt, context = message
             state = dict(zip(("x", "v", "theta", "omega"), observation))
             state.update(context)
-            raw_value = control(state, dt)
+            executed = []
+            def trace(frame, event, arg):
+                if event == "line" and frame.f_code.co_filename == "<student_controller>" and len(executed) < 128:
+                    if frame.f_lineno not in executed:
+                        executed.append(frame.f_lineno)
+                return trace
+            if trace_lines:
+                sys.settrace(trace)
+            try:
+                raw_value = control(state, dt)
+            finally:
+                if trace_lines:
+                    sys.settrace(None)
             if isinstance(raw_value, bool) or not isinstance(raw_value, Real):
                 raise TypeError("control(state, dt) 应返回数值，不能返回 True 或 False。")
             value = float(raw_value)
@@ -176,7 +190,7 @@ def _code_worker(connection: Connection, code: str) -> None:
                 if isinstance(raw, bool) or not isinstance(raw, Real) or not math.isfinite(float(raw)):
                     raise ValueError(f"诊断分量 {key} 必须是有限数值。")
                 parts[key] = float(raw)
-            connection.send(("result", request_id, value, time.monotonic(), parts))
+            connection.send(("result", request_id, value, time.monotonic(), parts, executed))
     except (EOFError, BrokenPipeError):
         pass
     except BaseException as exc:
@@ -203,6 +217,7 @@ class CodeController:
         self.startup_timeout = float(startup_timeout)
         self.error: str | None = None
         self.last_diagnostics: dict = {}
+        self.last_lines: list[int] = []
         self._process: BaseProcess | None = None
         self._connection: Connection | None = None
         self._retired: list[BaseProcess] = []
@@ -256,16 +271,17 @@ class CodeController:
         self.error = message
         self.stop()
 
-    def start(self, code: str) -> None:
+    def start(self, code: str, *, trace_lines: bool = False) -> None:
         self.stop()
         self.error = None
         self.last_diagnostics = {}
+        self.last_lines = []
         if not isinstance(code, str) or not code.strip():
             self.error = "请先编写 control(state, dt) 函数。"
             return
         context = multiprocessing.get_context("spawn")
         parent, child = context.Pipe(duplex=True)
-        process = context.Process(target=_code_worker, args=(child, code), daemon=True)
+        process = context.Process(target=_code_worker, args=(child, code, trace_lines), daemon=True)
         try:
             process.start()
         except Exception as exc:
@@ -348,6 +364,7 @@ class CodeController:
                         return None
                     result = float(message[2])
                     self.last_diagnostics = dict(message[4])
+                    self.last_lines = list(message[5]) if len(message) > 5 else []
                     self._pending = False
                     self._deadline = None
                 elif kind == "reset_done" and self._stage == "resetting" and message[1] == self._request_id:

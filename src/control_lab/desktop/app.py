@@ -3,17 +3,19 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 from datetime import datetime
 from pathlib import Path
 import os
+import re
 import sys
 import time
 
 from PySide6.QtCore import QTimer, Qt
-from PySide6.QtGui import QCloseEvent, QFont, QFontDatabase, QIcon, QTextCursor
+from PySide6.QtGui import QCloseEvent, QColor, QFont, QFontDatabase, QIcon, QTextCursor, QTextFormat
 from PySide6.QtWidgets import (
     QApplication, QComboBox, QFrame, QHBoxLayout, QLabel, QMainWindow,
-    QPlainTextEdit, QPushButton, QScrollArea, QSizePolicy, QStackedWidget, QVBoxLayout, QWidget, QDialog, QTabWidget,
+    QPlainTextEdit, QPushButton, QScrollArea, QSizePolicy, QStackedWidget, QVBoxLayout, QWidget, QDialog, QTabWidget, QTextEdit, QMenu, QMessageBox,
 )
 
 from control_lab.paths import user_data_dir
@@ -29,7 +31,14 @@ from control_lab.desktop.panels.tita import TitaPanel
 from control_lab.desktop.panels.updates import UpdatesPanel
 from control_lab.desktop.panels.signals import SignalsPanel
 from control_lab.desktop.panels.history import HistoryDialog
+from control_lab.desktop.panels.probe import ProbePanel
+from control_lab.desktop.panels.rewards import RewardsPanel
+from control_lab.desktop.panels.robustness import RobustnessPanel
+from control_lab.desktop.panels.foundations import FoundationsPanel
+from control_lab.desktop.panels.integral import IntegralPanel
+from control_lab.desktop.code_editor import CodeEditor
 from control_lab.core.types import Action
+from control_lab.evaluation.centering import CenteringTracker
 
 
 STYLES = """
@@ -139,7 +148,8 @@ class ControlLabWindow(QMainWindow):
         load_system_fonts()
         self.setWindowTitle("ControlLab · 从直觉到算法")
         self.resize(1380, 860)
-        self.setMinimumSize(1080, 680)
+        self.setMinimumSize(720, 440)
+        self._compact = None
         self.lessons = load_lessons()
         self.lesson_by_id = {lesson.lesson_id: lesson for lesson in self.lessons}
         self.progress_store = ProgressStore(root=data_dir)
@@ -149,15 +159,20 @@ class ControlLabWindow(QMainWindow):
         self._pending_action = None
         self._episode_reset_pending = False
         self._step_once = False
+        self._run_step_limit = None
         self._experiment_rows = []
         self._experiment_saved = False
         self._experiment_code = None
         self._pending_installer = None
+        self._training_close_choice = None
+        self._training_close_prepared = False
         self.updates_dialog = None
         self._replay_dialog = None
         self.sim = TeachingSimulation()
         self.controller = CodeController()
         self.state = list(self.sim.reset(seed=42))
+        self.centering_tracker = CenteringTracker()
+        self.centering_tracker.reset(self.sim.session.true_state)
         self.stage = 1
         self.paused = True
         self.code_running = False
@@ -188,10 +203,12 @@ class ControlLabWindow(QMainWindow):
         layout = QHBoxLayout(root)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        layout.addWidget(self._build_sidebar())
+        self.sidebar = self._build_sidebar()
+        layout.addWidget(self.sidebar)
 
         content = QWidget()
         content_layout = QVBoxLayout(content)
+        self.content_layout = content_layout
         content_layout.setContentsMargins(24, 22, 24, 16)
         content_layout.setSpacing(15)
         self.title = label("", "pageTitle")
@@ -203,9 +220,29 @@ class ControlLabWindow(QMainWindow):
         for lesson in self.lessons:
             self.lesson_combo.addItem(f"{lesson.lesson_id}  {lesson.title}", lesson.lesson_id)
         self.lesson_combo.currentIndexChanged.connect(self._lesson_selected)
-        content_layout.addWidget(self.lesson_combo)
+        course_row = QHBoxLayout()
+        course_row.addWidget(self.lesson_combo, 1)
+        self.compact_tools = QPushButton("更多")
+        self.compact_tools.setAccessibleName("软件工具")
+        menu = QMenu(self.compact_tools)
+        menu.addAction("对照实验与报告", self.open_evaluation)
+        menu.addAction("软件更新", self.open_updates)
+        self.compact_tools.setMenu(menu)
+        self.compact_tools.hide()
+        course_row.addWidget(self.compact_tools)
+        content_layout.addLayout(course_row)
+        self.robustness_toggle = QPushButton("打开冻结模型的成组试验")
+        self.robustness_toggle.setCheckable(True)
+        self.robustness_toggle.clicked.connect(self._toggle_robustness)
+        self.robustness_toggle.hide()
+        content_layout.addWidget(self.robustness_toggle)
+        self.lesson_tool_button = QPushButton()
+        self.lesson_tool_button.clicked.connect(self._open_lesson_tool)
+        self.lesson_tool_button.hide()
+        content_layout.addWidget(self.lesson_tool_button)
 
         body = QHBoxLayout()
+        self.body_layout = body
         body.setSpacing(20)
         lab_content = QWidget()
         left = QVBoxLayout(lab_content)
@@ -213,6 +250,13 @@ class ControlLabWindow(QMainWindow):
         left.setSpacing(15)
         self.experiment_panel = self._build_experiment()
         left.addWidget(self.experiment_panel, 1)
+        self.centering_status = label("", "status", True)
+        self.centering_status.hide()
+        left.addWidget(self.centering_status)
+        self.foundations_panel = FoundationsPanel(self.progress_store.root)
+        self.foundations_panel.eventRaised.connect(self._lesson_event)
+        self.foundations_panel.hide()
+        left.addWidget(self.foundations_panel)
         self.external_overview = QPlainTextEdit()
         self.external_overview.setReadOnly(True)
         self.external_overview.hide()
@@ -221,12 +265,32 @@ class ControlLabWindow(QMainWindow):
         self.training_panel.completed.connect(self._training_completed)
         self.training_panel.operationStarted.connect(self._training_started)
         self.training_panel.replayState.connect(self._replay_state)
+        self.training_panel.reportRequested.connect(self._open_formal_report)
         self.training_scroll = scrollable(self.training_panel)
         self.training_scroll.hide()
         left.addWidget(self.training_scroll, 1)
+        self.rewards_panel = RewardsPanel(self.progress_store.root)
+        self.rewards_panel.configurationSaved.connect(self._reward_saved)
+        self.rewards_panel.completed.connect(lambda result: self._lesson_event("reward.analysis.completed", result))
+        self.rewards_panel.error.connect(self._panel_error)
+        self.rewards_scroll = scrollable(self.rewards_panel)
+        self.rewards_scroll.hide()
+        left.addWidget(self.rewards_scroll, 1)
+        self.robustness_panel = RobustnessPanel(self.progress_store.root)
+        self.robustness_panel.completed.connect(self._robustness_completed)
+        self.robustness_panel.reviewed.connect(lambda result: self._lesson_event("robustness.reviewed", result))
+        self.robustness_panel.error.connect(self._panel_error)
+        self.robustness_scroll = scrollable(self.robustness_panel)
+        self.robustness_scroll.hide()
+        left.addWidget(self.robustness_scroll, 1)
         self.tita_panel = TitaPanel(self.progress_store.root)
         self.tita_panel.inspectionFinished.connect(self._tita_inspected)
         self.tita_panel.runFinished.connect(self._tita_finished)
+        self.tita_panel.interfaceSaved.connect(lambda result: self._lesson_event("external.verified",
+            {**result, "kind": "tita_interface"}))
+        self.tita_panel.safetyValidated.connect(lambda result: self._lesson_event("external.verified",
+            {**result, "kind": "tita_safety"}))
+        self.tita_panel.compatibilityChecked.connect(self._tita_compatibility)
         self.tita_scroll = scrollable(self.tita_panel)
         self.tita_scroll.hide()
         left.addWidget(self.tita_scroll, 1)
@@ -249,6 +313,9 @@ class ControlLabWindow(QMainWindow):
         self.lesson_panel.eventRaised.connect(self._lesson_event)
         self.lesson_panel.advanceRequested.connect(self._advance_lesson)
         self.lesson_panel.solutionRequested.connect(self._show_solution)
+        self.lesson_panel.stepRequested.connect(self._go_to_step)
+        self.lesson_panel.draftChanged.connect(self._response_edited)
+        self.lesson_panel.notesRequested.connect(self._show_lesson_notes)
         self.lesson_scroll = scrollable(self.lesson_panel)
         self.lesson_scroll.setMinimumHeight(180)
         lesson_side_layout.addWidget(self.lesson_scroll, 3)
@@ -265,11 +332,53 @@ class ControlLabWindow(QMainWindow):
         lesson_side_layout.addWidget(self.editor_tabs, 4)
         self.side_stack.addWidget(lesson_side)
         body.addWidget(self.side_stack)
+        self.workspace_tabs = QTabWidget()
+        self.workspace_tabs.hide()
+        self.compact_guide = scrollable(QWidget())
+        self.compact_guide.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        body.addWidget(self.workspace_tabs)
         content_layout.addLayout(body, 1)
         self.status = label("", "status", True)
         self.status.hide()
         content_layout.addWidget(self.status)
         layout.addWidget(content, 1)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if not hasattr(self, "workspace_tabs"):
+            return
+        compact = self.width() < 1180
+        if compact == self._compact:
+            return
+        self._compact = compact
+        self.sidebar.setVisible(not compact)
+        self.compact_tools.setVisible(compact)
+        self.content_layout.setContentsMargins(12 if compact else 24, 10 if compact else 22,
+                                               12 if compact else 24, 10 if compact else 16)
+        if compact:
+            self.body_layout.removeWidget(self.lab_scroll)
+            self.body_layout.removeWidget(self.side_stack)
+            self.side_stack.setMinimumWidth(0)
+            self.side_stack.setMaximumWidth(16777215)
+            placeholder = self.compact_guide.takeWidget()
+            if placeholder is not None and placeholder is not self.side_stack:
+                placeholder.deleteLater()
+            self.compact_guide.setWidget(self.side_stack)
+            self.workspace_tabs.addTab(self.lab_scroll, "实验台")
+            self.workspace_tabs.addTab(self.compact_guide, "教程与代码")
+            self.workspace_tabs.show()
+            self.lab_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        else:
+            while self.workspace_tabs.count():
+                self.workspace_tabs.removeTab(0)
+            self.compact_guide.takeWidget()
+            self.workspace_tabs.hide()
+            self.body_layout.insertWidget(0, self.lab_scroll, 1)
+            self.body_layout.insertWidget(1, self.side_stack)
+            self.side_stack.setFixedWidth(354)
+            self.lab_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.side_stack.show()
+        self.lab_scroll.show()
 
     def _build_sidebar(self):
         sidebar = QFrame()
@@ -356,6 +465,9 @@ class ControlLabWindow(QMainWindow):
         layout.addWidget(self.canvas, 1)
         self.flow_indicator = FlowIndicator()
         layout.addWidget(self.flow_indicator)
+        self.integral_panel = IntegralPanel()
+        self.integral_panel.hide()
+        layout.addWidget(self.integral_panel)
         return panel
 
     def _build_observations(self):
@@ -475,12 +587,16 @@ class ControlLabWindow(QMainWindow):
         layout.addLayout(mode_row)
         code_header = QHBoxLayout()
         code_header.addStretch()
+        self.diff_button = QPushButton("与原始模板比较")
+        self.diff_button.setObjectName("quiet")
+        self.diff_button.clicked.connect(self._show_template_diff)
+        code_header.addWidget(self.diff_button)
         self.example_button = QPushButton("载入示例")
         self.example_button.setObjectName("quiet")
         self.example_button.clicked.connect(self.load_example)
         code_header.addWidget(self.example_button)
         layout.addLayout(code_header)
-        self.editor = QPlainTextEdit()
+        self.editor = CodeEditor()
         self.editor.setObjectName("code_editor")
         self.editor.setAccessibleName("Python 控制代码编辑器")
         self.editor.setFont(QFont("Consolas", 11))
@@ -491,6 +607,14 @@ class ControlLabWindow(QMainWindow):
         self.editor.textChanged.connect(self._code_edited)
         self.highlighter = PythonHighlighter(self.editor.document())
         layout.addWidget(self.editor, 1)
+        self.draft_status = label("", "softText", True)
+        self.draft_status.hide()
+        layout.addWidget(self.draft_status)
+        self.probe_panel = ProbePanel(self.progress_store.root)
+        self.probe_panel.requested.connect(lambda: self.probe_panel.run(self.editor.toPlainText()))
+        self.probe_panel.completed.connect(self._probe_completed)
+        self.probe_panel.failed.connect(self._probe_error)
+        layout.addWidget(self.probe_panel)
         controls = QHBoxLayout()
         self.run_button = QPushButton("运行代码")
         self.run_button.setObjectName("primary")
@@ -501,6 +625,9 @@ class ControlLabWindow(QMainWindow):
         controls.addWidget(self.run_button, 1)
         controls.addWidget(self.stop_button)
         layout.addLayout(controls)
+        self.short_run_button = QPushButton("运行 0.2 秒并暂停")
+        self.short_run_button.clicked.connect(lambda: self.run_code(max_steps=10))
+        layout.addWidget(self.short_run_button)
         self.next_episode_button = QPushButton("新回合 · 保留代码")
         self.next_episode_button.setToolTip("保持同一个 Python 模块，调用可选 reset()，回到相同初始条件并暂停。")
         self.next_episode_button.clicked.connect(self.new_controller_episode)
@@ -508,6 +635,10 @@ class ControlLabWindow(QMainWindow):
         self.error_label = label("", "error", True)
         self.error_label.hide()
         layout.addWidget(self.error_label)
+        self.error_details_button = QPushButton("展开原始错误")
+        self.error_details_button.clicked.connect(self._show_error_details)
+        self.error_details_button.hide()
+        layout.addWidget(self.error_details_button)
         self.mode_description = label("", "guideText", True)
         layout.addWidget(self.mode_description)
         layout.addWidget(divider())
@@ -537,10 +668,20 @@ class ControlLabWindow(QMainWindow):
     def select_lesson(self, lesson_id):
         if lesson_id not in self.lesson_by_id:
             raise ValueError(f"没有这节课程：{lesson_id}")
-        self._save_progress()
-        self._archive_experiment()
+        if not self._ensure_experiment_saved() or not self._save_progress():
+            if self.lesson_session is not None:
+                self.lesson_combo.blockSignals(True)
+                self.lesson_combo.setCurrentIndex(self.lesson_combo.findData(self.lesson_session.lesson.id))
+                self.lesson_combo.blockSignals(False)
+                current = int(self.lesson_session.lesson.id[1:])
+                group = 0 if current <= 2 else 1 if current <= 4 else 2 if current <= 12 else 3 if current <= 22 else 4 if current <= 29 else 5
+                for index, button in enumerate(self.nav_buttons):
+                    button.setChecked(index == group)
+            return False
         self.chart.clear_reference()
         self.stop_code(show_status=False)
+        self.probe_panel.shutdown()
+        self.foundations_panel.shutdown()
         self.canvas.end_drag()
         lesson = self.lesson_by_id[lesson_id]
         self._loading_lesson = True
@@ -563,13 +704,24 @@ class ControlLabWindow(QMainWindow):
             self.editor.blockSignals(True)
             self.editor.setPlainText(self._drafts.get(lesson_id, saved.get("draft_code", lesson.read_template())))
             self.editor.blockSignals(False)
+            self.editor.setExtraSelections([])
+            self._template_path = None
+            self._previous_template_path = saved.get("template_snapshot")
+            if lesson.template:
+                try:
+                    self._template_path = self.progress_store.preserve_template(
+                        lesson_id, lesson.content_version, lesson.read_template())
+                except (OSError, ValueError) as exc:
+                    self.status.setText(f"原始模板暂未保存：{exc}")
+                    self.status.show()
             self.code_panel.setVisible(lesson.editor_kind != "none")
             self.editor_tabs.setVisible(lesson.editor_kind != "none")
             self.editor_tabs.setTabVisible(1, 13 <= number <= 22)
             self.editor_tabs.setCurrentIndex(0)
             self.lesson_scroll.setMaximumHeight(270 if lesson.editor_kind != "none" else 16777215)
             self.output_mode.setCurrentIndex(1 if lesson.input_mode == "velocity_mps" else 0)
-            self.output_mode.setEnabled(lesson.editor_kind == "controller")
+            self.output_mode.setEnabled(False)
+            self.output_mode.setToolTip("输出单位由本课固定：L11 使用目标速度，其他代码控制课程使用牛顿。")
             executable = lesson.editor_kind == "controller"
             self.code_title.setText("我的控制代码" if executable else "本课实验脚本")
             for widget in (self.output_mode, self.output_mode_label, self.mode_description,
@@ -604,6 +756,7 @@ class ControlLabWindow(QMainWindow):
             self.scenario_combo.setVisible(number >= 2 and lesson.scenario_id != "none")
             is_velocity = lesson.scenario_id.startswith("cart_velocity")
             self.canvas.show_pole = not is_velocity
+            self.canvas.disturbance_caption = "外部负载" if is_velocity else "外部轻推"
             self.experiment_title.setText("单车速度实验台" if is_velocity else "倒立摆实验台")
             self.reset_button.setText("归零暂停" if is_velocity else "重新扶正")
             chosen_cards = [name for name in lesson.visible_signals if name in self.metrics_by_name][:4]
@@ -639,7 +792,18 @@ class ControlLabWindow(QMainWindow):
         self.export_button.setVisible(number >= 3)
         self.playback_combo.setVisible(number >= 8)
         self.flow_indicator.setVisible(number == 8)
+        self.integral_panel.setVisible(number in (17, 18))
+        self.foundations_panel.setVisible(number in (3, 4, 15))
+        if number in (3, 4, 15):
+            self.foundations_panel.bind(self.lesson_session)
+        self.canvas.show_angle = number in (4, 15)
+        self.canvas.show_trend = number in (4, 15)
+        self.canvas.center_band_m = .1 if number == 16 else 0.
         self.next_episode_button.setVisible(number == 19)
+        self.probe_panel.setVisible(number in (7, 8, 10, 12))
+        if number in (7, 8, 10, 12):
+            self.probe_panel.bind(lesson_id)
+        self.short_run_button.setVisible(number in (5, 10))
         self.next_episode_button.setEnabled(False)
         self.editor_tabs.setTabVisible(self.signals_tab, number == 20)
         self.pin_button.setVisible(number >= 10)
@@ -647,13 +811,25 @@ class ControlLabWindow(QMainWindow):
         self.evaluation_button.setVisible(number >= 14)
         training = 25 <= number <= 28
         self.training_scroll.setVisible(training)
+        self.rewards_scroll.setVisible(number == 24)
+        self.robustness_scroll.hide()
+        self.robustness_toggle.setChecked(False)
+        self.robustness_toggle.setVisible(number == 29)
+        tool_titles = {14: "扫描不同增益，保留全部结果", 18: "对照三种积分保护方式", 22: "导出我的控制项目"}
+        self.lesson_tool_button.setVisible(number in tool_titles)
+        self.lesson_tool_button.setText(tool_titles.get(number, ""))
         self.training_panel.set_lesson(lesson_id)
         self.tita_scroll.setVisible(number >= 30)
         self.external_overview.hide()
-        self.experiment_panel.setVisible(not training and number < 30)
-        self.below_stack.setVisible(bool(lesson.visible_signals) and not training and number < 30)
+        self.experiment_panel.setVisible(not training and number < 30 and number != 24)
+        self.below_stack.setVisible(bool(lesson.visible_signals) and not training and number < 30 and number != 24)
         self.mode_changed()
         self.reset_experiment(emit_event=False)
+        self._refresh_step_signals()
+        if self.lesson_session.updated_steps:
+            self.status.setText("本课内容有更新，原答案和草稿已保留；变化的步骤需要重新确认。")
+            self.status.show()
+        return True
 
     def _save_progress(self):
         if self.lesson_session is None or self._loading_lesson:
@@ -663,6 +839,8 @@ class ControlLabWindow(QMainWindow):
         self._drafts[lesson_id] = code
         snapshot = self.lesson_session.snapshot()
         snapshot["draft_code"] = code
+        if getattr(self, "_template_path", None):
+            snapshot["template_snapshot"] = str(self._template_path)
         try:
             self.progress_store.save_lesson(lesson_id, snapshot)
         except (OSError, ValueError) as exc:
@@ -670,6 +848,12 @@ class ControlLabWindow(QMainWindow):
             self.status.show()
             return False
         return True
+
+    def _toggle_robustness(self, checked):
+        self.robustness_scroll.setVisible(checked)
+        self.experiment_panel.setVisible(not checked)
+        self.below_stack.setVisible(not checked)
+        self.robustness_toggle.setText("返回小车的单因子实验" if checked else "打开冻结模型的成组试验")
 
     def _lesson_event(self, event, payload=None):
         if self.lesson_session is None or self._loading_lesson:
@@ -684,7 +868,35 @@ class ControlLabWindow(QMainWindow):
 
     def _code_edited(self):
         if not self._loading_lesson:
+            self.editor.setExtraSelections([])
+            if self.code_running:
+                self.draft_status.setText("草稿已修改。当前实验仍使用启动时的代码；停止后重新运行即可应用。"
+                    if self.editor.toPlainText() != self._experiment_code else "当前实验正在使用这份代码的启动快照。")
+                self.draft_status.show()
             self._lesson_event("code.edited")
+
+    def _response_edited(self, text):
+        if self.lesson_session is not None and not self._loading_lesson:
+            self.lesson_session.save_response_draft(text)
+            self.draft_timer.start()
+
+    def _probe_completed(self, result):
+        if self.editor.toPlainText() == self.probe_panel.source:
+            self._highlight_lines(result["lines"])
+        self._lesson_event("code.probed", result)
+
+    def _probe_error(self, message):
+        self.error_label.setText("这次试算未完成：\n" + message.splitlines()[-1])
+        self.error_label.setToolTip(message)
+        self.error_details_button.show()
+        self.error_label.show()
+        self._lesson_event("code.error", {"message": message, "source": "probe"})
+
+    def _go_to_step(self, index):
+        self.lesson_session.go_to(index)
+        self.lesson_panel.refresh()
+        self._refresh_step_signals()
+        self._save_progress()
 
     def _advance_lesson(self, skip=False):
         if self.lesson_session.finished:
@@ -694,7 +906,79 @@ class ControlLabWindow(QMainWindow):
             return
         self.lesson_session.advance(force=skip)
         self.lesson_panel.refresh()
+        self._refresh_step_signals()
         self._save_progress()
+
+    def _refresh_step_signals(self):
+        """Introduce one measured quantity at a time in the first observation lessons."""
+        session = self.lesson_session
+        number = int(session.lesson.id[1:])
+        self.title.setText("倒得越多，就推得越多" if number == 13 and session.step_index < 6 else session.lesson.title)
+        self.editor_tabs.setTabVisible(1, 13 <= number <= 22 and
+            (number != 13 or session.step_index >= 6) and (number != 16 or session.step_index >= 2))
+        self.parameters.rows["kx"][0].setVisible(number == 16 and session.step_index >= 2 or number >= 19)
+        self.parameters.rows["kx"][1].setVisible(number == 16 and session.step_index >= 2 or number >= 19)
+        self.parameters.rows["kv"][0].setVisible(number == 16 and session.step_index >= 2 or number >= 19)
+        self.parameters.rows["kv"][1].setVisible(number == 16 and session.step_index >= 2 or number >= 19)
+        self.canvas.center_band_m = .1 if number == 16 and session.step_index >= 1 else 0.
+        self.centering_status.setVisible(number == 16 and session.step_index >= 1)
+        self.integral_panel.setVisible(number == 18 or number == 17 and session.step_index >= 3)
+        self.foundations_panel.setVisible(number == 15 or number == 3 and session.step_index >= 4
+                                          or number == 4 and session.step_index >= 3)
+        self.foundations_panel.quiz.setVisible(number == 3 and session.step_index >= 6)
+        self.foundations_panel.conversion.setVisible(number == 4 and session.step_index >= 5)
+        visible = list(session.lesson.visible_signals)
+        if session.step and session.step.visible_signals is not None:
+            visible = list(session.step.visible_signals)
+        for name, card in self.metrics_by_name.items():
+            card.setVisible(name in visible[:4])
+        self.chart.parentWidget().setVisible(not session.step or session.step.show_chart is not False)
+        for index in range(self.channel_combo.count()):
+            item = self.channel_combo.model().item(index)
+            if item is not None:
+                item.setEnabled(self.channel_combo.itemData(index) in visible)
+        if self.channel_combo.currentData() not in visible and self.channel_combo.count():
+            self.channel_combo.setCurrentIndex(0)
+        self.chart.available_channels = set(visible)
+        if session.lesson.editor_kind == "controller":
+            names = {"x": "位置 · m", "v": "速度 · m/s", "theta": "角度 · rad",
+                     "omega": "角速度 · rad/s", "target_v": "目标速度 · m/s", "time": "本回合时间 · s"}
+            help_lines = [f"state['{key if key != 'time' else 'time_s'}']   {title}"
+                          for key, title in names.items() if key in visible]
+            if number >= 8:
+                help_lines.append(f"dt   仿真步长 · {self.sim.dt:g} s")
+            self.state_help.setText("\n".join(help_lines))
+            self.state_help.setVisible(number >= 6 and bool(help_lines))
+            self.state_help_title.setVisible(number >= 6 and bool(help_lines))
+
+    def _show_template_diff(self):
+        lesson = self.lesson_session.lesson
+        dialog = QDialog(self)
+        dialog.setWindowTitle(f"{lesson.id} · 模板与草稿")
+        dialog.resize(740, 520)
+        layout = QVBoxLayout(dialog)
+        tabs = QTabWidget()
+        template = lesson.read_template()
+        choices = [("当前原始模板 → 我的草稿", template, self.editor.toPlainText())]
+        folder = self.progress_store.root / "templates" / lesson.id
+        for previous in sorted(folder.glob("v*-*.py"), key=lambda path: path.stat().st_mtime, reverse=True)[:6]:
+            if previous.stat().st_size > 1_000_000:
+                continue
+            old = previous.read_text(encoding="utf-8")
+            if old != template:
+                choices.append((f"{previous.name.split('-')[0]} 原模板 → 当前模板", old, template))
+        for caption, before, after in choices:
+            view = QPlainTextEdit()
+            view.setReadOnly(True)
+            difference = "".join(difflib.unified_diff(before.splitlines(keepends=True),
+                after.splitlines(keepends=True), fromfile="原始版本", tofile="比较版本"))
+            view.setPlainText(difference or "两份代码相同。")
+            tabs.addTab(view, caption)
+        layout.addWidget(tabs)
+        close = QPushButton("回到代码")
+        close.clicked.connect(dialog.accept)
+        layout.addWidget(close)
+        dialog.exec()
 
     def _show_solution(self):
         session = self.lesson_session
@@ -716,11 +1000,39 @@ class ControlLabWindow(QMainWindow):
         self._lesson_event("solution.viewed")
         dialog.exec()
 
+    def _show_lesson_notes(self):
+        notes = self.lesson_session.lesson.notes
+        sections = re.split(r"(?=\*\*[^\n]+：\*\*)", notes)
+        explanation = "\n\n".join(part for part in sections if part.startswith(
+            ("**前置与课时", "**只引入", "**教师问题", "**可观察结果", "**误解与分层提示")))
+        self._show_text_dialog("本课的思路与解释", explanation or self.lesson_session.lesson.summary)
+
+    def _show_error_details(self):
+        self._show_text_dialog("原始 Python 错误", self.error_label.toolTip())
+
+    def _show_text_dialog(self, title, text):
+        dialog = QDialog(self)
+        dialog.setWindowTitle(title)
+        dialog.resize(700, 520)
+        layout = QVBoxLayout(dialog)
+        view = QPlainTextEdit()
+        view.setReadOnly(True)
+        view.setPlainText(text)
+        layout.addWidget(view)
+        close = QPushButton("关闭")
+        close.clicked.connect(dialog.accept)
+        layout.addWidget(close)
+        dialog.exec()
+
     def _scenario_changed(self, index):
         if self._loading_lesson or self.lesson_session is None or index < 0:
             return
         scenario = self.scenario_combo.itemData(index)
-        self._archive_experiment()
+        if not self._ensure_experiment_saved():
+            self.scenario_combo.blockSignals(True)
+            self.scenario_combo.setCurrentIndex(self.scenario_combo.findData(self.sim.session.spec.scenario.scenario_id))
+            self.scenario_combo.blockSignals(False)
+            return
         self.chart.clear_reference()
         self.sim.configure(scenario)
         self.reset_experiment(emit_event=False)
@@ -731,27 +1043,52 @@ class ControlLabWindow(QMainWindow):
     def _apply_controller_code(self, code):
         # A parameter exercise starts from an explicit saved version of the
         # student's current draft, even if it was never saved manually.
-        previous = self.progress_store.save_workspace(self.lesson_session.lesson.id, self.editor.toPlainText(), "before_parameters.py")
+        try:
+            previous = self.progress_store.save_workspace(self.lesson_session.lesson.id, self.editor.toPlainText(), "before_parameters.py")
+        except (OSError, ValueError) as exc:
+            self._panel_error(f"草稿尚未备份，暂不替换：{exc}")
+            return
         self.stop_code(show_status=False)
         self.editor.setPlainText(code)
         self.editor_tabs.setCurrentIndex(0)
         self.status.setText(f"参数代码已载入。上一版保留在 {previous}；点击「运行代码」开始新的实验。")
         self.status.show()
 
-    def open_evaluation(self):
+    def _open_lesson_tool(self):
+        number = int(self.lesson_session.lesson.id[1:])
+        self.open_evaluation({14: "p", 18: "pi", 22: "project"}.get(number))
+
+    def open_evaluation(self, mode=None):
         self.paused = True
         self.pause_button.setText("继续")
         dialog = QDialog(self)
         dialog.setWindowTitle("ControlLab · 对照实验")
-        dialog.resize(880, 640)
-        layout = QVBoxLayout(dialog)
+        from control_lab.desktop.panels._dialogs import scrolling_body
+        layout = scrolling_body(dialog, self, (880, 640))
         panel = EvaluationPanel(self.progress_store.root)
-        panel.completed.connect(lambda report: self._lesson_event("comparison.saved", {"controller": report["controller"]}))
+        panel.completed.connect(lambda report: self._lesson_event("comparison.saved", report))
+        panel.caseViewed.connect(lambda result: self._lesson_event("evaluation.replayed", result))
+        panel.comparisonCompleted.connect(lambda result: self._lesson_event("comparison.completed", result))
+        panel.sweepCompleted.connect(lambda result: self._lesson_event("sweep.completed", result))
+        panel.projectExported.connect(lambda result: self._lesson_event("project.exported", result))
         layout.addWidget(panel)
+        if mode in ("p", "pi"):
+            QTimer.singleShot(0, lambda: panel.open_sweep(mode))
+        elif mode == "project":
+            QTimer.singleShot(0, panel.open_project)
         try:
             dialog.exec()
         finally:
             panel.shutdown()
+
+    def _open_formal_report(self, path):
+        from control_lab.desktop.panels.evaluation_history import EvaluationReportDialog
+        try:
+            dialog = EvaluationReportDialog(path, self)
+            dialog.caseViewed.connect(lambda result: self._lesson_event("evaluation.replayed", result))
+            dialog.exec()
+        except (OSError, ValueError, KeyError) as exc:
+            self._panel_error(f"评价轨迹暂时无法打开：{exc}")
 
     def _playback_changed(self):
         if hasattr(self, "timer"):
@@ -797,7 +1134,8 @@ class ControlLabWindow(QMainWindow):
             self.status.setText(f"当前草稿暂未备份，未替换代码：{exc}")
             self.status.show()
             return
-        self.select_lesson(recording.report["lesson_id"])
+        if self.select_lesson(recording.report["lesson_id"]) is False:
+            return
         self.sim.configure_spec(recording.spec)
         self.state = list(self.sim.start_scenario())
         self.target_x = self.state[0]
@@ -818,16 +1156,31 @@ class ControlLabWindow(QMainWindow):
 
     def _training_completed(self, result):
         if result.get("operation") == "train" and result.get("type") == "completed":
-            self._lesson_event("training.completed", {"path": result.get("path", "")})
+            self._lesson_event("training.completed", result)
             self._lesson_event("artifact.saved", {"path": result.get("path", "")})
+            self.robustness_panel.set_model(result.get("path", ""), self.training_panel.python_path.text())
         elif result.get("type") == "evaluation":
-            self._lesson_event("comparison.saved", {"path": result.get("path", "")})
+            self._lesson_event("comparison.saved", result)
         elif result.get("type") == "comparison":
-            self._lesson_event("comparison.saved", {"path": result.get("path", "")})
+            self._lesson_event("comparison.saved", result)
+        elif result.get("type") == "baseline":
+            self._lesson_event("baseline.saved", result)
         elif result.get("type") == "doctor" and result.get("status") == "ready":
-            self._lesson_event("external.verified", {"kind": "training_runtime"})
+            self._lesson_event("external.verified", {**result, "kind": "training_runtime"})
         elif result.get("type") == "replay_completed":
             self._lesson_event("model.loaded", {"kind": "replay"})
+
+    def _panel_error(self, message):
+        self.status.setText(message)
+        self.status.show()
+
+    def _reward_saved(self, path):
+        self.training_panel.set_reward_config(path)
+        self._lesson_event("reward.configuration.saved", {"path": path})
+
+    def _robustness_completed(self, result):
+        if result.get("status") == "completed":
+            self._lesson_event("robustness.completed", result)
 
     def _signal_analysis_completed(self, result):
         if self.lesson_session.lesson.id == "L20":
@@ -856,11 +1209,15 @@ class ControlLabWindow(QMainWindow):
 
     def _tita_finished(self, result):
         if result.get("status") == "completed" and result.get("mode") != "inspect":
-            self._lesson_event("external.verified", {"kind": "tita_run", "report": result})
+            self._lesson_event("external.verified", {"kind": "tita_run", "mode": result.get("mode"), "report": result})
 
     def _tita_inspected(self, report):
         if report.get("ready_for_smoke"):
             self._lesson_event("external.verified", {"kind": "inspection", "report": report})
+
+    def _tita_compatibility(self, result):
+        if result.get("compatible") is False:
+            self._lesson_event("external.verified", {**result, "kind": "tita_incompatible_model"})
 
     def open_updates(self):
         if self.updates_dialog is None:
@@ -884,15 +1241,22 @@ class ControlLabWindow(QMainWindow):
         self.status.hide()
 
     def reset_experiment(self, checked=False, *, emit_event=True):
-        self._archive_experiment()
+        if not self._ensure_experiment_saved():
+            return False
         self.stop_code(show_status=False)
         self.canvas.end_drag()
         self.state = list(self.sim.reset(seed=42))
+        self.centering_tracker = CenteringTracker(dt_s=self.sim.dt,
+            pole_angle_limit_rad=self.sim.session.spec.theta_limit_rad)
+        self.centering_tracker.reset(self.sim.session.true_state)
+        self._refresh_centering_status()
+        self.canvas.disturbance_force = 0.
         self._experiment_rows = []
         self._experiment_saved = False
         self._experiment_code = None
         self._pending_action = None
         self._step_once = False
+        self._run_step_limit = None
         self.fell = False
         self.paused = True
         self.canvas.allow_drag = self.sim.session.spec.scenario.environment == "cartpole"
@@ -901,15 +1265,19 @@ class ControlLabWindow(QMainWindow):
         self.canvas.clear_trail()
         self.chart.clear()
         self.flow_indicator.clear()
+        self.integral_panel.clear()
         self.error_label.hide()
+        self.error_details_button.hide()
         self.pause_button.setText("开始")
         self.clear_notice()
         self.refresh()
         if emit_event:
             self._lesson_event("simulation.reset")
+        return True
 
     def start_challenge(self):
-        self.reset_experiment()
+        if not self.reset_experiment():
+            return
         self.state = self.sim.start_scenario(challenge=True)
         self.paused = False
         self.pause_button.setText("暂停")
@@ -921,6 +1289,8 @@ class ControlLabWindow(QMainWindow):
             return
         if not self.code_running and self.lesson_session.lesson.editor_kind == "controller":
             self.run_code()
+            if not self.code_running:
+                return
         self.canvas.end_drag()
         self.paused = True
         self._step_once = True
@@ -983,18 +1353,30 @@ class ControlLabWindow(QMainWindow):
 
     def load_example(self):
         self.stop_code(show_status=False)
+        try:
+            backup = self.progress_store.save_workspace(self.lesson_session.lesson.id,
+                self.editor.toPlainText(), "before_template.py")
+        except (OSError, ValueError) as exc:
+            self.status.setText(f"草稿尚未备份，暂不替换：{exc}")
+            self.status.show()
+            return
         cursor = self.editor.textCursor()
         cursor.beginEditBlock()
         cursor.select(QTextCursor.SelectionType.Document)
         cursor.insertText(self.lesson_session.lesson.read_template() or self.example_code(self.output_mode.currentIndex() == 1))
         cursor.endEditBlock()
         self.error_label.hide()
+        self.error_details_button.hide()
         self.clear_notice()
+        self.status.setText(f"原草稿已保留：{backup}")
+        self.status.show()
 
-    def run_code(self):
+    def run_code(self, checked=False, *, max_steps=None):
         if self.lesson_session.lesson.editor_kind != "controller":
             return
-        self.reset_experiment()
+        if not self.reset_experiment():
+            return
+        self._run_step_limit = max_steps
         self.state = self.sim.start_scenario()
         self._experiment_code = self.editor.toPlainText()
         try:
@@ -1010,7 +1392,10 @@ class ControlLabWindow(QMainWindow):
         self.run_button.setEnabled(False)
         self.stop_button.setEnabled(True)
         self.next_episode_button.setEnabled(True)
-        self.editor.setReadOnly(True)
+        self.editor.setReadOnly(False)
+        self.editor.setExtraSelections([])
+        self.draft_status.setText("当前实验正在使用这份代码的启动快照。")
+        self.draft_status.show()
         self.example_button.setEnabled(False)
         self.parameters.set_running(True)
         self.pause_button.setText("暂停")
@@ -1020,9 +1405,10 @@ class ControlLabWindow(QMainWindow):
 
     def new_controller_episode(self):
         """L19: repeat the same scenario without reimporting the student module."""
+        if not self._ensure_experiment_saved():
+            return
         if not self.code_running or not self.controller.reset_episode():
             return
-        self._archive_experiment()
         self._experiment_rows = []
         self._experiment_saved = False
         self._pending_action = None
@@ -1035,6 +1421,7 @@ class ControlLabWindow(QMainWindow):
         self._episode_reset_pending = True
         self.canvas.clear_trail()
         self.chart.clear()
+        self.integral_panel.clear()
         self.pause_button.setText("继续")
         self.refresh()
 
@@ -1054,6 +1441,7 @@ class ControlLabWindow(QMainWindow):
             self.editor.setReadOnly(False)
             self.example_button.setEnabled(True)
             self.parameters.set_running(False)
+            self.draft_status.hide()
         if was_running:
             self.paused = True
             self.pause_button.setText("继续")
@@ -1070,13 +1458,39 @@ class ControlLabWindow(QMainWindow):
         concise = lines[-1] if lines else "请检查 control(state, dt) 的返回值。"
         if len(concise) > 230:
             concise = concise[:227] + "…"
-        self.error_label.setText("这次代码还不能运行：\n" + concise)
+        locations = re.findall(r'File "<student_controller>", line (\d+)', details)
+        line_number = int(locations[-1]) if locations else None
+        help_text = ("检查这一行和上一行的冒号、括号及缩进；同一层级使用相同空格。"
+            if "SyntaxError" in details or "IndentationError" in details else
+            "检查变量是否先赋值，名称的大小写是否一致。" if "NameError" in details else
+            "检查 state 的字段名，例如 x、v、theta、omega。" if "KeyError" in details else
+            "每个分支都要返回一个有限数值，例如 return 0.0。" if "返回" in details else
+            "先检查提示中对应的运算；修改后重新运行。")
+        same_source = self.editor.toPlainText() == self._experiment_code
+        location = (f"第 {line_number} 行 · " if same_source else f"运行时快照第 {line_number} 行（草稿已修改） · ") if line_number else ""
+        self.error_label.setText("这次代码还不能运行：\n" + location + concise + "\n" + help_text)
+        if line_number and same_source:
+            self._highlight_lines([line_number], "#F8D8C4")
         self.error_label.setToolTip(details)
+        self.error_details_button.show()
         self.error_label.show()
         self.clear_notice()
         self._lesson_event("code.error", {"message": concise})
         self._archive_experiment(status="error", error=details, include_empty=True)
         self.refresh()
+
+    def _highlight_lines(self, numbers, color="#E3EFDB"):
+        selections = []
+        for number in numbers:
+            block = self.editor.document().findBlockByNumber(number - 1)
+            if not block.isValid():
+                continue
+            selected = QTextEdit.ExtraSelection()
+            selected.cursor = QTextCursor(block)
+            selected.format.setBackground(QColor(color))
+            selected.format.setProperty(QTextFormat.Property.FullWidthSelection, True)
+            selections.append(selected)
+        self.editor.setExtraSelections(selections)
 
     def tick(self):
         if self.code_running:
@@ -1111,6 +1525,8 @@ class ControlLabWindow(QMainWindow):
             self._pending_action = None
         try:
             before = self.sim.session.true_state.as_dict()
+            before_observed_v = self.state[1]
+            target_velocity = self.sim.context["target_v"]
             result = self.sim.step_manual(self.target_x) if self.canvas.dragging and not self.code_running else self.sim.step(force)
         except Exception as exc:
             self.show_code_error(f"仿真实验暂时停止：{exc}")
@@ -1118,14 +1534,35 @@ class ControlLabWindow(QMainWindow):
         self.state = list(result["observation"])
         self.applied_force = float(result["applied_force"])
         record = result["record"]
+        self.canvas.disturbance_force = record.get("disturbance_force_n", 0.)
         record["before_state"] = before
         record["diagnostics"] = dict(self.controller.last_diagnostics) if self.code_running else {}
+        if self.lesson_session.lesson.id == "L16":
+            if self.sim.session.step_index == 1:
+                self.centering_tracker = CenteringTracker(dt_s=self.sim.dt,
+                    pole_angle_limit_rad=self.sim.session.spec.theta_limit_rad)
+                self.centering_tracker.reset(before)
+            previous_reached = self.centering_tracker.first_reached_time_s
+            record["centering"] = self.centering_tracker.observe(self.sim.session.true_state,
+                record["simulation_time_s"], terminated=record["terminated"])
+            self._refresh_centering_status()
+            if previous_reached is None and record["centering"]["first_reached_time_s"] is not None:
+                self._lesson_event("centering.reached", record["centering"])
+        if self.lesson_session.lesson.id in ("L17", "L18"):
+            self.integral_panel.push(target_velocity, before_observed_v, self.sim.dt,
+                record["requested_force_n"], self.sim.session.spec.force_limit_n, record["diagnostics"])
         self._experiment_rows.append(record)
         self._experiment_saved = False
         single = self._step_once
         self._step_once = False
-        if single:
+        short_finished = self._run_step_limit is not None and self.sim.session.step_index >= self._run_step_limit
+        if single or short_finished:
             self.paused = True
+        if short_finished:
+            self._run_step_limit = None
+            self.pause_button.setText("继续")
+            self._lesson_event("simulation.paused", {"reason": "short_segment", "steps": self.sim.session.step_index,
+                                                     "time_s": result["elapsed"]})
         if single or (self.lesson_session.step and "simulation.stepped" in str(self.lesson_session.step.completion)):
             self._lesson_event("simulation.stepped", {"step": self.sim.session.step_index, "time_s": result["elapsed"], "single": single})
         if (result["fell"] or result.get("time_limit", False)) and not self.fell:
@@ -1150,6 +1587,14 @@ class ControlLabWindow(QMainWindow):
         if self.lesson_session.lesson.id == "L08":
             self.flow_indicator.display_step(list(before.values()), record["requested_force_n"], self.sim.dt)
         self.refresh()
+
+    def _refresh_centering_status(self):
+        result = self.centering_tracker.snapshot()
+        first = result["first_reached_time_s"]
+        pole = "杆尚未倒" if result["pole_survived"] else "杆已倒下"
+        reached = "尚未达标" if first is None else f"首次达标：{first:.2f} s"
+        self.centering_status.setText(f"{pole}　·　回中{reached}　·　当前持续 {result['current_duration_s']:.2f} s\n"
+            "回中条件：|位置| ≤ 0.10 m 且 |速度| ≤ 0.10 m/s，连续保持 1 秒。")
 
     def refresh(self):
         self.canvas.set_state(self.sim.session.true_state.as_tuple(), self.applied_force, self.paused, self.fell)
@@ -1186,23 +1631,59 @@ class ControlLabWindow(QMainWindow):
                                     self.sim.session.spec, self._experiment_rows,
                                     code=self._experiment_code, status=status, error=error)
             self._experiment_saved = True
-            self._lesson_event("experiment.saved", {"path": str(folder)})
+            last = self._experiment_rows[-1] if self._experiment_rows else {}
+            self._lesson_event("experiment.saved", {"path": str(folder), "status": status,
+                "steps": len(self._experiment_rows), "is_complete": bool(not error and
+                    (last.get("terminated") or last.get("truncated")))})
             return folder
         except (OSError, ValueError) as exc:
             self.status.setText(f"实验记录暂未保存：{exc}")
             self.status.show()
             return None
 
+    def _ensure_experiment_saved(self):
+        if not self._experiment_rows or self._experiment_saved:
+            return True
+        return self._archive_experiment() is not None
+
     def save_experiment(self):
         folder = self._archive_experiment()
+        if folder is None and self._experiment_rows and not self._experiment_saved:
+            return
         self.status.setText(f"实验已保存：{folder}" if folder else "当前实验已经保存，或还没有运行步骤。")
         self.status.show()
 
     def closeEvent(self, event: QCloseEvent):
+        if self._training_close_choice is None and self.training_panel.has_active_training():
+            if not self._ensure_experiment_saved() or not self._save_progress():
+                event.ignore()
+                return
+            question = QMessageBox(self)
+            question.setWindowTitle("训练还在运行")
+            question.setText("退出软件后如何处理训练？")
+            question.setInformativeText("后台任务的状态、日志和模型保存在学习目录中，重新打开软件可以继续查看或停止。")
+            stop = question.addButton("停止并保存后退出", QMessageBox.ButtonRole.AcceptRole)
+            keep = question.addButton("保留后台任务并退出", QMessageBox.ButtonRole.ActionRole)
+            cancel = question.addButton("取消关闭", QMessageBox.ButtonRole.RejectRole)
+            question.setDefaultButton(stop)
+            question.exec()
+            if question.clickedButton() not in (stop, keep):
+                self.training_panel.abort_close()
+                event.ignore()
+                return
+            self._training_close_choice = "stop" if question.clickedButton() is stop else "keep"
         self.paused = True
+        self.probe_panel.shutdown()
+        self.foundations_panel.shutdown()
         self.stop_code(show_status=False)
-        ready = self.training_panel.shutdown()
+        if self._training_close_choice is not None and not self._training_close_prepared:
+            ready = self.training_panel.prepare_close(self._training_close_choice)
+            self._training_close_prepared = True
+        else:
+            ready = self.training_panel.shutdown()
         ready = self.signals_panel.shutdown() and ready
+        ready = self.rewards_panel.shutdown() and ready
+        ready = self.robustness_panel.shutdown() and ready
         self.tita_panel.shutdown()
         if self.updates_dialog is not None:
             ready = self.updates_panel.shutdown() and ready
@@ -1215,22 +1696,33 @@ class ControlLabWindow(QMainWindow):
         self.timer.stop()
         self.draft_timer.stop()
         self.canvas.end_drag()
-        self._archive_experiment()
-        saved = self._save_progress()
+        saved = self._ensure_experiment_saved() and self._save_progress()
+        if not saved:
+            self._pending_installer = None
+            self._training_close_choice = None
+            self._training_close_prepared = False
+            self.training_panel.abort_close()
+            self.timer.start()
+            if self.updates_dialog is not None:
+                self.updates_panel._closing = False
+                self.updates_panel._update_buttons()
+            event.ignore()
+            return
         if self._pending_installer is not None:
-            if not saved:
-                self._pending_installer = None
-                self.timer.start()
-                event.ignore()
-                return
             from control_lab.updates.installer import launch_installer
             try:
                 launch_installer(*self._pending_installer)
             except Exception as exc:
                 self._pending_installer = None
+                self._training_close_choice = None
+                self._training_close_prepared = False
+                self.training_panel.abort_close()
                 self.status.setText(f"更新安装未开始：{exc}")
                 self.status.show()
                 self.timer.start()
+                if self.updates_dialog is not None:
+                    self.updates_panel._closing = False
+                    self.updates_panel._update_buttons()
                 event.ignore()
                 return
         self.stop_code(show_status=False)
@@ -1267,6 +1759,8 @@ def main(argv=None):
     app.setWindowIcon(QIcon(str(Path(__file__).resolve().parents[1] / "resources" / "icon.png")))
     window = ControlLabWindow(stage=3 if initial_code is not None else args.stage,
                               lesson_id=args.lesson, data_dir=args.data_dir)
+    available = window.screen().availableGeometry()
+    window.resize(min(window.width(), available.width()), min(window.height(), available.height() - 32))
     if initial_code is not None:
         window.editor.setPlainText(initial_code)
         window.status.setText(f"已加载 {args.code_file.name}。点击「运行代码」开始实验。")

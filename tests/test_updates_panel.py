@@ -78,3 +78,36 @@ def test_close_cancels_network_worker_without_destroying_it(monkeypatch, tmp_pat
     until(app, lambda: not panel.running)
     assert panel.shutdown()
     panel.close()
+
+
+def test_recovery_rechecks_cache_displays_log_and_requires_explicit_retry(monkeypatch,tmp_path):
+    app=QApplication.instance() or QApplication([])
+    path=download_release(release(),tmp_path/'updates/downloads',transport=Transport())
+    (path.parent/'installer.log').write_text('previous installation cancelled',encoding='utf-8')
+    panel=panel_module.UpdatesPanel(tmp_path)
+    ready=[]
+    panel.readyToInstall.connect(ready.append)
+    try:
+        assert panel.cache_combo.count()==0 and ready==[]
+        panel.refresh_cache()
+        until(app,lambda:not panel.running)
+        app.processEvents()
+        assert panel.cache_combo.count()==1 and panel.retry_install_button.isEnabled()
+        assert panel.view_log_button.isEnabled()
+        panel.view_installer_log()
+        assert 'previous installation cancelled' in panel.release_notes.toPlainText()
+        monkeypatch.setattr(QMessageBox,'question',lambda *args,**kwargs:QMessageBox.StandardButton.No)
+        panel.retry_cached_installation()
+        assert ready==[]
+        monkeypatch.setattr(QMessageBox,'question',lambda *args,**kwargs:QMessageBox.StandardButton.Yes)
+        panel.retry_cached_installation()
+        assert ready==[path]
+        path.write_bytes(b'tampered after recovery scan')
+        panel.retry_cached_installation()
+        assert ready==[path] and '校验失败' in panel.status_label.text()
+        panel.refresh_cache()
+        until(app,lambda:not panel.running)
+        app.processEvents()
+        assert not panel.retry_install_button.isEnabled() and panel.view_log_button.isEnabled()
+    finally:
+        panel.shutdown();until(app,lambda:not panel.running);panel.close()

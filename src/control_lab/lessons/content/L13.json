@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 2,
   "lesson_id": "L13",
   "title": "倒得越多，就推得越多——比例 P 与方向",
   "summary": "kp=60、theta=.05 rad时输出多少，为什么？",

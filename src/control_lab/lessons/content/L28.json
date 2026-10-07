@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "content_version": 1,
+  "content_version": 3,
   "lesson_id": "L28",
   "title": "PID与强化学习的公平比较",
   "summary": "怎样公平比较PD与PPO？",
@@ -38,12 +38,13 @@
     },
     {
       "id": "step_02",
-      "title": "外部实验准备",
-      "instruction": "检查双方观测相同、输出均为牛顿、dt/初值/边界相同，没有一方偷偷使用辅助位置输入。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "保存我的解释",
+      "instruction": "核对PID与RL的四维观测、牛顿推力、dt/初态/边界；模型摘要包含seed/预算/奖励版本，模型名称相似时对照指纹。",
+      "activity": "predict",
+      "evidence": "提交公平性检查说明。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "prediction.submitted",
+        "field": "value"
       },
       "hints": [
         "先找输入模式或配置的差异。",
@@ -53,12 +54,15 @@
     },
     {
       "id": "step_03",
-      "title": "外部实验准备",
-      "instruction": "在保留用例10042–10061逐个运行，任何失败回合都入表。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "传统控制用正式评价的高级保留测试；RL勾选“冻结后的保留测试”，选择该模型完整验证report.json。逐个跑全部保留用例，失败也保留。",
+      "activity": "experiment",
+      "evidence": "分别得到两份完整保留测试报告；模型与验证指纹不符会拒绝。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "comparison.saved",
+        "field": "split",
+        "equals": "held_out",
+        "min_count": 2
       },
       "hints": [
         "先找输入模式或配置的差异。",
@@ -68,12 +72,14 @@
     },
     {
       "id": "step_04",
-      "title": "外部实验准备",
-      "instruction": "报告完整回合率、存活步数、角度RMS、最大位置偏移、力RMS和饱和比例。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "点击“比较评价报告”选择PID/RL同协议报告，查看完成率、步数、角度RMS、最大位移、力RMS和饱和比例。",
+      "activity": "experiment",
+      "evidence": "比较器实际校验协议并保存对照后继续。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "comparison.saved",
+        "field": "type",
+        "equals": "comparison"
       },
       "hints": [
         "先找输入模式或配置的差异。",
@@ -83,12 +89,13 @@
     },
     {
       "id": "step_05",
-      "title": "外部实验准备",
-      "instruction": "对RL三个训练seed分别汇报，再给出跨训练run的概括；不要把20个回合误写成20次独立训练。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "保存我的解释",
+      "instruction": "分别报告RL的三个训练seed，区分20个评价回合与3次独立训练。说明所选模型预算与奖励；不要只报告赢家。",
+      "activity": "predict",
+      "evidence": "写下跨训练run的概括与限制。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "prediction.submitted",
+        "field": "value"
       },
       "hints": [
         "先找输入模式或配置的差异。",
@@ -98,12 +105,14 @@
     },
     {
       "id": "step_06",
-      "title": "外部实验准备",
-      "instruction": "从各方法选一个失败案例，用状态/推力曲线解释其失效过程。",
-      "activity": "external",
-      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "title": "完成实际实验",
+      "instruction": "点击“打开评价轨迹 / 添加同条件对照”，选择一份PD/PPO报告，再添加另一份同条件报告。选择同一失败case并拖动时间滑条，比较两幅画布和状态/推力曲线；较早结束的方法显示无后续样本，不补长轨迹。",
+      "activity": "experiment",
+      "evidence": "真实打开两个同条件报告、浏览同一case，再写下失败原因。",
       "completion": {
-        "event": "step.acknowledged"
+        "event": "evaluation.replayed",
+        "field": "compared",
+        "equals": true
       },
       "hints": [
         "先找输入模式或配置的差异。",

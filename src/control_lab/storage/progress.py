@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from datetime import datetime, timezone
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -134,3 +135,20 @@ class ProgressStore:
             except FileExistsError:
                 continue
         raise FileExistsError("同名作业版本过多，请使用新文件名")
+
+    def preserve_template(self, lesson_id: str, version: int, code: str) -> Path:
+        """Keep every encountered original template; an update never replaces it."""
+        if not re.fullmatch(r"L\d{2}", lesson_id) or type(version) is not int or version < 1:
+            raise ValueError("课程或模板版本无效")
+        content = code.encode("utf-8")
+        digest = hashlib.sha256(content).hexdigest()
+        folder = self.root / "templates" / lesson_id
+        folder.mkdir(parents=True, exist_ok=True)
+        path = folder / f"v{version}-{digest}.py"
+        try:
+            with path.open("xb") as handle:
+                handle.write(content)
+        except FileExistsError:
+            if path.read_bytes() != content:
+                raise ValueError("已保存的原始模板被修改，请先保留并检查该文件。")
+        return path

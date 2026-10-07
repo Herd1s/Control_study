@@ -1,5 +1,6 @@
 import math
 import os
+import time
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -66,9 +67,12 @@ def test_flow_animates_without_advancing_or_changing_physics(app):
     flow = FlowIndicator()
     flow.display_step([0, .1, .05, 0], 3, .02)
     assert flow.stage == 0
-    QTest.qWait(150)
+    deadline = time.monotonic() + 1
+    while flow.stage == 0 and time.monotonic() < deadline:
+        QTest.qWait(10)
     assert flow.stage >= 1
-    QTest.qWait(300)
+    while flow.stage < 2 and time.monotonic() < deadline:
+        QTest.qWait(10)
     assert flow.stage == 2
     assert flow.step_count == 1
     assert flow.dt == .02 and flow.force == 3

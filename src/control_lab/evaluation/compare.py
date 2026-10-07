@@ -18,6 +18,8 @@ def compare_reports(reports):
     if not expected_ids or len(expected_ids) != len(set(expected_ids)):
         raise ValueError("Case list must be nonempty and unique")
     for report in reports:
+        if report.get("is_complete") is False or report.get("status", "completed") != "completed":
+            raise ValueError("Incomplete or cancelled reports cannot be compared as final scores")
         for key in COMPARABILITY_FIELDS:
             if report.get(key) != baseline[key]:
                 raise ValueError(f"Cannot compare different {key}: {report.get(key)!r} vs {baseline[key]!r}")

@@ -1,7 +1,7 @@
 """A single, progressive lesson guide; content comes from validated resources."""
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QFrame, QLabel, QPlainTextEdit, QPushButton, QHBoxLayout, QVBoxLayout
+from PySide6.QtWidgets import QComboBox, QFrame, QLabel, QPlainTextEdit, QPushButton, QHBoxLayout, QVBoxLayout
 
 
 def text_label(text="", name="guideText"):
@@ -15,6 +15,9 @@ class LessonPanel(QFrame):
     eventRaised = Signal(str, dict)
     advanceRequested = Signal(bool)
     solutionRequested = Signal()
+    stepRequested = Signal(int)
+    draftChanged = Signal(str)
+    notesRequested = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -25,6 +28,18 @@ class LessonPanel(QFrame):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(18, 18, 18, 18)
         layout.setSpacing(12)
+        navigation = QHBoxLayout()
+        self.previous_button = QPushButton("← 上一步")
+        self.previous_button.clicked.connect(lambda: self.stepRequested.emit(
+            max(0, self.session.step_index - 1)))
+        self.step_combo = QComboBox()
+        self.step_combo.setAccessibleName("返回课程步骤")
+        self.step_combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.step_combo.setMinimumContentsLength(8)
+        self.step_combo.activated.connect(lambda index: self.stepRequested.emit(index))
+        navigation.addWidget(self.previous_button)
+        navigation.addWidget(self.step_combo, 1)
+        layout.addLayout(navigation)
         self.step_title = text_label(name="guideTitle")
         self.instruction = text_label()
         layout.addWidget(self.step_title)
@@ -37,6 +52,9 @@ class LessonPanel(QFrame):
         row.addWidget(self.hint_button)
         row.addWidget(self.solution_button)
         layout.addLayout(row)
+        self.notes_button = QPushButton("为什么这样学？")
+        self.notes_button.clicked.connect(self.notesRequested)
+        layout.addWidget(self.notes_button)
         self.hint_text = text_label(name="tipText")
         self.hint_text.hide()
         layout.addWidget(self.hint_text)
@@ -45,6 +63,7 @@ class LessonPanel(QFrame):
         self.reflection.setAccessibleName("本步骤的实验观察")
         self.reflection.setMinimumHeight(72)
         self.reflection.setMaximumHeight(110)
+        self.reflection.textChanged.connect(lambda: self.draftChanged.emit(self.reflection.toPlainText()))
         layout.addWidget(self.reflection)
         self.submit = QPushButton("保存我的观察")
         self.submit.clicked.connect(self.submit_reflection)
@@ -68,12 +87,20 @@ class LessonPanel(QFrame):
     def bind(self, session):
         self.session = session
         self._shown_step = None
+        self.step_combo.clear()
+        for index, step in enumerate(session.lesson.steps):
+            self.step_combo.addItem(f"{index + 1}. {step.title}")
         self.refresh()
 
     def refresh(self):
         if self.session is None:
             return
         step = self.session.step
+        self.previous_button.setEnabled(self.session.step_index > 0)
+        self.step_combo.setCurrentIndex(-1 if step is None else self.session.step_index)
+        for index, item in enumerate(self.session.lesson.steps):
+            status = "✓ " if item.id in self.session.completed_step_ids else "待补 · " if item.id in self.session.skipped_step_ids else ""
+            self.step_combo.setItemText(index, f"{status}{index + 1}. {item.title}")
         self.solution_button.setEnabled(self.session.has_attempt)
         finished = step is None
         for widget in (self.hint_button, self.reflection, self.submit, self.skip_button, self.acknowledge):
@@ -82,7 +109,7 @@ class LessonPanel(QFrame):
             self.step_title.setText("本课学习记录")
             completed = self.session.completed
             self.instruction.setText("本课的操作与观察已记录。继续下一课，或回到本课重新实验。" if completed
-                                     else "已浏览到本课末尾。跳过的步骤仍保留未完成标记，可以重新进入本课补做。")
+                                     else "已浏览到本课末尾。用上方步骤菜单返回，继续补做标记为待补的步骤。")
             self.next_button.setText("进入下一课  →")
             self.next_button.setEnabled(True)
             self.hint_text.hide()
@@ -92,7 +119,9 @@ class LessonPanel(QFrame):
             self._shown_step = step.id
             self._hint_level = 0
             self.hint_text.hide()
-            self.reflection.clear()
+            self.reflection.blockSignals(True)
+            self.reflection.setPlainText(self.session.response_text())
+            self.reflection.blockSignals(False)
         total = len(self.session.lesson.steps)
         self.step_title.setText(f"{self.session.step_index + 1} / {total}  {step.title}")
         self.instruction.setText(step.instruction.replace("`", ""))
@@ -103,6 +132,7 @@ class LessonPanel(QFrame):
         needs_reflection = any(event in str(step.completion) for event in ("reflection.submitted", "prediction.submitted"))
         self.reflection.setVisible(needs_reflection)
         self.submit.setVisible(needs_reflection)
+        self.submit.setText("保存我的预测" if "prediction.submitted" in str(step.completion) else "保存我的观察")
         self.acknowledge.setVisible("step.acknowledged" in str(step.completion))
 
     def show_hint(self):

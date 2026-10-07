@@ -1,27 +1,29 @@
-"""在课程训练环境检查Gym接口；这是通路验证，不是训练成功。"""
-import numpy as np
-from gymnasium.utils.env_checker import check_env
+"""检查接口、真实终止与截断；可选256步通路实验。"""
+import argparse
+import json
+from pathlib import Path
 
-def main():
-    from control_lab.rl.env_factory import make_training_env
-    env = make_training_env(seed=0, reward_id="survival-v1")
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--smoke-output", type=Path, help="指定新目录后再运行256步训练")
+    args = parser.parse_args(argv)
+    from gymnasium.utils.env_checker import check_env
+    from control_lab.rl.env_factory import make_training_env, demonstrate_contract
+    env = make_training_env(seed=42)
     try:
         check_env(env, skip_render_check=True)
-        observation, info = env.reset(seed=42)
-        assert len(observation) == 4
-        assert env.action_space.shape == (1,)
-        assert np.allclose(env.action_space.low, -1.0)
-        assert np.allclose(env.action_space.high, 1.0)
-        for action in (-1.0, 0.0, 1.0):
-            env.reset(seed=42)
-            observation, reward, terminated, truncated, info = env.step(np.array([action], dtype=np.float32))
-            actual_force = float(info.get("actuator_force_n", info.get("applied_force", float("nan"))))
-            assert np.isclose(actual_force, 10.0 * action), "实际推力与归一化映射不符"
-            print("模型动作", action, "对应期望推力N", 10.0*action,
-                  "terminated", terminated, "truncated", truncated)
-        print("Gym接口检查结束；请同时核对实际推力，确认缩放只发生一次。")
     finally:
         env.close()
+    examples = demonstrate_contract()
+    assert [row["actuator_force_n"] for row in examples["mappings"]] == [-10, 0, 10]
+    assert examples["examples"]["zero_force"]["terminated"]
+    assert examples["examples"]["reference_feedback"]["truncated"]
+    print(json.dumps(examples, ensure_ascii=False, indent=2))
+    if args.smoke_output:
+        from control_lab.rl.train import TrainConfig, train
+        result = train(TrainConfig(args.smoke_output, total_timesteps=256, seed=0))
+        print("模型已保存：", result)
+        print("256步只检查通路；Ctrl+C或STOP文件会正常保存并停止。")
 
 if __name__ == "__main__":
     main()

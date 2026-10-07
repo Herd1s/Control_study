@@ -1,6 +1,6 @@
 # ControlLab 课程代码与软件开发规划
 
-规划日期：2026-10-07。本文保留原始开发规格与实施顺序，其中“已有/尚无/拟新增”默认指规划基线，不代表 0.2.0 当前状态。当前实现、验证证据与未完成项以 [实现审计](IMPLEMENTATION_AUDIT.md) 为准；可执行命令见 [README](../README.md)，原始排期见 [路线图](ROADMAP.md)。
+规划日期：2026-10-07。本文保留原始开发规格与实施顺序，其中“已有/尚无/拟新增”默认指规划基线，不代表 0.2.0 当前状态。0.2.0 历史记录见 [实现审计](IMPLEMENTATION_AUDIT.md)；0.2.1 当前实现、证据与未完成项见 [规格复核](SPEC_GAP_AUDIT.md)、[RL/TITA 复核](REQUIREMENT_GAPS_0.2.1.md) 和 [版本验证](VALIDATION_0.2.1.md)；可执行命令见 [README](../README.md)，原始排期见 [路线图](ROADMAP.md)。
 
 ## 1. 开发目标与边界
 

@@ -6,7 +6,7 @@ import numpy as np
 from control_lab.core.scenario import ScenarioConfig
 from control_lab.core.types import EpisodeSpec, State, integer
 from control_lab.envs.wrappers import make_scenario_env
-from .rewards import REWARD_SPECS, reward_components
+from .rewards import resolve_reward_config, components_for_config
 
 ENVIRONMENT_CONTRACT = {
     "environment_id": "control-lab-continuous-balance-training-v1",
@@ -23,20 +23,20 @@ ENVIRONMENT_CONTRACT = {
 }
 
 
-def environment_contract(reward_id="survival-v1"):
-    if reward_id not in REWARD_SPECS:
-        raise ValueError("Unsupported reward")
+def environment_contract(reward_id="survival-v1", reward_config=None):
+    config = resolve_reward_config(reward_id, reward_config)
     return {**deepcopy(ENVIRONMENT_CONTRACT), "reward_id": reward_id,
-            "reward_definition": deepcopy(REWARD_SPECS[reward_id])}
+            "reward_definition": {key: config[key] for key in ("version", "alive", "angle", "position", "effort")}}
 
 
 class TrainingEnv(gym.Env):
     metadata = {"render_modes": [], "render_fps": 50}
     render_mode = None
 
-    def __init__(self, seed=0, reward_id="survival-v1"):
+    def __init__(self, seed=0, reward_id="survival-v1", reward_config=None):
         self.root_seed = integer(seed, "training seed")
-        self.contract = environment_contract(reward_id)
+        self.reward_config = resolve_reward_config(reward_id, reward_config)
+        self.contract = environment_contract(reward_id, self.reward_config)
         self.reward_id = reward_id
         self.action_space = gym.spaces.Box(-1.0, 1.0, (1,), np.float32)
         self.observation_space = gym.spaces.Box(-np.inf, np.inf, (4,), np.float32)
@@ -71,7 +71,7 @@ class TrainingEnv(gym.Env):
         if self._base_env is None:
             raise RuntimeError("Call reset() before step()")
         observation, _, terminated, truncated, info = self._base_env.step(action)
-        parts = reward_components(self.reward_id, info["true_state"], info["actuator_force_n"])
+        parts = components_for_config(self.reward_config, info["true_state"], info["actuator_force_n"])
         info.update(reward_parts=parts, reward_id=self.reward_id)
         return observation.astype(np.float32), float(sum(parts.values())), terminated, truncated, info
 
@@ -81,5 +81,36 @@ class TrainingEnv(gym.Env):
             self._base_env = None
 
 
-def make_training_env(seed=0, reward_id="survival-v1") -> TrainingEnv:
-    return TrainingEnv(seed=seed, reward_id=reward_id)
+def make_training_env(seed=0, reward_id="survival-v1", reward_config=None) -> TrainingEnv:
+    return TrainingEnv(seed=seed, reward_id=reward_id, reward_config=reward_config)
+
+
+def demonstrate_contract():
+    """Actual fixed-seed examples for L25, without constructing or training PPO."""
+    env = make_training_env(seed=42)
+    try:
+        initial, _ = env.reset(seed=42)
+        mappings = []
+        for value in (-1.0, 0.0, 1.0):
+            env.reset(seed=42)
+            observed, reward, terminated, truncated, info = env.step(np.array([value], dtype=np.float32))
+            mappings.append({"normalized_action": value, "actuator_force_n": info["actuator_force_n"],
+                             "observation": observed.tolist(), "reward": reward})
+        examples = {}
+        for name in ("zero_force", "reference_feedback"):
+            observed, _ = env.reset(seed=42)
+            for step in range(1, 501):
+                x, v, theta, omega = observed
+                force = 0.0 if name == "zero_force" else 60*theta+12*omega+2*x+3*v
+                observed, reward, terminated, truncated, info = env.step(np.array([force/10], dtype=np.float32))
+                if terminated or truncated:
+                    break
+            examples[name] = {"steps": step, "terminated": bool(terminated), "truncated": bool(truncated),
+                              "end_reason": info.get("end_reason")}
+        if not examples["zero_force"]["terminated"] or not examples["reference_feedback"]["truncated"]:
+            raise RuntimeError("终止/时间上限演示与预期不符，请检查课程物理契约")
+        return {"initial_observation": initial.tolist(), "observation_fields": ["x", "v", "theta", "omega"],
+                "observation_units": ["m", "m/s", "rad", "rad/s"], "dt_s": .02,
+                "mappings": mappings, "examples": examples, "policy_trained": False}
+    finally:
+        env.close()

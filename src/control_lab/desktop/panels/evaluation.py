@@ -11,7 +11,7 @@ import uuid
 
 from PySide6.QtCore import QProcess, QProcessEnvironment, QTimer, Signal
 from PySide6.QtWidgets import (
-    QCheckBox, QComboBox, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+    QCheckBox, QComboBox, QDialog, QFileDialog, QFormLayout, QGridLayout, QHBoxLayout, QLabel,
     QLineEdit, QPlainTextEdit, QPushButton, QTableWidget, QTableWidgetItem,
     QVBoxLayout, QWidget,
 )
@@ -20,6 +20,10 @@ from PySide6.QtWidgets import (
 class EvaluationPanel(QWidget):
     completed = Signal(dict)
     error = Signal(str)
+    caseViewed = Signal(dict)
+    comparisonCompleted = Signal(dict)
+    sweepCompleted = Signal(dict)
+    projectExported = Signal(dict)
 
     def __init__(self, data_dir, parent=None):
         super().__init__(parent)
@@ -27,6 +31,8 @@ class EvaluationPanel(QWidget):
         self._output_dir = None
         self._cancelled = False
         self._generation = 0
+        self._current_report_path = None
+        self._dialogs = []
         self._decoder = codecs.getincrementaldecoder("utf-8")("replace")
         self._process = QProcess(self)
         self._process.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
@@ -83,11 +89,23 @@ class EvaluationPanel(QWidget):
         buttons.addWidget(self.stop_button)
         buttons.addStretch()
         layout.addLayout(buttons)
+        tools = QGridLayout()
+        for index, (text, slot) in enumerate((("打开评价报告", lambda: self.open_report()),
+                                               ("回放选中回合", self.replay_selected_case),
+                                               ("比较多个报告", self.choose_comparison),
+                                               ("P / PI 参数实验", lambda: self.open_sweep()),
+                                               ("导出课程项目", self.open_project))):
+            button = QPushButton(text)
+            button.clicked.connect(slot)
+            tools.addWidget(button, index//3, index%3)
+        layout.addLayout(tools)
         self.status_label = QLabel("选择同一组用例，逐项对照；保留测试不用于调参。")
         self.status_label.setWordWrap(True)
         layout.addWidget(self.status_label)
-        self.results_table = QTableWidget(0, 6)
-        self.results_table.setHorizontalHeaderLabels(["用例", "步数", "通过", "角度 RMS / rad", "结束原因", "错误"])
+        self.results_table = QTableWidget(0, 10)
+        self.results_table.setHorizontalHeaderLabels(["用例", "步数", "通过", "角度 RMS / rad", "结束原因", "错误",
+                                                     "最大 |x| / m", "平均 |力| / N", "饱和比例", "力变化 / N"])
+        self.results_table.cellDoubleClicked.connect(lambda *_: self.replay_selected_case())
         self.results_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.results_table.setMinimumHeight(180)
         layout.addWidget(self.results_table, 1)
@@ -200,7 +218,10 @@ class EvaluationPanel(QWidget):
         self._cancelled = True
         generation = self._generation
         self.status_label.setText("正在取消；已生成的记录保留，本次不会标记为完成成绩。")
-        self._process.terminate()
+        try:
+            (self._output_dir / "STOP").touch()
+        except (OSError, TypeError):
+            self._process.terminate()
         QTimer.singleShot(1500, lambda: self._kill_if_running(generation))
 
     def _kill_if_running(self, generation):
@@ -221,6 +242,10 @@ class EvaluationPanel(QWidget):
             self.status_label.setText(f"已取消。本次不是完整成绩；现有记录保留在 {self._output_dir}")
             if self._output_dir is not None:
                 try:
+                    if (self._output_dir / "report.json").is_file():
+                        partial = json.loads((self._output_dir / "report.json").read_text(encoding="utf-8"))
+                        self._fill_rows(partial)
+                        self._current_report_path = self._output_dir / "report.json"
                     (self._output_dir / "cancelled.json").write_text(
                         json.dumps({"status": "cancelled", "result_is_complete": False}, indent=2), encoding="utf-8")
                 except OSError:
@@ -236,18 +261,10 @@ class EvaluationPanel(QWidget):
             report = json.loads(report_path.read_text(encoding="utf-8"))
             episodes, summary = report["episodes"], report["aggregate"]
             expected = 5 if self.split_box.currentData() == "practice" else 20
-            if len(episodes) != expected or summary["episodes"] != expected:
+            if report.get("is_complete") is False or len(episodes) != expected or summary["episodes"] != expected:
                 raise ValueError("评价回合不完整，不能当作完成成绩")
-            self.results_table.setRowCount(len(episodes))
-            for row_index, episode in enumerate(episodes):
-                err = episode.get("controller_error")
-                values = [episode["case_id"], str(episode["episode_steps"]),
-                          "是" if episode["completed"] else "否",
-                          f"{episode['rms_theta_rad']:.5f}", episode["end_reason"],
-                          err.get("message", str(err)) if isinstance(err, dict) else str(err or "")]
-                for column, value in enumerate(values):
-                    self.results_table.setItem(row_index, column, QTableWidgetItem(value))
-            self.results_table.resizeColumnsToContents()
+            self._fill_rows(report)
+            self._current_report_path = report_path
             self.status_label.setText(
                 f"通过 {summary['completed_episodes']}/{summary['episodes']}（{summary['completed_fraction']:.0%}） · "
                 f"平均 {summary['mean_steps']:.1f} 步 · 最差 {summary['worst_steps']} 步 · "
@@ -261,6 +278,134 @@ class EvaluationPanel(QWidget):
         self.stop_evaluation()
         if self.running:
             self._process.kill()  # The event loop may stop before the grace timer.
+        for dialog in self._dialogs:
+            dialog.close()
+
+    def _fill_rows(self, report):
+        self.results_table.setRowCount(len(report["episodes"]))
+        number = lambda value: f"{value:.5f}" if value is not None else "—"
+        for row_index, episode in enumerate(report["episodes"]):
+            err = episode.get("controller_error")
+            values = [episode["case_id"], str(episode["episode_steps"]), "是" if episode["completed"] else "否",
+                      number(episode["rms_theta_rad"]), episode["end_reason"],
+                      err.get("message", str(err)) if isinstance(err, dict) else str(err or ""),
+                      number(episode["max_abs_x_m"]), number(episode["mean_abs_actuator_force_n"]),
+                      number(episode["saturation_fraction"]), number(episode["mean_abs_force_change_n"])]
+            for column, value in enumerate(values):
+                self.results_table.setItem(row_index, column, QTableWidgetItem(value))
+        self.results_table.resizeColumnsToContents()
+
+    def open_report(self, path=None, *, case_id=None):
+        from .evaluation_history import EvaluationReportDialog
+        if path is None:
+            path, _ = QFileDialog.getOpenFileName(self, "打开正式评价报告", str(self.data_dir / "evaluations"), "评价报告 (report.json)")
+        if not path:
+            return None
+        try:
+            dialog = EvaluationReportDialog(path, self)
+            dialog.caseViewed.connect(self.caseViewed.emit)
+            if case_id is not None:
+                dialog.case_box.setCurrentIndex(dialog.case_box.findData(case_id))
+            self._current_report_path = Path(path) / "report.json" if Path(path).is_dir() else Path(path)
+            self._fill_rows(dialog.record.report)
+            self._dialogs.append(dialog)
+            dialog.show()
+            return dialog
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            self._fail(f"无法打开评价报告：{exc}")
+            return None
+
+    def replay_selected_case(self):
+        if self._current_report_path is None:
+            self._fail("先运行一次评价，或打开已有的正式评价报告。")
+            return None
+        row = max(0, self.results_table.currentRow())
+        item = self.results_table.item(row, 0)
+        return self.open_report(self._current_report_path, case_id=item.text() if item else None)
+
+    def choose_comparison(self):
+        paths, _ = QFileDialog.getOpenFileNames(self, "选择至少两个同协议报告", str(self.data_dir / "evaluations"), "评价报告 (report.json)")
+        if paths:
+            self.compare_paths(paths)
+
+    def compare_paths(self, paths):
+        from control_lab.evaluation.report_io import load_evaluation
+        from control_lab.evaluation.compare import compare_reports
+        try:
+            records = [load_evaluation(path, require_complete=True) for path in paths]
+            if len({record.report["controller_sha256"] for record in records}) != len(records):
+                raise ValueError("请选择不同控制器配置，重复方法不能增加方法数量")
+            comparison = compare_reports(record.report for record in records)
+            dialog = QDialog(self)
+            dialog.setWindowTitle("同一协议的控制方法对照")
+            from ._dialogs import scrolling_body
+            layout = scrolling_body(dialog, self, (900, 600))
+            notice = QLabel("先看失败与完成率，再看角度、位置和用力；不把提前失败造成的短轨迹当作低误差优势。")
+            notice.setWordWrap(True)
+            layout.addWidget(notice)
+            table = QTableWidget(len(records), 8)
+            table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+            table.setHorizontalHeaderLabels(["方法", "通过", "平均步数", "最差步数", "角 RMS/rad", "最大|x|/m", "平均|力|/N", "饱和比例"])
+            def mean(report, key):
+                values = [entry[key] for entry in report["episodes"] if entry[key] is not None]
+                return f"{sum(values)/len(values):.5f}" if values else "—"
+            for row, record in enumerate(records):
+                report, summary = record.report, record.report["aggregate"]
+                values = [report["controller"], f"{summary['completed_episodes']}/{summary['episodes']}",
+                          f"{summary['mean_steps']:.2f}", str(summary["worst_steps"]),
+                          f"{summary['mean_episode_rms_theta_rad']:.5f}",
+                          f"{max(case['max_abs_x_m'] for case in report['episodes']):.5f}",
+                          mean(report, "mean_abs_actuator_force_n"), mean(report, "saturation_fraction")]
+                for column, value in enumerate(values):
+                    table.setItem(row, column, QTableWidgetItem(value))
+            table.resizeColumnsToContents()
+            layout.addWidget(table)
+            details = QPlainTextEdit()
+            details.setReadOnly(True)
+            details.setPlainText(json.dumps(comparison, ensure_ascii=False, indent=2))
+            layout.addWidget(details, 1)
+            folder = self.data_dir / "comparisons"
+            folder.mkdir(parents=True, exist_ok=True)
+            destination = folder / (datetime.now().strftime("%Y%m%d_%H%M%S_%f")+".json")
+            destination.write_text(json.dumps(comparison, ensure_ascii=False, indent=2), encoding="utf-8")
+            self._dialogs.append(dialog)
+            dialog.show()
+            self.comparisonCompleted.emit({"path": str(destination), "method_count": len(records),
+                                           "reports": [str(record.folder / "report.json") for record in records]})
+            return dialog
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            self._fail(f"这些报告不能直接比较：{exc}")
+            return None
+
+    def open_sweep(self, kind="p"):
+        from .sweep import SweepPanel
+        dialog = QDialog(self)
+        dialog.setWindowTitle("固定条件的参数实验")
+        from ._dialogs import scrolling_body
+        layout = scrolling_body(dialog, self, (850, 700))
+        panel = SweepPanel(self.data_dir, dialog)
+        panel.set_kind(kind)
+        panel.completed.connect(self.sweepCompleted.emit)
+        panel.error.connect(self.error.emit)
+        layout.addWidget(panel)
+        dialog.finished.connect(lambda *_: panel.shutdown())
+        self._dialogs.append(dialog)
+        dialog.show()
+        return panel
+
+    def open_project(self):
+        from .project import ProjectPanel
+        dialog = QDialog(self)
+        dialog.setWindowTitle("导出我的控制项目")
+        from ._dialogs import scrolling_body
+        layout = scrolling_body(dialog, self, (750, 620))
+        panel = ProjectPanel(self.data_dir, dialog)
+        panel.exported.connect(self.projectExported.emit)
+        panel.error.connect(self.error.emit)
+        layout.addWidget(panel)
+        self._dialogs.append(dialog)
+        dialog.show()
+        return panel
 
     def closeEvent(self, event):
         self.shutdown()
