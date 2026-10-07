@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "content_version": 2,
+  "lesson_id": "L19",
+  "title": "让程序拥有记忆，也能重新开始——完整控制器与重置",
+  "summary": "为什么Ki可以等于0？",
+  "duration_minutes": 80,
+  "prerequisites": [
+    "L18"
+  ],
+  "scenario_id": "balance_practice",
+  "scenario_options": [
+    "balance_practice"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "theta",
+    "omega",
+    "p",
+    "d",
+    "i",
+    "force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "运行实验",
+      "instruction": "运行预置代码，暂停后点击“新回合 · 保留代码”，再点“单步”。模块不重新载入；缺少 reset() 时，上回合的积分仍在，比较相同首状态的推力。用“保留这次曲线”留下第一轮对照。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "all": [
+          {
+            "event": "code.run"
+          },
+          {
+            "event": "simulation.reset",
+            "field": "retained_module",
+            "equals": true
+          }
+        ]
+      },
+      "hints": [
+        "逐项观察P、D、I。",
+        "改变参数一次只改一项。",
+        "先设置Ki=0复现基线，再记录试I是否改善。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "留下记录",
+      "instruction": "列出需要跨步保存但回合开始应清空的内容：积分、上一观测、滤波器状态、仿真时间；对比无需每回合改变的增益配置。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "逐项观察P、D、I。",
+        "改变参数一次只改一项。",
+        "先设置Ki=0复现基线，再记录试I是否改善。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "运行实验",
+      "instruction": "点击“停止”后添加无参数 reset()，把 integral 清零，再运行代码。先单步观察首动作；运行一段后用“新回合 · 保留代码”回到相同初始条件，再单步比较。暂停/继续不清记忆，新回合只调用一次 reset()；停止并重新运行会重新加载整个模块。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "all": [
+          {
+            "event": "code.run"
+          },
+          {
+            "event": "simulation.reset",
+            "field": "retained_module",
+            "equals": true
+          }
+        ]
+      },
+      "hints": [
+        "逐项观察P、D、I。",
+        "改变参数一次只改一项。",
+        "先设置Ki=0复现基线，再记录试I是否改善。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "留下记录",
+      "instruction": "保存两个相同初始条件回合的首动作与积分读数，确认添加 reset() 后一致。control() 内先更新积分，所以首步后的积分通常不等于零；应比较两次首步的一致性。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "逐项观察P、D、I。",
+        "改变参数一次只改一项。",
+        "先设置Ki=0复现基线，再记录试I是否改善。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "先预测",
+      "instruction": "将算法、参数、环境配置分开保存；解释代码版本相同不等于实验条件相同。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "逐项观察P、D、I。",
+        "改变参数一次只改一项。",
+        "先设置Ki=0复现基线，再记录试I是否改善。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "先预测",
+      "instruction": "可选进阶：把两函数转换成 `Controller.reset()/act()`，用一张对应表解释 `self.integral` 相当于这一个控制器自己的记忆。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "逐项观察P、D、I。",
+        "改变参数一次只改一项。",
+        "先设置Ki=0复现基线，再记录试I是否改善。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "留下记录",
+      "instruction": "一次运行多个回合并保存快照，尝试从保存的代码和配置复现实验。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "逐项观察P、D、I。",
+        "改变参数一次只改一项。",
+        "先设置Ki=0复现基线，再记录试I是否改善。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "为什么Ki可以等于0？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "逐项观察P、D、I。",
+        "改变参数一次只改一项。",
+        "先设置Ki=0复现基线，再记录试I是否改善。"
+      ]
+    }
+  ],
+  "template": "templates/l19_exercise.py",
+  "solution": "solutions/l19_exercise.py",
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "为什么Ki可以等于0？",
+  "reference_answer": "积分用于具体的持续误差问题，不是必须凑齐PID；当前倒立摆参考PD加回中已可作为基线。",
+  "objectives": [
+    "为什么Ki可以等于0？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置**：完成 L18，认识积分和函数外状态。建议 75–90 分钟。\n\n**引导问题**：“第二次实验，为什么可能带着第一次的积分或滤波记忆开始？”\n\n**课堂步骤**：\n\n1. 教师故意不清零积分，连续运行两回合，让学生发现相同初始条件却得到不同输出。\n2. 列出需要跨步保存但回合开始应清空的内容：积分、上一观测、滤波器状态、仿真时间；对比无需每回合改变的增益配置。\n3. 先保留熟悉的 `control(state, dt)`，加入可选 `reset()`。“新回合 · 保留代码”保持原模块并调用它；暂停/继续不调用。停止、扶正或换课会结束进程，点击运行后才重新加载模块并初始化。批量评估在每个新回合调用它。\n4. 让学生在两个相同回合的第一步打印/显示积分为零，确认“保存记忆”和“重置记忆”都工作。\n5. 将算法、参数、环境配置分开保存；解释代码版本相同不等于实验条件相同。\n6. 可选进阶：把两函数转换成 `Controller.reset()/act()`，用一张对应表解释 `self.integral` 相当于这一个控制器自己的记忆。\n7. 一次运行多个回合并保存快照，尝试从保存的代码和配置复现实验。\n\n**倒立摆短函数参考模板**：\n\n```python\nkp, kd, ki = 60.0, 12.0, 0.0  # 默认不启用积分\ncart_kp, cart_kd = 2.0, 3.0\nintegral = 0.0\nintegral_limit = 0.5\nforce_limit = 10.0\n\ndef reset():\n    global integral\n    integral = 0.0\n\ndef control(state, dt):\n    global integral\n    error = state[\"theta\"]\n    p = kp * error\n    d = kd * state[\"omega\"]\n    cart = cart_kp * state[\"x\"] + cart_kd * state[\"v\"]\n    candidate = max(-integral_limit,\n                    min(integral_limit, integral + error * dt))\n    requested = p + d + cart + ki * candidate\n    if ki == 0.0:\n        integral = 0.0\n    elif abs(requested) <= force_limit or requested * ki * error < 0.0:\n        integral = candidate\n    return p + d + cart + ki * integral\n```\n\n**可选类接口练习**：先完成短函数版本再做；类不是理解 PID 的先决条件。\n\n```python\nclass Controller:\n    def __init__(self):\n        self.reset()\n\n    def reset(self):\n        self.integral = 0.0\n\n    def act(self, observation, dt):\n        x, v, theta, omega = observation\n        # 从上面的短函数迁移；不要在 act() 里重新创建 Controller。\n        return 60.0 * theta + 12.0 * omega + 2.0 * x + 3.0 * v\n```\n\n上面类例子只示范生命周期与观测转换，没有启用积分；学生迁移积分逻辑时把 `integral` 改成 `self.integral`，并保留条件积分。本例 `integral` 暂未使用，教师应明确指出，不让学生误以为它已是 PID。\n\n**实验条件与对照**：用同样 seed 连跑两次，检查重置后首状态、首动作一致；再用不同 seed 确认并非硬编码轨迹。保留错误重置案例作为课堂素材。\n\n**常见误解**：每个 `control()` 调用都创建新对象会丢失记忆；Python 全局变量并不自动与场景重置同步；暂停/继续应保留状态，重新开始应清空，二者不同；GUI 与 evaluate CLI 都支持同一份短函数文件。\n\n**界面显示顺序**：本回合计数 → 状态记忆小卡片 → 重新开始前后对照 → 代码保存 → 批量执行。普通学生默认继续使用短函数，类接口放进“想了解工程写法”展开区。\n\n**验收与产物**：提交一个可重置的控制器和两次一致的复现报告；说明暂停与重新开始的差别。进阶学生额外交付类版本，基础学生不因未学类被扣分。\n\n**拟实现模块**：`lessons/content/L19.json`、`lessons/templates/l19_stateful.py`；`inputs/adapters.py` 同时支持短函数与现有类协议；`desktop/engine.py` worker 增加回合重置消息；`runner.py` 复用适配器。测试每回合恰好重置一次、暂停不重置、重置异常保存报告、学生代码超时不冻结 UI。"
+}

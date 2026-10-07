@@ -1,0 +1,13 @@
+.venv/
+.venv-rl/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+runs/
+logs/
+*.spec
+!packaging/*.spec
+!packaging/windows/*.spec

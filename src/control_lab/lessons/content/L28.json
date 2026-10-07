@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L28",
+  "title": "PID与强化学习的公平比较",
+  "summary": "怎样公平比较PD与PPO？",
+  "duration_minutes": 60,
+  "prerequisites": [
+    "L22",
+    "L27"
+  ],
+  "scenario_id": "balance_validation",
+  "scenario_options": [
+    "balance_validation"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "theta",
+    "x",
+    "force",
+    "reward"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "外部实验准备",
+      "instruction": "冻结PID代码快照、RL模型、参数和协议hash；明确PD加回中与完整PID的名称。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先找输入模式或配置的差异。",
+        "辅助位置或速度控制不能冒充直接力控制。",
+        "用冻结测试用例逐个评估，分开物理指标与训练回报。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "外部实验准备",
+      "instruction": "检查双方观测相同、输出均为牛顿、dt/初值/边界相同，没有一方偷偷使用辅助位置输入。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先找输入模式或配置的差异。",
+        "辅助位置或速度控制不能冒充直接力控制。",
+        "用冻结测试用例逐个评估，分开物理指标与训练回报。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "外部实验准备",
+      "instruction": "在保留用例10042–10061逐个运行，任何失败回合都入表。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先找输入模式或配置的差异。",
+        "辅助位置或速度控制不能冒充直接力控制。",
+        "用冻结测试用例逐个评估，分开物理指标与训练回报。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "外部实验准备",
+      "instruction": "报告完整回合率、存活步数、角度RMS、最大位置偏移、力RMS和饱和比例。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先找输入模式或配置的差异。",
+        "辅助位置或速度控制不能冒充直接力控制。",
+        "用冻结测试用例逐个评估，分开物理指标与训练回报。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "外部实验准备",
+      "instruction": "对RL三个训练seed分别汇报，再给出跨训练run的概括；不要把20个回合误写成20次独立训练。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先找输入模式或配置的差异。",
+        "辅助位置或速度控制不能冒充直接力控制。",
+        "用冻结测试用例逐个评估，分开物理指标与训练回报。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "外部实验准备",
+      "instruction": "从各方法选一个失败案例，用状态/推力曲线解释其失效过程。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先找输入模式或配置的差异。",
+        "辅助位置或速度控制不能冒充直接力控制。",
+        "用冻结测试用例逐个评估，分开物理指标与训练回报。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "外部实验准备",
+      "instruction": "讨论数据量、计算成本、可解释性、调参工作和适用条件，而不是投票“谁更高级”。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先找输入模式或配置的差异。",
+        "辅助位置或速度控制不能冒充直接力控制。",
+        "用冻结测试用例逐个评估，分开物理指标与训练回报。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "怎样公平比较PD与PPO？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "先找输入模式或配置的差异。",
+        "辅助位置或速度控制不能冒充直接力控制。",
+        "用冻结测试用例逐个评估，分开物理指标与训练回报。"
+      ]
+    }
+  ],
+  "template": "templates/l28_exercise.py",
+  "solution": "solutions/l28_exercise.py",
+  "requires": [
+    "rl_runtime"
+  ],
+  "availability": "external_runtime",
+  "editor_kind": "script",
+  "reflection": "怎样公平比较PD与PPO？",
+  "reference_answer": "双方同状态权限、力单位、初态、dt、终止和评价指标；报告全部回合以及各训练seed，不挑最漂亮结果。",
+  "objectives": [
+    "怎样公平比较PD与PPO？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置/时长：** L22、L27；60分钟。这是核心课程结业课。\n\n**操作步骤：**\n\n1. 冻结PID代码快照、RL模型、参数和协议hash；明确PD加回中与完整PID的名称。\n2. 检查双方观测相同、输出均为牛顿、dt/初值/边界相同，没有一方偷偷使用辅助位置输入。\n3. 在保留用例10042–10061逐个运行，任何失败回合都入表。\n4. 报告完整回合率、存活步数、角度RMS、最大位置偏移、力RMS和饱和比例。\n5. 对RL三个训练seed分别汇报，再给出跨训练run的概括；不要把20个回合误写成20次独立训练。\n6. 从各方法选一个失败案例，用状态/推力曲线解释其失效过程。\n7. 讨论数据量、计算成本、可解释性、调参工作和适用条件，而不是投票“谁更高级”。\n\n**代码任务：** 学生完成报告字段映射，调用未来的统一评价入口，不复制两套评分逻辑。候选结构：\n\n```python\ncontrollers = {\"my_pd\": pd_adapter, \"ppo_seed0\": policy_adapter}\n# evaluate_suite(controllers, frozen_cases, protocol) 由课程提供。\n```\n\n**提示/验收：** 首先找协议差异→再看逐回合→最后看汇总。交付可复查的完整报告、代码/模型引用、两个失败案例。若结果不符合预期，允许如实得出“当前实现下PD更稳”或“当前预算RL还未学会”；科学记录本身属于成果。\n\n**界面/代码：** 并列回放、同时间轴曲线、可比性提示、导出报告；`L28.json`、`evaluation/compare.py`、报告模板。DEV-R06。过关门槛以过程正确和解释完整为主，性能目标由教师预先公布，不能试完后改门槛。"
+}

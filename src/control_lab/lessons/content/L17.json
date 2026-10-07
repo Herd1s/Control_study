@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L17",
+  "title": "一直差一点怎么办——用单车速度场景认识积分 I",
+  "summary": "积分怎样抵消持续负载？",
+  "duration_minutes": 80,
+  "prerequisites": [
+    "L16"
+  ],
+  "scenario_id": "cart_velocity",
+  "scenario_options": [
+    "cart_velocity",
+    "cart_velocity_unloaded"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "v",
+    "target_v",
+    "integral",
+    "force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "观察",
+      "instruction": "固定杆不再摆动，只显示目标速度线和实际速度。先用恒定推力感受持续负载的影响。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先看目标速度与实际速度的差。",
+        "持续误差会不断积累。",
+        "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "观察",
+      "instruction": "写普通速度比例控制 `u=Kp*(target_v-v)`，比较无偏置与有偏置两种条件。说明本场景的误差符号与此前角度规则不同，是因为被控对象不同。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先看目标速度与实际速度的差。",
+        "持续误差会不断积累。",
+        "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "观察",
+      "instruction": "停在速度基本不再变化时，读出目标与实际之差；教师把“持续的差距”命名为稳态误差。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先看目标速度与实际速度的差。",
+        "持续误差会不断积累。",
+        "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "观察",
+      "instruction": "用纸上三步练习计算 `integral += error*dt`，例如同样 `0.1 m/s` 的误差持续 `0.02 s` 与 `0.2 s`，积累量不同。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先看目标速度与实际速度的差。",
+        "持续误差会不断积累。",
+        "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "修改代码",
+      "instruction": "在函数外加入积分变量，保留前一次调用后的值；先只打印或显示积分，不把它加入推力。",
+      "activity": "code",
+      "evidence": "在你的代码副本中修改本步骤要求的一处内容。",
+      "completion": {
+        "event": "code.edited"
+      },
+      "hints": [
+        "先看目标速度与实际速度的差。",
+        "持续误差会不断积累。",
+        "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "运行实验",
+      "instruction": "增加 `ki*integral`，比较 P 与 PI 在同样偏置下的变化。参考起点 `Kp=2、Ki=1`，由教师预运行确认课堂现象，不声明适合倒立摆。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "先看目标速度与实际速度的差。",
+        "持续误差会不断积累。",
+        "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "观察",
+      "instruction": "回到倒立摆参考实现，说明默认 `Ki=0` 的原因：积分解决的是特定问题，不能把单车速度课的结论照搬为“所有平衡都需要 I”。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先看目标速度与实际速度的差。",
+        "持续误差会不断积累。",
+        "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "积分怎样抵消持续负载？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "先看目标速度与实际速度的差。",
+        "持续误差会不断积累。",
+        "integral += (target_v-v)*dt；输出kp*error+ki*integral。"
+      ]
+    }
+  ],
+  "template": "templates/l17_exercise.py",
+  "solution": "solutions/l17_exercise.py",
+  "requires": [
+    "cart_velocity"
+  ],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "积分怎样抵消持续负载？",
+  "reference_answer": "积分按error*dt累积历史速度差，让PI补充持续推力；该场景是单车速度台，不是倒立摆。",
+  "objectives": [
+    "积分怎样抵消持续负载？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置**：完成 L16，会赋值与四则运算，认识误差。建议 75–90 分钟。\n\n**重要边界**：本课建议新增一个“固定杆、只控制小车速度”的可选教学场景，当前软件尚没有该场景。它使用明确的单车动力学，不属于倒立摆正式比较协议；不能直接把它的成绩与倒立摆成绩放在同一张排名表里。\n\n**引导问题**：“有一股持续向左的力时，为什么速度总比目标低一点？可以把过去没追上的部分记下来吗？”\n\n**场景规格**：水平单车质量 `m=1 kg`，粘性阻力 `b=0.5 N·s/m`，已知恒定偏置力 `F_bias=-0.5 N`；运动方程 `dv/dt=(u-b*v+F_bias)/m`，步长仍为 `0.02 s`。目标速度先设 `0.3 m/s`，推力限幅仍为 `±10 N`。轨道应允许平移浏览，不因持续行驶在 `2.4 m` 处结束；界面清楚标出这是速度实验台。参数及积分法都写进实验配置。\n\n**课堂步骤**：\n\n1. 固定杆不再摆动，只显示目标速度线和实际速度。先用恒定推力感受持续负载的影响。\n2. 写普通速度比例控制 `u=Kp*(target_v-v)`，比较无偏置与有偏置两种条件。说明本场景的误差符号与此前角度规则不同，是因为被控对象不同。\n3. 停在速度基本不再变化时，读出目标与实际之差；教师把“持续的差距”命名为稳态误差。\n4. 用纸上三步练习计算 `integral += error*dt`，例如同样 `0.1 m/s` 的误差持续 `0.02 s` 与 `0.2 s`，积累量不同。\n5. 在函数外加入积分变量，保留前一次调用后的值；先只打印或显示积分，不把它加入推力。\n6. 增加 `ki*integral`，比较 P 与 PI 在同样偏置下的变化。参考起点 `Kp=2、Ki=1`，由教师预运行确认课堂现象，不声明适合倒立摆。\n7. 回到倒立摆参考实现，说明默认 `Ki=0` 的原因：积分解决的是特定问题，不能把单车速度课的结论照搬为“所有平衡都需要 I”。\n\n**学生代码：仅用于拟新增单车速度实验台**：\n\n```python\nintegral = 0.0\ntarget_v = 0.3\nkp = 2.0\nki = 1.0\n\ndef reset():\n    global integral\n    integral = 0.0\n\ndef control(state, dt):\n    global integral\n    error = target_v - state[\"v\"]\n    integral += error * dt\n    return kp * error + ki * integral\n```\n\n这里的 `reset()` 是后续统一控制适配器拟支持的可选钩子；当前桌面 worker 只加载并调用 `control()`，没有调用 `reset()` 的协议。现阶段重新启动代码进程会重新执行顶层 `integral=0`，正式课程实现时应显式建立回合重置语义。\n\n**实验条件与对照**：每次 `v=0`、积分为零，运行同样时长；比较 P/PI × 偏置力 0/-0.5 N，共四格。保持质量、阻力和目标速度一致。无偏置时仍有粘性阻力，不能把“无偏置”误称为“完全无负载”。\n\n**常见误解**：积分不是把误差简单加很多次，必须乘 `dt`；积分变量放在 `control()` 内每次赋零就不会积累；把 `dt` 写成窗口刷新间隔会改变结果；PI 的目标速度稳定后小车继续移动是正确行为。\n\n**界面显示顺序**：目标/实际速度 → 当前误差 → 历史误差面积动画 → 积分值 → P/I 两项力。不要把大幅积分曲线默认盖在速度曲线上。\n\n**验收与产物**：完成一次手算积分；保存 `l17_velocity_pi.py` 和四格对照表；能说明何时值得试 I，何时不能断言 I 有益。\n\n**拟实现模块**：`envs/cart_velocity.py`、`lessons/content/L17.json`、`lessons/templates/l17_velocity_pi.py`、`inputs/adapters.py` 的可选 `reset` 支持。增加动力学量纲与恒定负载测试；课程加载时必须明确 `scenario_id=cart_velocity`，禁止误选倒立摆。"
+}

@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L27",
+  "title": "保存、回放、继续训练与奖励对照",
+  "summary": "保存policy.zip是否足够复现？",
+  "duration_minutes": 60,
+  "prerequisites": [
+    "L26"
+  ],
+  "scenario_id": "balance_validation",
+  "scenario_options": [
+    "balance_validation"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "theta",
+    "reward"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "外部实验准备",
+      "instruction": "关闭训练进程，重新从磁盘加载模型，验证其不依赖编辑器里残留的变量。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "首先比对模型元数据。",
+        "动作单位或观察顺序不匹配会改变结果。",
+        "重开进程加载，确定性predict，核对相同用例。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "外部实验准备",
+      "instruction": "检查模型包中的观察顺序、动作倍率、环境hash和奖励版本，故意给一个不匹配的配置，确认软件拒绝加载。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "首先比对模型元数据。",
+        "动作单位或观察顺序不匹配会改变结果。",
+        "重开进程加载，确定性predict，核对相同用例。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "外部实验准备",
+      "instruction": "用同一组验证用例比较训练结束时与重新加载后的结果；检查是否误开了探索噪声。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "首先比对模型元数据。",
+        "动作单位或观察顺序不匹配会改变结果。",
+        "重开进程加载，确定性predict，核对相同用例。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "外部实验准备",
+      "instruction": "如果使用观测归一化，保存统计并在评估时冻结；缺少统计时明确报错。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "首先比对模型元数据。",
+        "动作单位或观察顺序不匹配会改变结果。",
+        "重开进程加载，确定性predict，核对相同用例。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "外部实验准备",
+      "instruction": "从一个检查点继续训练，同时另开一次从零训练；区分“继续”与“从零”。不保证中断恢复后与不间断训练逐位相同。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "首先比对模型元数据。",
+        "动作单位或观察顺序不匹配会改变结果。",
+        "重开进程加载，确定性predict，核对相同用例。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "外部实验准备",
+      "instruction": "选择L24一个奖励改动做独立对照，保持预算、训练seed组和环境分布不变。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "首先比对模型元数据。",
+        "动作单位或观察顺序不匹配会改变结果。",
+        "重开进程加载，确定性predict，核对相同用例。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "外部实验准备",
+      "instruction": "在验证集上选定最终候选，冻结模型和配置；此时仍不打开保留测试集。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "首先比对模型元数据。",
+        "动作单位或观察顺序不匹配会改变结果。",
+        "重开进程加载，确定性predict，核对相同用例。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "保存policy.zip是否足够复现？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "首先比对模型元数据。",
+        "动作单位或观察顺序不匹配会改变结果。",
+        "重开进程加载，确定性predict，核对相同用例。"
+      ]
+    }
+  ],
+  "template": "templates/l27_exercise.py",
+  "solution": "solutions/l27_exercise.py",
+  "requires": [
+    "rl_runtime"
+  ],
+  "availability": "external_runtime",
+  "editor_kind": "script",
+  "reflection": "保存policy.zip是否足够复现？",
+  "reference_answer": "不够；需要环境、观察顺序、动作缩放、预处理、奖励、依赖和验证结果。重载模型不应依赖旧进程状态。",
+  "objectives": [
+    "保存policy.zip是否足够复现？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置/时长：** L26；60分钟加课后实验。新概念为检查点、训练配置、复现、验证集选模。\n\n**操作步骤：**\n\n1. 关闭训练进程，重新从磁盘加载模型，验证其不依赖编辑器里残留的变量。\n2. 检查模型包中的观察顺序、动作倍率、环境hash和奖励版本，故意给一个不匹配的配置，确认软件拒绝加载。\n3. 用同一组验证用例比较训练结束时与重新加载后的结果；检查是否误开了探索噪声。\n4. 如果使用观测归一化，保存统计并在评估时冻结；缺少统计时明确报错。\n5. 从一个检查点继续训练，同时另开一次从零训练；区分“继续”与“从零”。不保证中断恢复后与不间断训练逐位相同。\n6. 选择L24一个奖励改动做独立对照，保持预算、训练seed组和环境分布不变。\n7. 在验证集上选定最终候选，冻结模型和配置；此时仍不打开保留测试集。\n\n**回放练习：**\n\n```python\nmodel = PPO.load(\"policy\", device=\"cpu\")\naction, _ = model.predict(observation, deterministic=True)\n# action仍是模型的动作单位；环境/适配器负责唯一一次转成牛顿。\n```\n\n**观察/误解：** 保存一个zip文件不等于保存整个实验；缺少环境/预处理说明，模型可能“能加载但表现不对”。模型文件来自受信课程或本人训练，不安排运行同学随意转来的未知反序列化文件。\n\n**提示/验收：** 先对比元数据→再看首步动作→最后查训练参数。交付一个可独立重载的模型包和奖励对照报告，能指出哪些条件保持一致、哪些改变了。\n\n**界面/代码：** 模型列表显示版本/来源/验证结果，避免只有无含义时间戳；`L27.json`、`rl/artifacts.py`、`rl/evaluate.py`。DEV-R05。训练与独立评估、多次运行及归一化管理参考 [SB3实践说明](https://stable-baselines3.readthedocs.io/en/master/guide/rl_tips.html)。"
+}

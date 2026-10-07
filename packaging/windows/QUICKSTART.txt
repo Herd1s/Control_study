@@ -1,0 +1,47 @@
+ControlLab 0.2.0 — 从亲手平衡到强化学习
+
+双击 ControlLab.exe，或从开始菜单打开 ControlLab。
+从拖动小车、观察状态、第一段 Python 开始，再进入 P/PD/PI/PID、
+对照实验和强化学习。32 课提供引导、模板与参考答案；高级课程中的
+外部实验需配置对应环境，进度勾选不等于算法性能已达标。
+
+便携版请保留整个 ControlLab 文件夹和 _internal，不能只复制 exe。
+基础课堂自带运行时，不需要 Python、Isaac Sim 或 NVIDIA 显卡。
+作业、进度和实验默认保存在系统“文档”目录下的 ControlLab，
+与安装文件分开；升级和卸载不删除该学习目录。
+
+代码入口
+  def control(state, dt):
+      return 0.0
+
+state 中的 x、v、theta、omega 单位为 m、m/s、rad、rad/s；dt=0.02 s。
+推力模式返回牛顿，执行器限幅 ±10 N。可选 reset() 每回合清空状态。
+目标速度模式返回 m/s，不能作为推力评分。旧 Controller 类仍兼容。
+
+PowerShell 终端入口（从程序目录执行）：
+  .\ControlLabCLI.exe doctor
+  .\ControlLabCLI.exe lesson --list
+  .\ControlLabCLI.exe init-workspace 'D:\我的控制实验'
+  .\ControlLabCLI.exe run --controller reference --render
+  .\ControlLabCLI.exe evaluate --controller student --controller-file 'D:\我的控制实验\my_controller.py' --split validation --output-dir 'D:\我的控制实验\validation-01'
+
+正式评价使用固定非零初态和 20 个验证用例，保存全部失败和错误。
+每次使用新输出目录。参考控制器与自己的控制器应使用相同协议；
+手动辅助体验不计入同一评分表。不要用保留测试集反复调参。
+
+强化学习需要独立 Python 3.11–3.13，首次配置会联网下载 CPU PyTorch：
+  .\runtime\setup-rl.ps1 -Python 'C:\Python313\python.exe'
+按实际 Python 路径修改命令。若脚本被阻止，可仅本次使用：
+  powershell -NoProfile -ExecutionPolicy Bypass -File .\runtime\setup-rl.ps1 -Python 'C:\Python313\python.exe'
+
+脚本将环境放入“文档\ControlLab\runtimes\rl”，并打印解释器路径。
+在软件强化学习页选择该解释器，检查环境后再训练、保存、验证和回放。
+短训练成功不表示已经学会稳定平衡。TITA 需要另配其外部仿真工程。
+
+更新默认来自 GitHub 的 Herd1s/Control_study，也可保存自己的发布仓库。
+进入更新页不会联网；检查、下载、安装分别操作。无正式版本时会提示。
+安装前核对下载的 SHA256、保存作业并停止实验，再打开安装向导。
+安装完成后可在向导中选择打开软件，不会自动重启计算机。
+SHA256 是文件一致性校验，不等于发布者数字签名。
+
+依赖声明与许可证见 THIRD_PARTY_NOTICES.txt。

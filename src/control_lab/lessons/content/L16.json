@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L16",
+  "title": "杆站住了，小车为什么越走越远——回中反馈",
+  "summary": "为什么不能直接拼上独立小车的负位置反馈？",
+  "duration_minutes": 80,
+  "prerequisites": [
+    "L15"
+  ],
+  "scenario_id": "offset_right",
+  "scenario_options": [
+    "offset_right",
+    "upright",
+    "tilt_right",
+    "tilt_left"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "x",
+    "v",
+    "theta",
+    "force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "运行实验",
+      "instruction": "运行纯角度 PD，选择具有非零小车速度或位置偏差的场景，观察角度较小但小车仍漂移的片段。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "先看保杆和回中是否同时完成。",
+        "第一帧动作与最终回中方向未必相同。",
+        "比较角度PD与加2*x+3*v的整段轨迹。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "观察",
+      "instruction": "把中央画成一个较宽的目标区域，区分“杆没倒”和“小车已经回中且速度小”两项指标。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先看保杆和回中是否同时完成。",
+        "第一帧动作与最终回中方向未必相同。",
+        "比较角度PD与加2*x+3*v的整段轨迹。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "观察",
+      "instruction": "教师提供现有参考完整反馈 `60θ + 12ω + 2x + 3v`，先观看全过程，再允许学生修改。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先看保杆和回中是否同时完成。",
+        "第一帧动作与最终回中方向未必相同。",
+        "比较角度PD与加2*x+3*v的整段轨迹。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "观察",
+      "instruction": "在 `x=+0.2 m、其他状态=0` 处单步观察。说明本参考先产生正力，底座运动使杆产生倾斜，角度反馈再参与调整；必须从整套耦合过程理解回中。",
+      "activity": "observe",
+      "evidence": "暂停后使用单步，观察输入和输出。",
+      "completion": {
+        "event": "simulation.stepped"
+      },
+      "hints": [
+        "先看保杆和回中是否同时完成。",
+        "第一帧动作与最终回中方向未必相同。",
+        "比较角度PD与加2*x+3*v的整段轨迹。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "先预测",
+      "instruction": "比较纯角度 PD、PD 加 `2x`、PD 加 `2x+3v`，其余条件不变。记录前 0.2 s 的短期动作和整段轨迹，避免只看第一帧就判断方向错。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "先看保杆和回中是否同时完成。",
+        "第一帧动作与最终回中方向未必相同。",
+        "比较角度PD与加2*x+3*v的整段轨迹。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "观察",
+      "instruction": "由教师给出一个过大的回中增益示例，观察回中愿望与保杆能力之间的冲突。学生只在公布的小范围内一次调整一项。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先看保杆和回中是否同时完成。",
+        "第一帧动作与最终回中方向未必相同。",
+        "比较角度PD与加2*x+3*v的整段轨迹。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "先预测",
+      "instruction": "学生用两句话解释“车的位置目标”和“杆的角度目标如何互相影响”，不要求推导极点或状态空间矩阵。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "先看保杆和回中是否同时完成。",
+        "第一帧动作与最终回中方向未必相同。",
+        "比较角度PD与加2*x+3*v的整段轨迹。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "为什么不能直接拼上独立小车的负位置反馈？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "先看保杆和回中是否同时完成。",
+        "第一帧动作与最终回中方向未必相同。",
+        "比较角度PD与加2*x+3*v的整段轨迹。"
+      ]
+    }
+  ],
+  "template": "templates/l16_exercise.py",
+  "solution": "solutions/l16_exercise.py",
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "为什么不能直接拼上独立小车的负位置反馈？",
+  "reference_answer": "倒立摆是耦合系统，底座动作先改变倾角再影响回中；当前参考完整反馈为60θ+12ω+2x+3v。",
+  "objectives": [
+    "为什么不能直接拼上独立小车的负位置反馈？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置**：完成 L15，理解 `x/v`。建议 75–90 分钟。\n\n**引导问题**：“保持杆直立和让小车停在中央，是不是同一个目标？”\n\n**课堂步骤**：\n\n1. 运行纯角度 PD，选择具有非零小车速度或位置偏差的场景，观察角度较小但小车仍漂移的片段。\n2. 把中央画成一个较宽的目标区域，区分“杆没倒”和“小车已经回中且速度小”两项指标。\n3. 教师提供现有参考完整反馈 `60θ + 12ω + 2x + 3v`，先观看全过程，再允许学生修改。\n4. 在 `x=+0.2 m、其他状态=0` 处单步观察。说明本参考先产生正力，底座运动使杆产生倾斜，角度反馈再参与调整；必须从整套耦合过程理解回中。\n5. 比较纯角度 PD、PD 加 `2x`、PD 加 `2x+3v`，其余条件不变。记录前 0.2 s 的短期动作和整段轨迹，避免只看第一帧就判断方向错。\n6. 由教师给出一个过大的回中增益示例，观察回中愿望与保杆能力之间的冲突。学生只在公布的小范围内一次调整一项。\n7. 学生用两句话解释“车的位置目标”和“杆的角度目标如何互相影响”，不要求推导极点或状态空间矩阵。\n\n**学生代码**：\n\n```python\ndef control(state, dt):\n    balance = 60.0 * state[\"theta\"] + 12.0 * state[\"omega\"]\n    centering = 2.0 * state[\"x\"] + 3.0 * state[\"v\"]\n    return balance + centering\n```\n\n**实验条件与对照**：`[0.2, 0, 0, 0]` 与 `[0, 0.1, 0.02, 0]` 是拟新增教学场景；再用种子集复核。统一环境，不把单纯角度 PD 的失败归咎于学生“没有理解 PID”。上述增益仅对应当前参考模型。\n\n**常见误解**：不要直接把普通独立小车的 `-Kx*x-Kv*v` 拼到这里；增益符号来自整个被控系统，不能靠“反馈必须写减号”判断；回中瞬间杆有小角度不一定是控制失败；本课仍未包含大角度起摆。\n\n**界面显示顺序**：中央目标区 → 小车位置曲线 → 速度曲线 → 回中分项 → 与角度 PD 对照。首次只显示“保杆”和“回中”两个模块，避免四个滑杆一起出现。\n\n**验收与产物**：保存 `l16_centering.py`；提交纯 PD 与完整反馈在相同场景下的轨迹；能说明增益选择只在给定模型及测试条件下成立。评分看证据和解释，不硬性要求某个尚未验证的秒数回中。\n\n**拟实现模块**：`lessons/content/L16.json`、`lessons/templates/l16_centering.py`、目标区域覆盖层、`metrics.final_x/final_v`。回中稳定时间属于新增指标，需在开发时明确容差和持续窗口，不能只取一次穿过中央的时刻。"
+}

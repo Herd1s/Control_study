@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "content_version": 2,
+  "lesson_id": "L29",
+  "title": "延迟、噪声和模型变化",
+  "summary": "电脑卡顿与传感器延迟有什么区别？",
+  "duration_minutes": 60,
+  "prerequisites": [
+    "L20",
+    "L28"
+  ],
+  "scenario_id": "balance_practice",
+  "scenario_options": [
+    "balance_practice",
+    "observation_delay_1",
+    "observation_delay_2",
+    "measurement_theta_noise",
+    "pole_mass_minus10",
+    "pole_mass_plus10",
+    "robustness_delay"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "theta",
+    "true_theta",
+    "force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "观察",
+      "instruction": "固定已冻结控制器，重跑基准组。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "每次只打开一个因素。",
+        "延迟、噪声和参数变化要分别测试。",
+        "比较0/1/2步延迟，关闭其他扰动后再换噪声。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "留下记录",
+      "instruction": "在实验初始条件中分别选“观测延迟一步”和“观测延迟两步”，其他因素保持关闭；运行并保存记录。分别对应20/40 ms。延迟队列在回合开始用初始观测填充，真实摆杆继续正常运动。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "每次只打开一个因素。",
+        "延迟、噪声和参数变化要分别测试。",
+        "比较0/1/2步延迟，关闭其他扰动后再换噪声。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "观察",
+      "instruction": "选择“仅角度测量噪声”，这会关闭延迟；同一初态运行后，切换真实角度和测量角度进行比较。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "每次只打开一个因素。",
+        "延迟、噪声和参数变化要分别测试。",
+        "比较0/1/2步延迟，关闭其他扰动后再换噪声。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "观察",
+      "instruction": "分别选择“仅杆质量 −10%”与“仅杆质量 +10%”，不改变控制器。每组都关闭噪声和延迟，保存为独立测试组；这些是鲁棒性练习，不能和标准 balance-v1 混记成绩。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "每次只打开一个因素。",
+        "延迟、噪声和参数变化要分别测试。",
+        "比较0/1/2步延迟，关闭其他扰动后再换噪声。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "先预测",
+      "instruction": "先写预测，再比较数据，解释失败是否来自观测滞后、噪声或动力学变化。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "每次只打开一个因素。",
+        "延迟、噪声和参数变化要分别测试。",
+        "比较0/1/2步延迟，关闭其他扰动后再换噪声。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "修改代码",
+      "instruction": "可选重新训练加入随机化，但必须用新验证集及未暴露的测试组评价，不能覆盖原基准结果。",
+      "activity": "code",
+      "evidence": "在你的代码副本中修改本步骤要求的一处内容。",
+      "completion": {
+        "event": "code.edited"
+      },
+      "hints": [
+        "每次只打开一个因素。",
+        "延迟、噪声和参数变化要分别测试。",
+        "比较0/1/2步延迟，关闭其他扰动后再换噪声。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "电脑卡顿与传感器延迟有什么区别？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "每次只打开一个因素。",
+        "延迟、噪声和参数变化要分别测试。",
+        "比较0/1/2步延迟，关闭其他扰动后再换噪声。"
+      ]
+    }
+  ],
+  "template": "templates/l29_exercise.py",
+  "solution": "solutions/l29_exercise.py",
+  "requires": [
+    "robustness_scenario"
+  ],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "电脑卡顿与传感器延迟有什么区别？",
+  "reference_answer": "电脑卡顿改变播放速度；明确的一步观察延迟使控制用到20 ms前的信息，属于任务配置变化。",
+  "objectives": [
+    "电脑卡顿与传感器延迟有什么区别？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置/时长：** L28、L20；60分钟。一次只加一个因素。\n\n**操作步骤：**\n\n1. 固定已冻结控制器，重跑基准组。\n2. 分别加入1步、2步观察延迟，保持其他因素关闭，记录延迟对应20/40 ms。\n3. 关闭延迟，只加角度测量噪声；分开看真实角度和读数。\n4. 关闭噪声，只调整一个物理参数，例如杆质量±10%；标为新测试组。\n5. 先写预测，再比较数据，解释失败是否来自观测滞后、噪声或动力学变化。\n6. 可选重新训练加入随机化，但必须用新验证集及未暴露的测试组评价，不能覆盖原基准结果。\n\n**代码练习：** 用队列理解延迟，队列长度、初始填充规则写进配置；该逻辑放测量适配器，不写进每个学生控制器。L29只介绍设计草案，未实现前不让学生自行拼接可能错一步的队列。\n\n**误解/验收：** 仿真跑慢不等于传感器延迟；参数随机化不保证解决所有实物差异。提交“因素—预测—结果—解释”表和完整场景配置。\n\n**界面/代码：** 增加一个因子选择和一个强度参数，其余高级参数折叠；`L29.json`、测量/延迟包装器、鲁棒性协议。DEV-R07，M7。\n\n当前软件入口：实验初始条件下拉框提供基线、观测延迟20/40ms、仅角度噪声、杆质量0.09/0.11kg及额外的动作延迟40ms。每次选择都会重新开始独立配置。"
+}

@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L08",
+  "title": "反馈函数与固定 dt",
+  "summary": "慢放会不会改变dt？",
+  "duration_minutes": 55,
+  "prerequisites": [
+    "L07"
+  ],
+  "scenario_id": "moving_right",
+  "scenario_options": [
+    "moving_right",
+    "upright",
+    "tilt_right",
+    "tilt_left"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "v",
+    "force",
+    "time"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "观察",
+      "instruction": "看一张三步动画：传入当前状态 → 调用 `control` → 返回并施加力，再进入下一步。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "单步查看输入和输出。",
+        "软件负责重复调用，函数只算本次动作。",
+        "不用while True；读取state并return一个力。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "观察",
+      "instruction": "在暂停模式点击一次“单步”，核对状态被读取一次、动作产生一次、仿真时间增加 0.02 s。",
+      "activity": "observe",
+      "evidence": "暂停后使用单步，观察输入和输出。",
+      "completion": {
+        "event": "simulation.stepped",
+        "field": "single",
+        "equals": true,
+        "min_count": 1
+      },
+      "hints": [
+        "单步查看输入和输出。",
+        "软件负责重复调用，函数只算本次动作。",
+        "不用while True；读取state并return一个力。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "观察",
+      "instruction": "连续单步 5 次，观察状态和动作如何变化，确认 `state` 每次是本次读数。",
+      "activity": "observe",
+      "evidence": "暂停后使用单步，观察输入和输出。",
+      "completion": {
+        "event": "simulation.stepped",
+        "field": "single",
+        "equals": true,
+        "min_count": 5
+      },
+      "hints": [
+        "单步查看输入和输出。",
+        "软件负责重复调用，函数只算本次动作。",
+        "不用while True；读取state并return一个力。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "观察",
+      "instruction": "阅读下面的速度反馈例子，先试算正速度和负速度对应的推力方向。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "单步查看输入和输出。",
+        "软件负责重复调用，函数只算本次动作。",
+        "不用while True；读取state并return一个力。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "运行实验",
+      "instruction": "从同一个移动初态短运行，观察这一规则能改变小车速度，但不保证摆杆站立。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "单步查看输入和输出。",
+        "软件负责重复调用，函数只算本次动作。",
+        "不用while True；读取state并return一个力。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "观察",
+      "instruction": "切换慢放和正常播放，比较相同物理步数对应的状态轨迹，理解播放速度与物理时间不同。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "单步查看输入和输出。",
+        "软件负责重复调用，函数只算本次动作。",
+        "不用while True；读取state并return一个力。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "先预测",
+      "instruction": "用自己的话解释 `state`、`dt`、`return` 各负责什么，保存本课代码。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "单步查看输入和输出。",
+        "软件负责重复调用，函数只算本次动作。",
+        "不用while True；读取state并return一个力。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "慢放会不会改变dt？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "单步查看输入和输出。",
+        "软件负责重复调用，函数只算本次动作。",
+        "不用while True；读取state并return一个力。"
+      ]
+    }
+  ],
+  "template": "templates/l08_exercise.py",
+  "solution": "solutions/l08_exercise.py",
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "慢放会不会改变dt？",
+  "reference_answer": "不会；每次控制对应一次0.02 s物理步，慢放只改变真实等待时间。",
+  "objectives": [
+    "慢放会不会改变dt？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置与课时：** 完成 L07；55 分钟（循环图解 10、单步体验 20、独立解释 15、复盘 10）。\n\n**只引入：** 函数输入、函数返回、读取—决策—执行循环、固定物理步长；此时完整解释前几课一直使用的函数外壳。不要求学生自己写 `while` 主循环。\n\n**教师问题：** “软件什么时候再问你的代码一次？”“画面卡了一下，物理里的 0.02 秒应该变成 0.2 秒吗？”\n\n**学生操作：**\n\n1. 看一张三步动画：传入当前状态 → 调用 `control` → 返回并施加力，再进入下一步。\n2. 在暂停模式点击一次“单步”，核对状态被读取一次、动作产生一次、仿真时间增加 0.02 s。\n3. 连续单步 5 次，观察状态和动作如何变化，确认 `state` 每次是本次读数。\n4. 阅读下面的速度反馈例子，先试算正速度和负速度对应的推力方向。\n5. 从同一个移动初态短运行，观察这一规则能改变小车速度，但不保证摆杆站立。\n6. 切换慢放和正常播放，比较相同物理步数对应的状态轨迹，理解播放速度与物理时间不同。\n7. 用自己的话解释 `state`、`dt`、`return` 各负责什么，保存本课代码。\n\n**模板与练习：**\n\n```python\ndef control(state, dt):\n    velocity = state[\"v\"]\n    force = -2.0 * velocity\n    return force\n```\n\n此例只用于观察连续反馈循环；系数 `2.0` 的完整控制意义留到后续。`dt` 虽未使用，仍由软件传入；不需要为了“用到参数”写无意义运算。\n\n**可观察结果：** 输出可以随新状态变化；50 个物理步对应 1 秒仿真时间。慢放改变观看节奏，不改变一个物理步的时长。做不到实时运行时软件减慢播放，而不是让无记忆/有记忆控制器使用不一致的控制周期。\n\n**误解与分层提示：**\n\n- “代码只从上到下运行一次。”提示 1：看调用计数；提示 2：软件会重复调用该函数；提示 3：单步跟踪输入与输出的变化。\n- “我要在函数内一直 `while True`。”提示 1：说明本次调用要交回一个动作；提示 2：重复由软件负责；提示 3：去掉循环，只保留一次计算和返回。\n- “`dt` 是上一帧真实等待多久。”提示 1：比较慢放；提示 2：这里是物理步长；提示 3：显示仿真时间与播放状态，避免学生使用墙钟时间。\n\n**交付与过关：** 对输入、返回、重复调用各举一个例子；单步 5 次时间恰好增加 0.10 s；能解释慢放不改变控制规则的物理效果。\n\n**界面显示：** 增加可展开的“本次输入 → 本次动作”卡、单步、播放速度。计数和固定 `dt` 只在这一课展开，平时保持界面简洁。\n\n**软件与文件计划：** DEV-F06 确定的一次调用一次物理步、单步、慢放与控制错误暂停；DEV-F07 输入输出检查。`lessons/content/L08.json`、`lessons/templates/l08_feedback_loop.py`；`tests/test_runtime_steps.py` 要覆盖帧延迟不改变 N 步轨迹、暂停不产生新动作和陈旧回复不作用于新回合。"
+}

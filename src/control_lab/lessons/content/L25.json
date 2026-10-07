@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L25",
+  "title": "环境接口与第一次训练准备",
+  "summary": "terminated与truncated有什么区别？",
+  "duration_minutes": 60,
+  "prerequisites": [
+    "L24"
+  ],
+  "scenario_id": "balance_practice",
+  "scenario_options": [
+    "balance_practice"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "theta",
+    "force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "外部实验准备",
+      "instruction": "用一张表把4个观测、各自单位和1个动作列出。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "检查环境返回的五个值。",
+        "归一化动作只转换一次。",
+        "-1、0、1应映射为-10、0、10 N。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "外部实验准备",
+      "instruction": "手动执行一次reset，确认初态非零；执行一步0 N，再看返回值。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "检查环境返回的五个值。",
+        "归一化动作只转换一次。",
+        "-1、0、1应映射为-10、0、10 N。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "外部实验准备",
+      "instruction": "运行一次超过角度边界的实验，再运行参考控制器到500步，区别倒下和时间上限。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "检查环境返回的五个值。",
+        "归一化动作只转换一次。",
+        "-1、0、1应映射为-10、0、10 N。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "外部实验准备",
+      "instruction": "查看归一化动作-1、0、1分别变成-10、0、10 N；用代码断言映射只发生一次。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "检查环境返回的五个值。",
+        "归一化动作只转换一次。",
+        "-1、0、1应映射为-10、0、10 N。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "外部实验准备",
+      "instruction": "对课程环境执行官方接口检查，再进行256步短运行，检查保存/停止通路。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "检查环境返回的五个值。",
+        "归一化动作只转换一次。",
+        "-1、0、1应映射为-10、0、10 N。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "外部实验准备",
+      "instruction": "在没有训练依赖的基础版上检查友好提示，确认前22课仍能打开。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "检查环境返回的五个值。",
+        "归一化动作只转换一次。",
+        "-1、0、1应映射为-10、0、10 N。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "terminated与truncated有什么区别？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "检查环境返回的五个值。",
+        "归一化动作只转换一次。",
+        "-1、0、1应映射为-10、0、10 N。"
+      ]
+    }
+  ],
+  "template": "templates/l25_exercise.py",
+  "solution": "solutions/l25_exercise.py",
+  "requires": [
+    "rl_runtime"
+  ],
+  "availability": "external_runtime",
+  "editor_kind": "script",
+  "reflection": "terminated与truncated有什么区别？",
+  "reference_answer": "前者表示倒下等任务终止，后者表示时间等外部上限；循环可合并判断结束，但训练接口须保留二者。",
+  "objectives": [
+    "terminated与truncated有什么区别？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置/时长：** L23–L24；60分钟。新概念为reset/step、动作空间、终止与时间上限。教师先完成独立训练环境配置，学生不用从零排查安装。\n\n**操作步骤：**\n\n1. 用一张表把4个观测、各自单位和1个动作列出。\n2. 手动执行一次reset，确认初态非零；执行一步0 N，再看返回值。\n3. 运行一次超过角度边界的实验，再运行参考控制器到500步，区别倒下和时间上限。\n4. 查看归一化动作-1、0、1分别变成-10、0、10 N；用代码断言映射只发生一次。\n5. 对课程环境执行官方接口检查，再进行256步短运行，检查保存/停止通路。\n6. 在没有训练依赖的基础版上检查友好提示，确认前22课仍能打开。\n\n**接口练习（未来课程环境工厂完成后）：**\n\n```python\nobservation, info = env.reset(seed=42)\nobservation, reward, terminated, truncated, info = env.step([0.0])\nfinished = terminated or truncated\n```\n\n这里的 `env` 由课程提供，不要求新手自己编写动力学。程序循环可用finished结束回合，但包装器必须保留两个原始标志，交给训练库正确处理时间上限。[Gymnasium接口说明](https://gymnasium.farama.org/tutorials/gymnasium_basics/handling_time_limits/)\n\n**提示/验收：** 先显示状态/动作表→逐项解释返回值→给出接口检查报告。学生能解释两个结束原因，提交映射表；256步只验通路，不认定策略已学会平衡。\n\n**界面/代码：** 增加训练环境检测页、协议摘要；`L25.json`、`rl/env_factory.py`、`envs/wrappers.py`、`tests/test_rl_contract.py`。DEV-R03；使用SB3的环境检查接口验证自定义任务。[SB3自定义环境](https://stable-baselines3.readthedocs.io/en/master/guide/custom_env.html)"
+}

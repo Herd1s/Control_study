@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L31",
+  "title": "复现TITA官方仿真实验",
+  "summary": "短步数烟测与稳定行走训练有什么不同？",
+  "duration_minutes": 120,
+  "prerequisites": [
+    "L30"
+  ],
+  "scenario_id": "none",
+  "scenario_options": [
+    "none"
+  ],
+  "input_mode": "none",
+  "visible_signals": [],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "外部实验准备",
+      "instruction": "在教师预配置的外部环境运行任务列表，记录实际可用的TITA任务ID和依赖版本。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对解释器、仓库提交和任务ID。",
+        "小预算管道验证不能替代性能评价。",
+        "先运行官方只读任务清单，再用已验证的小规模入口；不要向硬件发命令。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "外部实验准备",
+      "instruction": "检查机器人资源路径与URDF，加载一个仿真场景；学生先观察关节名称、坐标与接触。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对解释器、仓库提交和任务ID。",
+        "小预算管道验证不能替代性能评价。",
+        "先运行官方只读任务清单，再用已验证的小规模入口；不要向硬件发命令。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "外部实验准备",
+      "instruction": "按固定提交的官方入口做少量环境、短步数烟测，记录日志和显存占用。不能把官方大规模并行默认值直接套到所有学生电脑。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对解释器、仓库提交和任务ID。",
+        "小预算管道验证不能替代性能评价。",
+        "先运行官方只读任务清单，再用已验证的小规模入口；不要向硬件发命令。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "外部实验准备",
+      "instruction": "回放教师准备并验证的检查点，核对观测顺序、历史窗口、动作缩放和控制频率。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对解释器、仓库提交和任务ID。",
+        "小预算管道验证不能替代性能评价。",
+        "先运行官方只读任务清单，再用已验证的小规模入口；不要向硬件发命令。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "外部实验准备",
+      "instruction": "对比训练配置与回放配置，说明随机化、命令和环境数可能不同。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对解释器、仓库提交和任务ID。",
+        "小预算管道验证不能替代性能评价。",
+        "先运行官方只读任务清单，再用已验证的小规模入口；不要向硬件发命令。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "外部实验准备",
+      "instruction": "小预算复现训练与保存，只认定管道可用；稳定行走需要单独评估，不能把10次迭代称为训练完成。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对解释器、仓库提交和任务ID。",
+        "小预算管道验证不能替代性能评价。",
+        "先运行官方只读任务清单，再用已验证的小规模入口；不要向硬件发命令。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "外部实验准备",
+      "instruction": "根据该项目工具导出策略，并保存输入输出说明和配置，暂不发给实物执行。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对解释器、仓库提交和任务ID。",
+        "小预算管道验证不能替代性能评价。",
+        "先运行官方只读任务清单，再用已验证的小规模入口；不要向硬件发命令。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "短步数烟测与稳定行走训练有什么不同？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "先核对解释器、仓库提交和任务ID。",
+        "小预算管道验证不能替代性能评价。",
+        "先运行官方只读任务清单，再用已验证的小规模入口；不要向硬件发命令。"
+      ]
+    }
+  ],
+  "template": "templates/l31_exercise.py",
+  "solution": "solutions/l31_exercise.py",
+  "requires": [
+    "tita_external_environment"
+  ],
+  "availability": "external_robot",
+  "editor_kind": "script",
+  "reflection": "短步数烟测与稳定行走训练有什么不同？",
+  "reference_answer": "烟测验证加载、训练、保存通路，不代表策略已稳定行走；TITA需要独立Isaac环境与固定版本。",
+  "objectives": [
+    "短步数烟测与稳定行走训练有什么不同？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置/时长：** L30；两节60分钟，安装/训练时间另计。教师先准备满足依赖的机器。\n\n**本机起点：** 已有外部工程 `E:/Workspace/Isaac_lab/ddt_lab`，本次规划只读核查提交为 `701a49c`；README声明Isaac Sim 5.1、Isaac Lab 2.3.0、Python3.11。该环境与ControlLab桌面环境分开。官方仓库包含TITA任务及训练/回放入口；实施前再次核对固定提交、资源路径和许可证，不自动跟随最新主分支。[DDT官方仓库](https://github.com/DDTRobot/DDT_Lab)\n\n**操作步骤：**\n\n1. 在教师预配置的外部环境运行任务列表，记录实际可用的TITA任务ID和依赖版本。\n2. 检查机器人资源路径与URDF，加载一个仿真场景；学生先观察关节名称、坐标与接触。\n3. 按固定提交的官方入口做少量环境、短步数烟测，记录日志和显存占用。不能把官方大规模并行默认值直接套到所有学生电脑。\n4. 回放教师准备并验证的检查点，核对观测顺序、历史窗口、动作缩放和控制频率。\n5. 对比训练配置与回放配置，说明随机化、命令和环境数可能不同。\n6. 小预算复现训练与保存，只认定管道可用；稳定行走需要单独评估，不能把10次迭代称为训练完成。\n7. 根据该项目工具导出策略，并保存输入输出说明和配置，暂不发给实物执行。\n\n**代码任务：** 用配置文件记录外部解释器、仓库提交、任务ID和日志路径。ControlLab通过外部进程启动预定义任务，不把Isaac依赖导入主程序。\n\n**验收：** 可复现环境清单、加载截图/日志、一次受控回放、导出接口表。能说清CartPole的PPO课程与该仓库具体算法不是同一组网络/配置。\n\n**界面/代码：** “外部环境检查→打开仿真→查看结果”三个动作，错误保留完整日志；`L31.json`、TITA profile与只读任务适配。DEV-R09。实际命令以固定提交验证后的脚本为准，不在课程中粘贴未验证的平台命令。"
+}

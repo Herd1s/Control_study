@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L04",
+  "title": "角度不等于角速度",
+  "summary": "同角度不同角速度，下一步一样吗？",
+  "duration_minutes": 55,
+  "prerequisites": [
+    "L03"
+  ],
+  "scenario_id": "angle_recovering",
+  "scenario_options": [
+    "angle_recovering",
+    "angle_fast_right",
+    "tilt_right",
+    "tilt_left"
+  ],
+  "input_mode": "manual_position_assist",
+  "visible_signals": [
+    "theta",
+    "omega"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "观察",
+      "instruction": "打开角度卡，扶正看 0°；用鼠标形成左右倾斜，看正负号与虚线竖直基准。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先观察杆顶朝哪边运动。",
+        "倾斜方向不等于转动方向。",
+        "theta>0且omega<0代表向右倾但正在回正。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "观察",
+      "instruction": "暂停并沿杆画出倾角弧线，确认角度取自竖直而不是水平轨道。",
+      "activity": "observe",
+      "evidence": "在需要观察的时刻暂停，保留当前画面。",
+      "completion": {
+        "event": "simulation.paused"
+      },
+      "hints": [
+        "先观察杆顶朝哪边运动。",
+        "倾斜方向不等于转动方向。",
+        "theta>0且omega<0代表向右倾但正在回正。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "观察",
+      "instruction": "打开角速度卡，观察角度越来越大和越来越小的时刻。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先观察杆顶朝哪边运动。",
+        "倾斜方向不等于转动方向。",
+        "theta>0且omega<0代表向右倾但正在回正。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "观察",
+      "instruction": "播放两段同角度、不同角速度的预置片段，暂停比较箭头和读数。",
+      "activity": "observe",
+      "evidence": "在需要观察的时刻暂停，保留当前画面。",
+      "completion": {
+        "event": "simulation.paused"
+      },
+      "hints": [
+        "先观察杆顶朝哪边运动。",
+        "倾斜方向不等于转动方向。",
+        "theta>0且omega<0代表向右倾但正在回正。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "观察",
+      "instruction": "找到“仍向右倾、已经往回转”的瞬间，描述此时角度正、角速度负。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先观察杆顶朝哪边运动。",
+        "倾斜方向不等于转动方向。",
+        "theta>0且omega<0代表向右倾但正在回正。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "观察",
+      "instruction": "点开“代码里如何表示”，看一次 5° 与约 0.0873 rad 的对应；不要求心算换算。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先观察杆顶朝哪边运动。",
+        "倾斜方向不等于转动方向。",
+        "theta>0且omega<0代表向右倾但正在回正。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "先预测",
+      "instruction": "给“当前倾斜”和“倾倒趋势”各写一句自己的解释，再预测两段片段哪段更紧急。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "先观察杆顶朝哪边运动。",
+        "倾斜方向不等于转动方向。",
+        "theta>0且omega<0代表向右倾但正在回正。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "同角度不同角速度，下一步一样吗？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "先观察杆顶朝哪边运动。",
+        "倾斜方向不等于转动方向。",
+        "theta>0且omega<0代表向右倾但正在回正。"
+      ]
+    }
+  ],
+  "template": null,
+  "solution": null,
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "none",
+  "reflection": "同角度不同角速度，下一步一样吗？",
+  "reference_answer": "不一样。theta描述当前倾斜，omega描述变化趋势；代码为rad/rad/s，界面可换算为度。",
+  "objectives": [
+    "同角度不同角速度，下一步一样吗？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置与课时：** 完成 L03；55 分钟（旧知识连接 5、体验 20、对照 20、复盘 10）。\n\n**只引入：** 竖直为 0°、左右倾斜、角速度 °/s；界面角度与代码 rad 的单位不同。暂不要求背三角函数或推导角速度。\n\n**教师问题：** “杆现在向右倾，就一定正在向右倒吗？”“倾斜相同但一个正在回正，应该采取完全一样的动作吗？”\n\n**学生操作：**\n\n1. 打开角度卡，扶正看 0°；用鼠标形成左右倾斜，看正负号与虚线竖直基准。\n2. 暂停并沿杆画出倾角弧线，确认角度取自竖直而不是水平轨道。\n3. 打开角速度卡，观察角度越来越大和越来越小的时刻。\n4. 播放两段同角度、不同角速度的预置片段，暂停比较箭头和读数。\n5. 找到“仍向右倾、已经往回转”的瞬间，描述此时角度正、角速度负。\n6. 点开“代码里如何表示”，看一次 5° 与约 0.0873 rad 的对应；不要求心算换算。\n7. 给“当前倾斜”和“倾倒趋势”各写一句自己的解释，再预测两段片段哪段更紧急。\n\n**代码：** 不用代码。后续看到 `theta` 和 `omega` 时能对应含义即可。\n\n**可观察结果：** 倾斜方向和转动方向可以不同；同一角度不是同一状态；四个读数一起描述小车和杆的运动。\n\n**误解与分层提示：**\n\n- “角速度就是角度除以总时间。”提示 1：回看角度先增大后减小；提示 2：关注这一小段时间的变化；提示 3：相邻两帧角度差对应当前变化趋势，精确计算留到后续。\n- “`theta=5` 就是 5°。”提示 1：查看变量旁单位；提示 2：代码使用 rad；提示 3：使用界面换算卡，强调 5 rad 不是小倾斜。\n\n**交付与过关：** 正确区分四种读数的含义和单位；识别同角度但不同角速度的两个场景。无需计算导数。\n\n**界面显示：** 本课按顺序增加角度弧线、角度卡、角速度卡；其余两卡可以收起。一次曲线只突出一种量，避免四条不同单位的曲线共用同一纵轴。\n\n**软件与文件计划：** DEV-F03 逐步显隐；DEV-F04 同角度对照回放；DEV-F05 单位与符号一致性检查。`lessons/content/L04.json`；场景生成器保留真实 `theta/omega`，渲染测试核对向右倾与正角度一致。"
+}

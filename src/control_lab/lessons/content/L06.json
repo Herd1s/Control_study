@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L06",
+  "title": "变量，让数字有名字",
+  "summary": "改变量名会改变动作单位吗？",
+  "duration_minutes": 50,
+  "prerequisites": [
+    "L05"
+  ],
+  "scenario_id": "upright",
+  "scenario_options": [
+    "upright",
+    "tilt_right",
+    "tilt_left"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "x",
+    "force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "观察",
+      "instruction": "把上一课 `return 1.0` 分成“给数值起名”“返回这个名字”两行。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "检查赋值与返回的名字。",
+        "先给数命名，再返回变量。",
+        "force = 0.5，然后return force。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "修改代码",
+      "instruction": "在 `force` 旁写上单位注释，只改变赋值为 `0.5`，预测输出仍如何传到小车。",
+      "activity": "code",
+      "evidence": "在你的代码副本中修改本步骤要求的一处内容。",
+      "completion": {
+        "event": "code.edited"
+      },
+      "hints": [
+        "检查赋值与返回的名字。",
+        "先给数命名，再返回变量。",
+        "force = 0.5，然后return force。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "运行实验",
+      "instruction": "增加 `position = state[\"x\"]`，运行后在观察卡看 `position` 对应当前小车位置。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "检查赋值与返回的名字。",
+        "先给数命名，再返回变量。",
+        "force = 0.5，然后return force。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "先预测",
+      "instruction": "扶正，先不把位置用于动作；解释“读取一个变量”本身不会改变小车。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "检查赋值与返回的名字。",
+        "先给数命名，再返回变量。",
+        "force = 0.5，然后return force。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "运行实验",
+      "instruction": "把 `force` 改为自己能理解的英文名字，并同步修改返回行，确认仍能运行。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "检查赋值与返回的名字。",
+        "先给数命名，再返回变量。",
+        "force = 0.5，然后return force。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "留下记录",
+      "instruction": "故意把返回名字拼错一次，学习报错后修复，保存正确版本。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "检查赋值与返回的名字。",
+        "先给数命名，再返回变量。",
+        "force = 0.5，然后return force。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "改变量名会改变动作单位吗？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "检查赋值与返回的名字。",
+        "先给数命名，再返回变量。",
+        "force = 0.5，然后return force。"
+      ]
+    }
+  ],
+  "template": "templates/l06_exercise.py",
+  "solution": "solutions/l06_exercise.py",
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "改变量名会改变动作单位吗？",
+  "reference_answer": "不会。动作含义来自软件契约；变量名帮助阅读，注释不会自动转换单位。",
+  "objectives": [
+    "改变量名会改变动作单位吗？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置与课时：** 完成 L05；50 分钟（示例 10、改写 20、观测映射 10、复盘 10）。\n\n**只引入：** 变量赋值、变量名、先定义后使用、注释和单位；读取 `state[\"x\"]` 的固定写法。暂不全面讲列表、字典、对象。\n\n**教师问题：** “如果有很多数字，怎样知道哪个是推力？”“`position` 是一个新传感器，还是给原读数起的新名字？”\n\n**学生操作：**\n\n1. 把上一课 `return 1.0` 分成“给数值起名”“返回这个名字”两行。\n2. 在 `force` 旁写上单位注释，只改变赋值为 `0.5`，预测输出仍如何传到小车。\n3. 增加 `position = state[\"x\"]`，运行后在观察卡看 `position` 对应当前小车位置。\n4. 扶正，先不把位置用于动作；解释“读取一个变量”本身不会改变小车。\n5. 把 `force` 改为自己能理解的英文名字，并同步修改返回行，确认仍能运行。\n6. 故意把返回名字拼错一次，学习报错后修复，保存正确版本。\n\n**模板与练习：**\n\n```python\ndef control(state, dt):\n    position = state[\"x\"]  # 当前小车位置，m\n    force = 0.5            # 本次输出推力，N\n    return force\n```\n\n本课 `position` 读取但不参与计算，是有意安排的观测练习。观察面板可显示课程指定变量；如未实现局部变量探查，用 `x` 状态卡对应说明即可，不宣称已有调试器。\n\n**可观察结果：** 改变量名字但保持引用一致，不改变物理结果；改变数值会改变输出。变量存一个数，本身不自动携带单位，单位靠代码约定和界面标签保持一致。\n\n**误解与分层提示：**\n\n- “变量名叫 speed 就会输出速度。”提示 1：看推力模式标签；提示 2：名字不改变动作含义；提示 3：把错误命名改回 `force`。\n- “注释写 N 后程序就会检查单位。”提示 1：指出 `#` 后只是说明；提示 2：程序仍在返回数值；提示 3：看统一入口契约，避免混用。\n- “引号里的 `x` 可以随意改名。”提示 1：看状态映射卡；提示 2：左侧自选名字，右侧传感器键是约定；提示 3：用已知的 `x/v/theta/omega` 替换拼错的键。\n\n**交付与过关：** 保存含至少一个有意义变量名和单位注释的代码；能区分“读数”和“输出”；能自己修复一次变量名不一致。\n\n**界面显示：** 编辑器与当前动作读数；按需展开状态字段卡，避免同时介绍所有 Python 类型。不会出现类、包管理和命令行安装说明。\n\n**软件与文件计划：** DEV-F03 模板与字段提示；DEV-F05 单位标签；DEV-F08 `NameError/KeyError` 教学提示且保留原始错误可展开。`lessons/content/L06.json`、`lessons/templates/l06_named_force.py`。"
+}

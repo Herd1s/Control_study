@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L15",
+  "title": "看见倾倒速度——从 P 到 PD",
+  "summary": "同角度不同omega，D怎样改变动作？",
+  "duration_minutes": 80,
+  "prerequisites": [
+    "L14"
+  ],
+  "scenario_id": "angle_fast_right",
+  "scenario_options": [
+    "angle_recovering",
+    "angle_fast_right",
+    "tilt_right",
+    "tilt_left"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "theta",
+    "omega",
+    "p",
+    "d",
+    "force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "观察",
+      "instruction": "并排暂停两次场景：角度均为 `0.05 rad`，角速度分别为 `+0.15` 与 `-0.15 rad/s`。学生用箭头表示下一瞬间的趋势。",
+      "activity": "observe",
+      "evidence": "在需要观察的时刻暂停，保留当前画面。",
+      "completion": {
+        "event": "simulation.paused"
+      },
+      "hints": [
+        "先判断正在越倒越快还是回正。",
+        "D利用角速度区分相同角度。",
+        "return 60*theta + 12*omega。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "运行实验",
+      "instruction": "先运行 P，核对它对这两个状态给出相同的初始输出，理解缺少的正是变化速度信息。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "先判断正在越倒越快还是回正。",
+        "D利用角速度区分相同角度。",
+        "return 60*theta + 12*omega。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "先预测",
+      "instruction": "在 P 的代码上只增加 `kd * omega` 一项。手算两种状态的输出差异。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "先判断正在越倒越快还是回正。",
+        "D利用角速度区分相同角度。",
+        "return 60*theta + 12*omega。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "留下记录",
+      "instruction": "固定 `kp=60`，比较 `kd=0、4、8、12`；这组数只是扫描参考，是否稳定以记录为准。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "先判断正在越倒越快还是回正。",
+        "D利用角速度区分相同角度。",
+        "return 60*theta + 12*omega。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "先预测",
+      "instruction": "打开 P 与 D 的分项力，暂停观察 D 何时增加推力、何时减少推力。解释 D 在闭环中帮助阻尼，但它的符号不是“永远向左”或“永远反向”。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "先判断正在越倒越快还是回正。",
+        "D利用角速度区分相同角度。",
+        "return 60*theta + 12*omega。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "观察",
+      "instruction": "对同一组练习种子比较 P 与 PD 的成功回合数、角度变化与最大小车位置；不要挑各自最漂亮的一次录像。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先判断正在越倒越快还是回正。",
+        "D利用角速度区分相同角度。",
+        "return 60*theta + 12*omega。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "先预测",
+      "instruction": "保存最能解释现象的一对轨迹，用口头说明替代背诵公式。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "先判断正在越倒越快还是回正。",
+        "D利用角速度区分相同角度。",
+        "return 60*theta + 12*omega。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "同角度不同omega，D怎样改变动作？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "先判断正在越倒越快还是回正。",
+        "D利用角速度区分相同角度。",
+        "return 60*theta + 12*omega。"
+      ]
+    }
+  ],
+  "template": "templates/l15_exercise.py",
+  "solution": "solutions/l15_exercise.py",
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "同角度不同omega，D怎样改变动作？",
+  "reference_answer": "D读取角速度，正omega增加正向推力，负omega减少；omega已经每秒变化量，不要再除以dt。",
+  "objectives": [
+    "同角度不同omega，D怎样改变动作？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置**：完成 L14，区分角度与角速度。建议 75–90 分钟。\n\n**引导问题**：“两根杆都向右偏 3°，一根还在往右倒，另一根已经在往回走，应该同样用力吗？”\n\n**课堂步骤**：\n\n1. 并排暂停两次场景：角度均为 `0.05 rad`，角速度分别为 `+0.15` 与 `-0.15 rad/s`。学生用箭头表示下一瞬间的趋势。\n2. 先运行 P，核对它对这两个状态给出相同的初始输出，理解缺少的正是变化速度信息。\n3. 在 P 的代码上只增加 `kd * omega` 一项。手算两种状态的输出差异。\n4. 固定 `kp=60`，比较 `kd=0、4、8、12`；这组数只是扫描参考，是否稳定以记录为准。\n5. 打开 P 与 D 的分项力，暂停观察 D 何时增加推力、何时减少推力。解释 D 在闭环中帮助阻尼，但它的符号不是“永远向左”或“永远反向”。\n6. 对同一组练习种子比较 P 与 PD 的成功回合数、角度变化与最大小车位置；不要挑各自最漂亮的一次录像。\n7. 保存最能解释现象的一对轨迹，用口头说明替代背诵公式。\n\n**学生代码**：\n\n```python\nkp = 60.0\nkd = 12.0  # 单位 N·s/rad；参考起点\n\ndef control(state, dt):\n    p_force = kp * state[\"theta\"]\n    d_force = kd * state[\"omega\"]\n    return p_force + d_force\n```\n\n**实验条件与对照**：先使用上述两种精确状态，再使用相同 seeds `42–46`。对照只改变 `kd`；保持 `kp`、动作模式、阈值、力上限一致。这里直接使用环境提供的角速度，不要求学生先学习数值微分。\n\n**常见误解**：D 不是另一个角度系数；`omega` 已经是每秒的变化量，不能再除以 `dt`；直接角速度反馈避免了差分计算，却不意味着未来真实传感器没有噪声；PD 站得住不保证小车回到中央。\n\n**界面显示顺序**：两幅相同角度不同运动趋势的动画 → 角速度箭头 → 两行代码 → P/D 分项 → 对照曲线。\n\n**验收与产物**：学生能判断上述两个状态哪一个应有更大的正向推力；保存 `l15_pd.py` 与一个公平对照报告。若未实现长期稳定，先检查符号与单位，不要求凭空继续加参数。\n\n**拟实现模块**：`lessons/content/L15.json`、`lessons/templates/l15_pd.py`、控制分项显示组件、场景对照器。分项是控制器主动上报的教学数据；界面不得对任意学生代码猜测“哪部分是 P 或 D”。"
+}

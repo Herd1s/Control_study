@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L11",
+  "title": "目标速度与推力的区别",
+  "summary": "返回0 N和目标0 m/s为什么不同？",
+  "duration_minutes": 50,
+  "prerequisites": [
+    "L10"
+  ],
+  "scenario_id": "moving_right",
+  "scenario_options": [
+    "moving_right",
+    "upright",
+    "tilt_right",
+    "tilt_left"
+  ],
+  "input_mode": "velocity_mps",
+  "visible_signals": [
+    "target_v",
+    "v",
+    "force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "留下记录",
+      "instruction": "在推力模式运行固定 `0.5`，记录单位为 N，观察小车速度随状态变化。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "先核对N还是m/s。",
+        "目标速度经过软件的速度反馈环。",
+        "同一移动初态分别运行两种0输出，观察实际推力。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "观察",
+      "instruction": "停止并复位，切换为目标速度模式；界面醒目显示 m/s，提示本课有软件帮助控制。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对N还是m/s。",
+        "目标速度经过软件的速度反馈环。",
+        "同一移动初态分别运行两种0输出，观察实际推力。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "观察",
+      "instruction": "使用同样的 `0.5`，观察软件根据速度差持续调整实际推力；不能只看返回值。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对N还是m/s。",
+        "目标速度经过软件的速度反馈环。",
+        "同一移动初态分别运行两种0输出，观察实际推力。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "观察",
+      "instruction": "从同一个移动初态分别比较推力模式的 `0.0` 和速度模式的 `0.0`。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对N还是m/s。",
+        "目标速度经过软件的速度反馈环。",
+        "同一移动初态分别运行两种0输出，观察实际推力。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "观察",
+      "instruction": "试小幅正负目标速度，指出“目标”和“当前实际”可以不同，达到力限幅时不可能瞬间跟上。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对N还是m/s。",
+        "目标速度经过软件的速度反馈环。",
+        "同一移动初态分别运行两种0输出，观察实际推力。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "先预测",
+      "instruction": "用两句话解释这两个模式，切回推力 N 并新建一次主线实验；旧记录仍保留原动作单位。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "先核对N还是m/s。",
+        "目标速度经过软件的速度反馈环。",
+        "同一移动初态分别运行两种0输出，观察实际推力。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "返回0 N和目标0 m/s为什么不同？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "先核对N还是m/s。",
+        "目标速度经过软件的速度反馈环。",
+        "同一移动初态分别运行两种0输出，观察实际推力。"
+      ]
+    }
+  ],
+  "template": "templates/l11_exercise.py",
+  "solution": "solutions/l11_exercise.py",
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "返回0 N和目标0 m/s为什么不同？",
+  "reference_answer": "零力不主动停车；目标零速度会由软件速度环尝试减速，两者不能直接混合评分。",
+  "objectives": [
+    "返回0 N和目标0 m/s为什么不同？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置与课时：** 完成 L08，建议在 L10 后学习；50 分钟（概念 10、对照 20、解释 10、回主线 10）。不学本课也能继续 L12 和 PID。\n\n**只引入：** 动作单位改变会改变含义；目标速度由隐藏在软件中的速度反馈环转换成力；不重新讲一次 Python 函数，也不把该帮助环当成学生已学会的 PID。\n\n**教师问题：** “同样返回 0.5，软件到底答应了什么？”“要求速度为零，与给零推力会有一样的刹车效果吗？”\n\n**学生操作：**\n\n1. 在推力模式运行固定 `0.5`，记录单位为 N，观察小车速度随状态变化。\n2. 停止并复位，切换为目标速度模式；界面醒目显示 m/s，提示本课有软件帮助控制。\n3. 使用同样的 `0.5`，观察软件根据速度差持续调整实际推力；不能只看返回值。\n4. 从同一个移动初态分别比较推力模式的 `0.0` 和速度模式的 `0.0`。\n5. 试小幅正负目标速度，指出“目标”和“当前实际”可以不同，达到力限幅时不可能瞬间跟上。\n6. 用两句话解释这两个模式，切回推力 N 并新建一次主线实验；旧记录仍保留原动作单位。\n\n**两份模板：**\n\n```python\n# 推力模式：这表示 0.5 N。\ndef control(state, dt):\n    return 0.5\n```\n\n```python\n# 目标速度模式：这表示目标 0.5 m/s。\ndef control(state, dt):\n    return 0.5\n```\n\n当前桌面内部转换为 `F = 8 × (目标速度 − 当前速度)` 并限幅 ±10 N，系数单位为 N/(m/s)。这是现有实现说明；学生界面先用箭头图说明“目标速度 → 软件调节推力 → 小车”，后续可展开公式。\n\n**可观察结果：** 速度目标不等于实际速度保证；零速度指令会让软件尝试减速，零力不这样做；对同一动作数值，单位不同会产生不同实验。\n\n**误解与分层提示：**\n\n- “速度模式效果好，所以我的代码比推力 PID 更好。”提示 1：查看软件帮助标记；提示 2：此模式额外用了速度反馈；提示 3：公平比较需统一动作定义，不能直接合并分数。\n- “模式切换后旧代码意义不会变。”提示 1：看单位；提示 2：数字相同而指令含义不同；提示 3：停止、重新确认、作为新实验运行。\n\n**交付与过关：** 正确解释两个 `return 0.5` 和两个 `return 0.0` 的差异；能从保存记录中读出动作模式。该课不能给直接力控制的平衡成绩加分。\n\n**界面显示：** 只在支线开放模式选择；并排展示目标速度、实际速度、实际推力，速度与力用独立坐标或切换标签。离开支线明确恢复 N，不能静默沿用 m/s。\n\n**软件与文件计划：** 当前两种模式转换已有；DEV-F05 模式/单位持久化与切换确认；DEV-F09 记录内部速度环配置并排除跨模式排名。`lessons/content/L11.json`、`lessons/templates/l11_target_velocity.py`；模式切换不得覆盖原代码，须停止旧会话并创建新实验。"
+}

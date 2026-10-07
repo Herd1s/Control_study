@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L09",
+  "title": "让程序记得时间，并正确重置",
+  "summary": "为什么累计值要跨调用保留、每回合重置？",
+  "duration_minutes": 55,
+  "prerequisites": [
+    "L08"
+  ],
+  "scenario_id": "upright",
+  "scenario_options": [
+    "upright",
+    "tilt_right",
+    "tilt_left"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "time",
+    "force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "观察",
+      "instruction": "打开已写好函数外壳的模板，先只阅读“累计到约 0.5 秒停止推力”的任务。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "观察elapsed有没有一直归零。",
+        "记忆放在函数外，用reset清空。",
+        "control内elapsed += dt；reset内elapsed = 0.0。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "修改代码",
+      "instruction": "在 `control` 里补上 `elapsed += dt`，通过单步观察 0.02、0.04 等累计值。",
+      "activity": "code",
+      "evidence": "在你的代码副本中修改本步骤要求的一处内容。",
+      "completion": {
+        "event": "code.edited"
+      },
+      "hints": [
+        "观察elapsed有没有一直归零。",
+        "记忆放在函数外，用reset清空。",
+        "control内elapsed += dt；reset内elapsed = 0.0。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "运行实验",
+      "instruction": "从全零初态运行，观察先推后停止给力；停止给力后小车仍可能继续运动。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "观察elapsed有没有一直归零。",
+        "记忆放在函数外，用reset清空。",
+        "control内elapsed += dt；reset内elapsed = 0.0。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "观察",
+      "instruction": "暂停较长一段真实时间，再继续，确认暂停期间仿真计时没有偷偷增长。",
+      "activity": "observe",
+      "evidence": "在需要观察的时刻暂停，保留当前画面。",
+      "completion": {
+        "event": "simulation.paused"
+      },
+      "hints": [
+        "观察elapsed有没有一直归零。",
+        "记忆放在函数外，用reset清空。",
+        "control内elapsed += dt；reset内elapsed = 0.0。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "观察",
+      "instruction": "执行“重新实验”，确认系统调用 `reset()`；第二次动作序列与第一次相同。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "观察elapsed有没有一直归零。",
+        "记忆放在函数外，用reset清空。",
+        "control内elapsed += dt；reset内elapsed = 0.0。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "观察",
+      "instruction": "在隔离演示中把 `elapsed = 0.0` 错放到 `control` 开头，预测并观察“永远记不住”的问题，再恢复。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "观察elapsed有没有一直归零。",
+        "记忆放在函数外，用reset清空。",
+        "control内elapsed += dt；reset内elapsed = 0.0。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "留下记录",
+      "instruction": "保存正确版本，并说明普通暂停、重新实验、修改代码重启各自是否清空记忆。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "观察elapsed有没有一直归零。",
+        "记忆放在函数外，用reset清空。",
+        "control内elapsed += dt；reset内elapsed = 0.0。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "为什么累计值要跨调用保留、每回合重置？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "观察elapsed有没有一直归零。",
+        "记忆放在函数外，用reset清空。",
+        "control内elapsed += dt；reset内elapsed = 0.0。"
+      ]
+    }
+  ],
+  "template": "templates/l09_exercise.py",
+  "solution": "solutions/l09_exercise.py",
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "为什么累计值要跨调用保留、每回合重置？",
+  "reference_answer": "跨调用才能记得过去，回合重置才能让相同条件重复；暂停不能清空或增加仿真时间。",
+  "objectives": [
+    "为什么累计值要跨调用保留、每回合重置？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置与课时：** 完成 L08 且 DEV-F06 已通过验证；55 分钟（引入 10、填空 20、重置实验 15、复盘 10）。\n\n**只引入：** 跨调用记忆、`+=`、模块变量、`global`、可选 `reset()`；不引入类或积分控制。先累计时间，为以后累计误差打基础。\n\n**教师问题：** “每次都把计时器设为零，它还能记住多久吗？”“第二次运行应该接着上次的时间，还是从头开始？”\n\n**学生操作：**\n\n1. 打开已写好函数外壳的模板，先只阅读“累计到约 0.5 秒停止推力”的任务。\n2. 在 `control` 里补上 `elapsed += dt`，通过单步观察 0.02、0.04 等累计值。\n3. 从全零初态运行，观察先推后停止给力；停止给力后小车仍可能继续运动。\n4. 暂停较长一段真实时间，再继续，确认暂停期间仿真计时没有偷偷增长。\n5. 执行“重新实验”，确认系统调用 `reset()`；第二次动作序列与第一次相同。\n6. 在隔离演示中把 `elapsed = 0.0` 错放到 `control` 开头，预测并观察“永远记不住”的问题，再恢复。\n7. 保存正确版本，并说明普通暂停、重新实验、修改代码重启各自是否清空记忆。\n\n**规划中的模板：** 使用已学过的 `if`，不同时引入新的条件表达式或类。\n\n```python\nelapsed = 0.0\n\n\ndef reset():\n    global elapsed\n    elapsed = 0.0\n\n\ndef control(state, dt):\n    global elapsed\n    force = 0.0\n    if elapsed < 0.5:\n        force = 1.0\n    elapsed += dt\n    return force\n```\n\n在当前 `dt=0.02` 下，此例前 25 步输出 1 N，随后输出 0 N。这里只学习“记住上次的值再累计”，不教授浮点计算细节；软件显示时间取自整数步数乘步长。以后需要精确扰动时刻或停止边界时，由场景事件使用整数步数调度，不能假定任意小数累计都可作精确计时器。\n\n**可观察结果：** 记忆在同一回合跨调用保留，复位后回到零；物理时间由 `dt` 累计，独立于真实暂停时长。系统重新加载代码本身也会重建变量，但课程要求显式 `reset()` 以便未来复用会话时行为一致。\n\n**误解与分层提示：**\n\n- “全局变量太复杂，必须先学面向对象。”提示 1：只说明“函数外的小记事本”；提示 2：`global` 允许本函数修改那本记事本；提示 3：提供固定外壳，只填写累计那一行。\n- “停止推力等于刹停。”提示 1：看速度；提示 2：回到 L05 的零力实验；提示 3：让学生提出以后怎样加一个主动减速阶段。\n- “暂停后重新从零计时更方便。”提示 1：看同一回合是否被保留；提示 2：暂停不应改控制器状态；提示 3：对照“重新实验”按钮。\n\n**交付与过关：** 能解释把累计值放在函数内部重置会发生什么；连续两次新回合动作序列一致；暂停不增加时间。自动检查依据控制步序列，不依据真人按按钮的墙钟时刻。\n\n**界面显示：** 增加一项“本回合累计时间”和可展开的记忆说明；保留单步；不要同时展示积分误差、Ki 或 PID 曲线。\n\n**软件与文件计划：** DEV-F06 worker 支持可选 `reset()`、异常回报与生命周期；DEV-F07 测试新回合/暂停/热重载语义。`lessons/content/L09.json`、`lessons/templates/l09_timed_push.py`；重置语义测试覆盖无 `reset()` 老程序、`reset()` 报错、旧回复丢弃和从完全相同初态重复运行。"
+}

@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "content_version": 2,
+  "lesson_id": "L20",
+  "title": "真实读数会抖——噪声、滤波和微分冲击",
+  "summary": "曲线更平滑是否一定控制更好？",
+  "duration_minutes": 80,
+  "prerequisites": [
+    "L19"
+  ],
+  "scenario_id": "balance_practice",
+  "scenario_options": [
+    "balance_practice",
+    "measurement_theta_noise",
+    "measurement_omega_noise"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "theta",
+    "omega",
+    "true_theta",
+    "force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "留下记录",
+      "instruction": "固定同一个已能运行的完整反馈控制器，先保存无噪声对照。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "对比真实角度与观测读数。",
+        "滤波以降低噪声换取响应滞后。",
+        "alpha=1-exp(-dt/tau)；tau=0直接通过。指数公式已提供，先只改tau。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "观察",
+      "instruction": "仅给控制器读到的角度加入可复现小噪声，真实物理状态与终止判定不加噪声；同时显示“真实值”和“传感器读数”。",
+      "activity": "observe",
+      "evidence": "在实验场景中选择“角度测量噪声”，对照真实值与读数。",
+      "completion": {
+        "event": "scenario.selected",
+        "field": "id",
+        "equals": "measurement_theta_noise"
+      },
+      "hints": [
+        "对比真实角度与观测读数。",
+        "滤波以降低噪声换取响应滞后。",
+        "alpha=1-exp(-dt/tau)；tau=0直接通过。指数公式已提供，先只改tau。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "运行实验",
+      "instruction": "运行并保存角度测量噪声实验；打开右侧“信号实验”页签，在“同一份数据，换一种看法”中选择保存目录的 `trajectory.csv`，点击“分析同一条轨迹”并打开曲线报告。对照直接 `omega`、`(theta-last_theta)/dt` 与因果滤波，移动鼠标读同一时刻的数据；改变分析面板的 `tau` 重算同一文件。先完成离线对照，再把控制器的 `omega_source` 改为 `difference` 作闭环观察，避免把反馈造成的轨迹差异误当测量噪声差异。",
+      "activity": "experiment",
+      "evidence": "选择已保存的trajectory.csv并点击“分析同一条轨迹”；报告实际保存后才能继续。",
+      "completion": {
+        "event": "signal.analysis.completed"
+      },
+      "hints": [
+        "先运行并保存带角度噪声的实验，再打开右侧“信号实验”页签。",
+        "选择同一个trajectory.csv重算，观察原始差分与滤波曲线；这一步不重跑物理。",
+        "difference=(theta-last_theta)/dt；首样本无上一值。对照同一真值差分，可分清噪声与数值近似误差。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "运行实验",
+      "instruction": "选择“角速度测量噪声”场景，控制器设 `omega_source=\"sensor\"`，依次修改代码中的 `tau=0、0.02、0.05、0.1 s`，分别运行并保存四轮实验。`tau=0` 表示不滤波，其余取值是待验证扫描，不保证越大越好；分析面板的 tau 只影响离线报告，不会自动改写控制代码。",
+      "activity": "experiment",
+      "evidence": "选择“角速度测量噪声”，修改tau并实际运行四次；每次保存观察，由学生或教师核对参数分别为0、0.02、0.05、0.1。",
+      "completion": {
+        "all": [
+          {
+            "event": "scenario.selected",
+            "field": "id",
+            "equals": "measurement_omega_noise"
+          },
+          {
+            "event": "code.run",
+            "min_count": 4
+          }
+        ]
+      },
+      "hints": [
+        "对比真实角度与观测读数。",
+        "滤波以降低噪声换取响应滞后。",
+        "alpha=1-exp(-dt/tau)；tau=0直接通过。指数公式已提供，先只改tau。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "先预测",
+      "instruction": "对比推力变化和响应迟滞，解释滤波会付出延迟代价；默认由学生选择一个折中并保存失败例子。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "对比真实角度与观测读数。",
+        "滤波以降低噪声换取响应滞后。",
+        "alpha=1-exp(-dt/tau)；tau=0直接通过。指数公式已提供，先只改tau。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "运行实验",
+      "instruction": "点击“运行目标跳变实验”并打开报告：目标在 1 s 从 0 跳到 `0.02 rad`，测量角度始终为 0，`dt=0.02 s、Kd=12`。用游标对照误差求导的 `-12 N` 尖峰与仅测量求导的 `0 N`，再改变 tau 观察峰值降低和拖尾。此步骤只计算信号，不运行倒立摆、不施加 ±10 N 限幅，不把信号结果当回中成绩。",
+      "activity": "experiment",
+      "evidence": "点击“运行目标跳变实验”；报告实际保存后才能继续。",
+      "completion": {
+        "event": "signal.kick.completed"
+      },
+      "hints": [
+        "打开右侧“信号实验”页签，点击“运行目标跳变实验”。",
+        "目标变了，测量仍为0；error=theta-target，因此误差突然减小。",
+        "12*(0-0.02)/0.02=-12N；测量差分=0。信号图不施加执行器限幅。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "留下记录",
+      "instruction": "恢复正式无噪声协议，保存带噪声实验为单独鲁棒性协议，防止后续排名混入不同条件。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "对比真实角度与观测读数。",
+        "滤波以降低噪声换取响应滞后。",
+        "alpha=1-exp(-dt/tau)；tau=0直接通过。指数公式已提供，先只改tau。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "曲线更平滑是否一定控制更好？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "对比真实角度与观测读数。",
+        "滤波以降低噪声换取响应滞后。",
+        "alpha=1-exp(-dt/tau)；tau=0直接通过。指数公式已提供，先只改tau。"
+      ]
+    }
+  ],
+  "template": "templates/l20_exercise.py",
+  "solution": "solutions/l20_exercise.py",
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "曲线更平滑是否一定控制更好？",
+  "reference_answer": "不一定；滤波引入滞后。真实状态与带噪观测要分开，差分需要除dt并正确处理第一步。 同输入离线对照先排除闭环轨迹变化；第一条差分未知，不计入指标。角度误差单位rad、角速度误差单位rad/s，不能直接比较数值大小。误差定义theta-target；目标跳0.02rad、dt=0.02s、Kd=12时，误差D项为-12N，测量保持0时仅测量求导为0N。这是未限幅的独立信号计算，不是小车稳定性试验。",
+  "objectives": [
+    "曲线更平滑是否一定控制更好？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置**：完成 L19，理解角速度反馈、`dt` 和持久状态。建议 75–90 分钟。\n\n**引导问题**：“杆没有明显乱晃，为什么计算出来的推力却在快速跳动？”\n\n**课堂步骤**：\n\n1. 固定同一个已能运行的完整反馈控制器，先保存无噪声对照。\n2. 仅给控制器读到的角度加入可复现小噪声，真实物理状态与终止判定不加噪声；同时显示“真实值”和“传感器读数”。\n3. 运行并保存角度测量噪声实验；打开右侧“信号实验”页签，在“同一份数据，换一种看法”中选择保存目录的 `trajectory.csv`，点击“分析同一条轨迹”并打开曲线报告。对照直接 `omega`、`(theta-last_theta)/dt` 与因果滤波，移动鼠标读同一时刻的数据；改变分析面板的 `tau` 重算同一文件。先完成离线对照，再把控制器的 `omega_source` 改为 `difference` 作闭环观察，避免把反馈造成的轨迹差异误当测量噪声差异。\n4. 选择“角速度测量噪声”场景，控制器设 `omega_source=\"sensor\"`，依次修改代码中的 `tau=0、0.02、0.05、0.1 s`，分别运行并保存四轮实验。`tau=0` 表示不滤波，其余取值是待验证扫描，不保证越大越好；分析面板的 tau 只影响离线报告，不会自动改写控制代码。\n5. 对比推力变化和响应迟滞，解释滤波会付出延迟代价；默认由学生选择一个折中并保存失败例子。\n6. 点击“运行目标跳变实验”并打开报告：目标在 1 s 从 0 跳到 `0.02 rad`，测量角度始终为 0，`dt=0.02 s、Kd=12`。用游标对照误差求导的 `-12 N` 尖峰与仅测量求导的 `0 N`，再改变 tau 观察峰值降低和拖尾。此步骤只计算信号，不运行倒立摆、不施加 ±10 N 限幅，不把信号结果当回中成绩。\n7. 恢复正式无噪声协议，保存带噪声实验为单独鲁棒性协议，防止后续排名混入不同条件。\n\n**滤波模板：本例使用噪声包装器提供的测得角速度**：\n\n```python\nimport math\n\nfiltered_omega = None\ntau = 0.05\n\ndef reset():\n    global filtered_omega\n    filtered_omega = None\n\ndef control(state, dt):\n    global filtered_omega\n    measured = state[\"omega\"]\n    if filtered_omega is None:\n        filtered_omega = measured\n    alpha = 1.0 if tau == 0 else -math.expm1(-dt / tau)\n    filtered_omega += alpha * (measured - filtered_omega)\n    return (60.0 * state[\"theta\"] + 12.0 * filtered_omega\n            + 2.0 * state[\"x\"] + 3.0 * state[\"v\"])\n```\n\n使用已提供的指数公式，使模板、离线实验与软件 `FirstOrderLowPass` 一致；学生本课只需调整时间常数，无需先推导离散化。完整模板还提供 `omega_source=\"difference\"` 和 `last_theta/reset()`，差分控制首步暂用 0，报告首样本标为未知并排除差分指标。\n\n**VS Code 操作入口**：导出的 `l20_exercise.py` 可作为控制器，也可在终端运行下列独立实验。每次输出目录必须是新目录，已有结果不会被覆盖。命令中的轨迹路径替换为自己的保存记录，`--tau` 只设置这次离线分析。\n\n```powershell\npython l20_exercise.py noise --trajectory \"已保存实验/trajectory.csv\" --output-dir \"实验结果/l20-noise-01\" --tau 0.05\npython l20_exercise.py kick --output-dir \"实验结果/l20-kick-01\" --dt 0.02 --tau 0.05\n```\n\n每个结果目录包含 `signals.csv`、`report.json`、无需联网的 `report.html`。程序支持课堂记录的 `simulation_time_s`；评价记录的 `time_s` 对应动作后状态、观测却在动作前，因此会向前对齐真值，首个缺失真值不参与误差统计。差分噪声通过“带噪角度差分减去同一真实角度差分”单独计算，与对真实角速度的总误差分别报告；前者不包含有限差分本身的近似误差。拒绝跨回合、丢步、错误 dt 的记录，不能用未来样本平滑。\n\n**微分冲击的符号说明**：按本课程误差 `error=theta-target_theta`，若对误差差分，目标突然增加会引入一个负的尖峰项；若只使用测得的 `omega`，不会直接把目标阶跃求导。两者都可能有测量噪声，不能把“无目标微分冲击”等同于“无噪声”。\n\n**实验条件与对照**：噪声只影响控制器观测，真实值始终单独记录。课堂可从角度标准差 `0.002 rad`、角速度标准差 `0.02 rad/s` 开始逐个启用，独立噪声 seed 固定，不与初始状态 seed 混在一起。给所有算法相同的噪声时间序列；滤波状态每回合清零。\n\n**常见误解**：曲线变平滑不等于控制变好；差分角度时忘除 `dt` 或把 `omega` 再除一次都不对；不能用未来样本平滑后再声称可实时控制；真实状态与测量状态的终止判定不能混淆。\n\n**界面显示顺序**：原始曲线 → 测量噪声开关 → 差分演示 → 滤波后曲线 → 推力变化 → 高级目标阶跃演示。多个噪声开关不同时默认开启。\n\n**验收与产物**：提交 `l20_exercise.py`、同输入分析的 CSV/JSON/HTML、独立目标跳变报告；解释一种滤波收益和一种代价；给出无噪声/有噪声、无滤波/有滤波的对照表，至少保留一个不理想配置。软件只验证实际报告已生成，不自动判定学生的物理解释正确。\n\n**实现模块**：`controllers/filters.py`、`lessons/signal_experiments.py`、`desktop/panels/signals.py`、`lessons/content/L20.json`、`lessons/templates/l20_exercise.py`；真实/观测和噪声 seed 由公共场景/记录层保存。终止只依真实状态，评分分别列理想协议与噪声协议。离线分析不写控制器评分。"
+}

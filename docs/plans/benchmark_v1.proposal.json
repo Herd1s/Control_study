@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "document_kind": "benchmark_proposal_not_runtime_config",
+  "status": "proposed_pending_baseline_calibration",
+  "protocol_id": "balance-v1",
+  "source_environment": "CartPoleContinuousForce-v0",
+  "input_mode": "force_n",
+  "physics": {
+    "gravity_m_s2": 9.8,
+    "cart_mass_kg": 1,
+    "pole_mass_kg": 0.1,
+    "pole_half_length_m": 0.5,
+    "integrator": "euler",
+    "dt_s": 0.02
+  },
+  "observation": {
+    "ordered_fields": [
+      "x",
+      "v",
+      "theta",
+      "omega"
+    ],
+    "units": [
+      "m",
+      "m/s",
+      "rad",
+      "rad/s"
+    ],
+    "dtype": "float32",
+    "measurement_noise": "none",
+    "delay_steps": 0
+  },
+  "action": {
+    "shape": [
+      1
+    ],
+    "unit": "N",
+    "min": -10,
+    "max": 10,
+    "invalid_nonfinite": "controller_error",
+    "rl_policy_range": [
+      -1,
+      1
+    ],
+    "rl_to_force_scale": 10,
+    "record_requested_and_applied": true
+  },
+  "termination": {
+    "angle_limit_rad": 0.20943951023931953,
+    "cart_limit_m": 2.4,
+    "comparison": "strictly_greater_abs",
+    "max_steps": 500,
+    "time_limit_flag": "truncated",
+    "physical_failure_flag": "terminated"
+  },
+  "initial_state": {
+    "sampling": "uniform_per_component_with_rejection",
+    "component_low": [
+      -0.05,
+      -0.05,
+      -0.05,
+      -0.05
+    ],
+    "component_high": [
+      0.05,
+      0.05,
+      0.05,
+      0.05
+    ],
+    "reject_abs_theta_below_rad": 0.01,
+    "all_zero_allowed": false,
+    "freeze_explicit_case_states_before_release": true,
+    "case_table_hash": null
+  },
+  "seeds": {
+    "practice": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "validation": [
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119
+    ],
+    "held_out": [
+      10042,
+      10043,
+      10044,
+      10045,
+      10046,
+      10047,
+      10048,
+      10049,
+      10050,
+      10051,
+      10052,
+      10053,
+      10054,
+      10055,
+      10056,
+      10057,
+      10058,
+      10059,
+      10060,
+      10061
+    ],
+    "rl_training_runs": [
+      0,
+      1,
+      2
+    ]
+  },
+  "disturbances": [],
+  "reward": {
+    "id": "survival-v1",
+    "baseline": "Gymnasium CartPole step reward; reward changes require another version"
+  },
+  "evaluation": {
+    "success": "max_steps reached without termination or controller error",
+    "rl_predict_deterministic": true,
+    "freeze_observation_normalization": true,
+    "metrics": [
+      "episode_steps",
+      "completed_fraction",
+      "rms_theta_rad",
+      "max_abs_x_m",
+      "rms_actuator_force_n",
+      "saturation_fraction",
+      "end_reason"
+    ],
+    "rank_by_raw_return_across_different_rewards": false,
+    "min_success_threshold": null
+  },
+  "release_requirements": [
+    "验证本配置对应的实际动力学参数并冻结版本。",
+    "生成显式非零初始case表与SHA256；null表示尚未发布。",
+    "零输入与参考控制器运行完整验证集，标定公开性能门槛。",
+    "GUI、CLI、RL用相同配置与适配器验证轨迹和动作倍率。",
+    "冻结代码/模型后才评估held_out；不以评分结果回调模型。"
+  ]
+}

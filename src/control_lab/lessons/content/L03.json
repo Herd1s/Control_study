@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L03",
+  "title": "位置不等于速度",
+  "summary": "位置为正时速度一定为正吗？",
+  "duration_minutes": 55,
+  "prerequisites": [
+    "L02"
+  ],
+  "scenario_id": "moving_right",
+  "scenario_options": [
+    "moving_right",
+    "offset_right",
+    "upright"
+  ],
+  "input_mode": "manual_position_assist",
+  "visible_signals": [
+    "x",
+    "v"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "观察",
+      "instruction": "扶正后只打开“位置”读数，找出中心 0 m，慢拖到左右两边。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "分开看在哪里和往哪走。",
+        "正负位置和正负速度独立。",
+        "在右侧向左移动时暂停，记录x与v。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "动手体验",
+      "instruction": "暂停在右侧，说出位置符号；松开鼠标，不用“右边”替代“正在向右”。",
+      "activity": "manual",
+      "evidence": "用鼠标抓住小车，完成上面的拖动练习。",
+      "completion": {
+        "event": "cart.dragged"
+      },
+      "hints": [
+        "分开看在哪里和往哪走。",
+        "正负位置和正负速度独立。",
+        "在右侧向左移动时暂停，记录x与v。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "观察",
+      "instruction": "打开“速度”读数，观察同一位置附近朝两个方向移动时符号不同。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "分开看在哪里和往哪走。",
+        "正负位置和正负速度独立。",
+        "在右侧向左移动时暂停，记录x与v。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "留下记录",
+      "instruction": "完成一段“小车在右侧但向左运动”的轨迹并暂停，保存为例子。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "分开看在哪里和往哪走。",
+        "正负位置和正负速度独立。",
+        "在右侧向左移动时暂停，记录x与v。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "先预测",
+      "instruction": "观看两个预置短回放：都经过中心，一个向左、一个向右；先判断速度符号再揭示读数。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "分开看在哪里和往哪走。",
+        "正负位置和正负速度独立。",
+        "在右侧向左移动时暂停，记录x与v。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "先预测",
+      "instruction": "在位置随时间曲线上找一段上升、一段下降、一段近乎水平，结合动画解释。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "分开看在哪里和往哪走。",
+        "正负位置和正负速度独立。",
+        "在右侧向左移动时暂停，记录x与v。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "观察",
+      "instruction": "完成三张预测卡：右侧向左、左侧向右、中心静止，分别填位置和速度的符号。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "分开看在哪里和往哪走。",
+        "正负位置和正负速度独立。",
+        "在右侧向左移动时暂停，记录x与v。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "位置为正时速度一定为正吗？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "分开看在哪里和往哪走。",
+        "正负位置和正负速度独立。",
+        "在右侧向左移动时暂停，记录x与v。"
+      ]
+    }
+  ],
+  "template": null,
+  "solution": null,
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "none",
+  "reflection": "位置为正时速度一定为正吗？",
+  "reference_answer": "不一定。小车在右侧但向左走时x为正而v为负。",
+  "objectives": [
+    "位置为正时速度一定为正吗？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置与课时：** 完成 L02；55 分钟（引入 10、体验 20、预测卡 15、复盘 10）。\n\n**只引入：** 轨道中心、向右为正、位置 m、速度 m/s；先中文后出现 `x`、`v`。暂不讲导数。\n\n**教师问题：** “小车在右边，就一定还在向右走吗？”“两个时刻小车都经过中心，后续会一样吗？”\n\n**学生操作：**\n\n1. 扶正后只打开“位置”读数，找出中心 0 m，慢拖到左右两边。\n2. 暂停在右侧，说出位置符号；松开鼠标，不用“右边”替代“正在向右”。\n3. 打开“速度”读数，观察同一位置附近朝两个方向移动时符号不同。\n4. 完成一段“小车在右侧但向左运动”的轨迹并暂停，保存为例子。\n5. 观看两个预置短回放：都经过中心，一个向左、一个向右；先判断速度符号再揭示读数。\n6. 在位置随时间曲线上找一段上升、一段下降、一段近乎水平，结合动画解释。\n7. 完成三张预测卡：右侧向左、左侧向右、中心静止，分别填位置和速度的符号。\n\n**代码：** 不用代码。变量名称显示在中文名称旁，学生不需要记忆字典语法。\n\n**可观察结果：** 位置说明“在哪里”，速度说明“怎样移动”；`x>0` 可以同时有 `v<0`；曲线是否向上与当前速度方向相关，而不是与位置正负绑定。\n\n**误解与分层提示：**\n\n- “位置为零就没有在动。”提示 1：看经过中心的回放；提示 2：中心只是位置参考；提示 3：同时框出 `x≈0` 和非零速度。\n- “负速度比正速度更慢。”提示 1：只比较 0.5 和 −0.5 的移动距离；提示 2：符号表示方向；提示 3：显示两段同样时长、相反方向的回放。\n\n**交付与过关：** 保存一张 `x>0、v<0` 的场景卡；三张预测卡至少两张正确，错题可以回放后重做；能用一句话区分位置与速度。\n\n**界面显示：** 仅位置、速度两张读数卡；位置曲线默认折叠，完成前四步后再出现。隐藏角度、角速度、代码和输出模式选择。\n\n**软件与文件计划：** DEV-F03 按课解锁读数；DEV-F04 同步时间游标、短回放和预测卡。`lessons/content/L03.json`；预置回放由固定输入离线生成并附场景配置，不能手画伪数据；`lessons/scenarios/foundation.json` 增加本课样例。"
+}

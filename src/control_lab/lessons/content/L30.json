@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L30",
+  "title": "从小车摆杆到轮足机器人",
+  "summary": "从倒立摆到TITA哪些可迁移，哪些必须重做？",
+  "duration_minutes": 50,
+  "prerequisites": [
+    "L28"
+  ],
+  "scenario_id": "none",
+  "scenario_options": [
+    "none"
+  ],
+  "input_mode": "none",
+  "visible_signals": [],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "外部实验准备",
+      "instruction": "对照小车—轮子、摆杆—机身姿态，列出可借用的平衡直觉。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先画输入输出链路。",
+        "机器人不只有四个状态和一个推力。",
+        "从实际配置读取维数，拒绝把CartPole模型直接加载到TITA。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "外部实验准备",
+      "instruction": "再列出不能直接借用的部分：多关节、接触、机身三维姿态、多个执行器、动作接口。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先画输入输出链路。",
+        "机器人不只有四个状态和一个推力。",
+        "从实际配置读取维数，拒绝把CartPole模型直接加载到TITA。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "外部实验准备",
+      "instruction": "从TITA配置实际读取观察和动作定义，不凭倒立摆四维状态猜测机器人输入。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先画输入输出链路。",
+        "机器人不只有四个状态和一个推力。",
+        "从实际配置读取维数，拒绝把CartPole模型直接加载到TITA。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "外部实验准备",
+      "instruction": "区分轮速目标、关节位置目标、力矩三种控制层级，查清中间是否已有PD等底层控制。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先画输入输出链路。",
+        "机器人不只有四个状态和一个推力。",
+        "从实际配置读取维数，拒绝把CartPole模型直接加载到TITA。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "外部实验准备",
+      "instruction": "根据配置画“传感器→预处理→策略→动作缩放→底层控制→机器人”的链路。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先画输入输出链路。",
+        "机器人不只有四个状态和一个推力。",
+        "从实际配置读取维数，拒绝把CartPole模型直接加载到TITA。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "外部实验准备",
+      "instruction": "给一个CartPole模型包做兼容性检查，应因维数/环境不匹配拒绝用于TITA。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先画输入输出链路。",
+        "机器人不只有四个状态和一个推力。",
+        "从实际配置读取维数，拒绝把CartPole模型直接加载到TITA。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "从倒立摆到TITA哪些可迁移，哪些必须重做？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "先画输入输出链路。",
+        "机器人不只有四个状态和一个推力。",
+        "从实际配置读取维数，拒绝把CartPole模型直接加载到TITA。"
+      ]
+    }
+  ],
+  "template": "templates/l30_exercise.py",
+  "solution": "solutions/l30_exercise.py",
+  "requires": [
+    "tita_external_environment"
+  ],
+  "availability": "external_robot",
+  "editor_kind": "script",
+  "reflection": "从倒立摆到TITA哪些可迁移，哪些必须重做？",
+  "reference_answer": "可迁移观测、动作、反馈、试验和评价方法；必须核对多关节状态、接触、坐标、控制频率、动作单位及底层控制。",
+  "objectives": [
+    "从倒立摆到TITA哪些可迁移，哪些必须重做？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置/时长：** L28，可并行L29；50分钟。先做概念映射，不驱动硬件。\n\n**操作步骤：**\n\n1. 对照小车—轮子、摆杆—机身姿态，列出可借用的平衡直觉。\n2. 再列出不能直接借用的部分：多关节、接触、机身三维姿态、多个执行器、动作接口。\n3. 从TITA配置实际读取观察和动作定义，不凭倒立摆四维状态猜测机器人输入。\n4. 区分轮速目标、关节位置目标、力矩三种控制层级，查清中间是否已有PD等底层控制。\n5. 根据配置画“传感器→预处理→策略→动作缩放→底层控制→机器人”的链路。\n6. 给一个CartPole模型包做兼容性检查，应因维数/环境不匹配拒绝用于TITA。\n\n**代码任务：** 教师提供只读配置提取脚本，学生补全一张观测/动作表；先不写发送电机指令的代码。\n\n**验收：** 至少解释两项可迁移的方法和三项必须重做的接口/模型。正确结论是迁移实验方法与理解，不是把倒立摆策略文件直接装进机器人。\n\n**界面/代码：** 外部机器人学习模块按需安装；`L30.json`、`integrations/tita_profile.py`、观察映射作业。DEV-R08。"
+}

@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L23",
+  "title": "从“写规则”到“让程序尝试”",
+  "summary": "随机动作是在学习吗？",
+  "duration_minutes": 50,
+  "prerequisites": [
+    "L21"
+  ],
+  "scenario_id": "balance_practice",
+  "scenario_options": [
+    "balance_practice"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "theta",
+    "force",
+    "reward"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "运行实验",
+      "instruction": "加载已完成的PD参考，在同一个非零初态运行并暂停；学生指出输入和输出。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "先指出观测和动作。",
+        "策略和环境负责不同事情。",
+        "random.uniform(-10,10)只生成随机力，不会自动学习。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "观察",
+      "instruction": "将控制器换成随机动作，每0.02 s选一个[-10,10] N的力；保持物理参数不变。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先指出观测和动作。",
+        "策略和环境负责不同事情。",
+        "random.uniform(-10,10)只生成随机力，不会自动学习。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "留下记录",
+      "instruction": "运行5个完整回合，记录每次存活步数，保留倒下的回合。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "先指出观测和动作。",
+        "策略和环境负责不同事情。",
+        "random.uniform(-10,10)只生成随机力，不会自动学习。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "观察",
+      "instruction": "对一次回合逐步回放，圈出“看见状态→选择力→得到新状态”。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先指出观测和动作。",
+        "策略和环境负责不同事情。",
+        "random.uniform(-10,10)只生成随机力，不会自动学习。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "先预测",
+      "instruction": "用口头规则、Python函数和一个未知策略文件分别表示“策略”，解释表示方式不同但角色相同。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "先指出观测和动作。",
+        "策略和环境负责不同事情。",
+        "random.uniform(-10,10)只生成随机力，不会自动学习。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "先预测",
+      "instruction": "写下随机动作偶尔成功几秒是否意味着会平衡，给出理由。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "先指出观测和动作。",
+        "策略和环境负责不同事情。",
+        "random.uniform(-10,10)只生成随机力，不会自动学习。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "随机动作是在学习吗？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "先指出观测和动作。",
+        "策略和环境负责不同事情。",
+        "random.uniform(-10,10)只生成随机力，不会自动学习。"
+      ]
+    }
+  ],
+  "template": "templates/l23_exercise.py",
+  "solution": "solutions/l23_exercise.py",
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "随机动作是在学习吗？",
+  "reference_answer": "不是。随机策略只是选择动作的规则，没有根据奖励更新；环境提供状态转移，策略决定动作。",
+  "objectives": [
+    "随机动作是在学习吗？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置/时长：** L21；50分钟。新概念只引入观测、动作、回合、策略，不讲神经网络梯度。\n\n**教师提问：** “你写PID时，谁决定下一次推多大？如果程序自己提出动作，我们怎样告诉它这次做得如何？”\n\n**操作步骤：**\n\n1. 加载已完成的PD参考，在同一个非零初态运行并暂停；学生指出输入和输出。\n2. 将控制器换成随机动作，每0.02 s选一个[-10,10] N的力；保持物理参数不变。\n3. 运行5个完整回合，记录每次存活步数，保留倒下的回合。\n4. 对一次回合逐步回放，圈出“看见状态→选择力→得到新状态”。\n5. 用口头规则、Python函数和一个未知策略文件分别表示“策略”，解释表示方式不同但角色相同。\n6. 写下随机动作偶尔成功几秒是否意味着会平衡，给出理由。\n\n**练习模板（在新增reset钩子完成后使用）：**\n\n```python\nimport random\n\ndef reset():\n    # 课堂演示固定随机动作序列，方便同学对照。\n    random.seed(7)\n\ndef control(state, dt):\n    return random.uniform(-10.0, 10.0)\n```\n\n**观察/误解：** 一次存活较久不代表掌握规律；这个模板只生成随机动作，不会学习。正式随机基线由运行器提供每回合独立且可记录的动作seed，不能把上面的固定seed示例当完整评估器。\n\n**提示层级：** 先指动画中的输入输出→显示一步状态转移→展示代码。**交付/验收：** 5回合记录和一张观测/动作/策略对应表，能指出策略与环境各负责什么。没有存活时长门槛。\n\n**界面/代码：** 只增加“随机策略”和单步回放；隐藏网络层数与优化器。新增 `lessons/content/L23.json`、`lessons/templates/l23_random.py`，复用 `core/session.py`、记录器；任务DEV-R01，M5。"
+}

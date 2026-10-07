@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L26",
+  "title": "用PPO训练第一个策略",
+  "summary": "训练步数增长是否证明已经会平衡？",
+  "duration_minutes": 60,
+  "prerequisites": [
+    "L25"
+  ],
+  "scenario_id": "balance_practice",
+  "scenario_options": [
+    "balance_practice"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "reward",
+    "time"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "外部实验准备",
+      "instruction": "选择已冻结的存活奖励和 `balance-v1` 训练分布，锁定其他条件。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对环境与动作契约。",
+        "训练和独立评估使用不同用例。",
+        "固定预算和配置，分别用seed=0、1、2训练并保留全部结果。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "外部实验准备",
+      "instruction": "保存训练前随机/未训练策略的5回合回放作为起点。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对环境与动作契约。",
+        "训练和独立评估使用不同用例。",
+        "固定预算和配置，分别用seed=0、1、2训练并保留全部结果。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "外部实验准备",
+      "instruction": "用根seed=0启动一个小预算训练，观察环境步数增长和训练状态，不每一步绘制所有环境。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对环境与动作契约。",
+        "训练和独立评估使用不同用例。",
+        "固定预算和配置，分别用seed=0、1、2训练并保留全部结果。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "外部实验准备",
+      "instruction": "完成后在验证用例100–119上运行确定性策略；保存模型和报告。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对环境与动作契约。",
+        "训练和独立评估使用不同用例。",
+        "固定预算和配置，分别用seed=0、1、2训练并保留全部结果。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "外部实验准备",
+      "instruction": "保持配置不变增加训练预算，例如从25,600到102,400步，说明步数是起步预算，不是成功保证。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对环境与动作契约。",
+        "训练和独立评估使用不同用例。",
+        "固定预算和配置，分别用seed=0、1、2训练并保留全部结果。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "外部实验准备",
+      "instruction": "用seed=1、2独立重复，比较结果是否一致；不要只展示最好的一次。 本软件的一次CPU校准中，同样训练25,600步，seed0/1/2在20个验证回合中分别完成3/0/20回合；前两组主要因小车越界结束。这说明杆角度小不等于已经回中，单个好seed也不能代表所有训练。你的实验需保留自己的真实结果。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对环境与动作契约。",
+        "训练和独立评估使用不同用例。",
+        "固定预算和配置，分别用seed=0、1、2训练并保留全部结果。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "外部实验准备",
+      "instruction": "记录若未学会时应先检查动作缩放、初值、终止和奖励，再调整算法参数。",
+      "activity": "external",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先核对环境与动作契约。",
+        "训练和独立评估使用不同用例。",
+        "固定预算和配置，分别用seed=0、1、2训练并保留全部结果。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "训练步数增长是否证明已经会平衡？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "先核对环境与动作契约。",
+        "训练和独立评估使用不同用例。",
+        "固定预算和配置，分别用seed=0、1、2训练并保留全部结果。"
+      ]
+    }
+  ],
+  "template": "templates/l26_exercise.py",
+  "solution": "solutions/l26_exercise.py",
+  "requires": [
+    "rl_runtime"
+  ],
+  "availability": "external_runtime",
+  "editor_kind": "script",
+  "reflection": "训练步数增长是否证明已经会平衡？",
+  "reference_answer": "不是；训练完成只说明管道可运行，需独立验证，并用多个训练seed检查稳定性。 已记录的2026-10-07校准：同为25,600步，seed0/1/2完成率分别3/20、0/20、20/20，平均步数369.55、349.55、500；前两组主要是小车越界。仅验证集结果，不是保留测试，也不是任意电脑、预算或机器人上的效果保证。",
+  "objectives": [
+    "训练步数增长是否证明已经会平衡？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置/时长：** L25；课堂60分钟，加独立训练时间。PPO先解释成“收集尝试，适度调整策略，再尝试”，公式推导放拓展阅读。\n\n**操作步骤：**\n\n1. 选择已冻结的存活奖励和 `balance-v1` 训练分布，锁定其他条件。\n2. 保存训练前随机/未训练策略的5回合回放作为起点。\n3. 用根seed=0启动一个小预算训练，观察环境步数增长和训练状态，不每一步绘制所有环境。\n4. 完成后在验证用例100–119上运行确定性策略；保存模型和报告。\n5. 保持配置不变增加训练预算，例如从25,600到102,400步，说明步数是起步预算，不是成功保证。\n6. 用seed=1、2独立重复，比较结果是否一致；不要只展示最好的一次。\n7. 记录若未学会时应先检查动作缩放、初值、终止和奖励，再调整算法参数。\n\n**教师运行骨架（`env`由未来课程工厂创建，非当前可直接粘贴运行的完整脚本）：**\n\n```python\nfrom stable_baselines3 import PPO\n\nmodel = PPO(\n    \"MlpPolicy\", env, device=\"cpu\", seed=0,\n    n_steps=1024, batch_size=64, learning_rate=3e-4,\n    policy_kwargs={\"net_arch\": [64, 64]},\n)\nmodel.learn(total_timesteps=25_600)\nmodel.save(\"policy\")\n```\n\nPPO可用于连续Box动作；CPU小型MLP适合作为本项目首个训练方案。此配置是待测试起点，不是经过验证的课程最优参数。[SB3 PPO](https://stable-baselines3.readthedocs.io/en/master/modules/ppo.html)\n\n**误解/提示：** 训练曲线是采样统计，不是每一回合都越来越好。提示顺序为检查任务契约→检查一个训练回合→最后才调学习率。不要把“奖励没立刻上涨”简单归咎于学生。\n\n**交付/验收：** 三个独立训练run、模型、参数、评价报告；能解释训练与验证的区别。技术通过标准是训练可完成、可停止、可保存和重载；学习效果单独按标定基线评估。\n\n**界面/代码：** 首屏只显示步数/预算、当前状态、验证结果和停止按钮；高级参数折叠。新增 `L26.json`、`rl/train.py`、`rl/service.py`、`desktop/panels/training.py`。DEV-R04。",
+  "calibration_evidence": {
+    "source": "logs/rl-curriculum-20261007_220330",
+    "split": "validation",
+    "requested_steps": 25600,
+    "training_seeds": [
+      0,
+      1,
+      2
+    ],
+    "completed_episodes": [
+      3,
+      0,
+      20
+    ],
+    "episodes_per_seed": 20,
+    "mean_steps": [
+      369.55,
+      349.55,
+      500.0
+    ]
+  }
+}

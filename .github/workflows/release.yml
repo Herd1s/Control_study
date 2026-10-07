@@ -1,0 +1,117 @@
+name: Build Windows release candidate
+
+# Ordinary commits never publish or push an update to classrooms.
+on:
+  workflow_dispatch:
+    inputs:
+      create_draft:
+        description: Create a draft GitHub Release after all checks pass
+        type: boolean
+        default: false
+      release_tag:
+        description: Existing tag matching the package version, for example v0.2.0
+        type: string
+        default: ''
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write # Used only by the explicit draft-release step below.
+    env:
+      PYTHONUTF8: '1'
+      QT_QPA_PLATFORM: offscreen
+      SDL_VIDEODRIVER: dummy
+      SDL_AUDIODRIVER: dummy
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Create the independent development environment
+        run: |
+          $ErrorActionPreference = 'Stop'
+          .\setup.ps1 -Python (Get-Command python.exe).Source
+          if ($LASTEXITCODE -ne 0) { throw 'Environment setup failed.' }
+      - name: Validate source and deterministic tests
+        run: |
+          .\.venv\Scripts\python.exe -m pytest -q
+          if ($LASTEXITCODE -ne 0) { throw 'Tests failed.' }
+      - name: Verify version and build portable application
+        id: version
+        env:
+          MANUAL_RELEASE_TAG: ${{ inputs.release_tag }}
+          CREATE_DRAFT: ${{ inputs.create_draft }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $releaseVersion = (& .\.venv\Scripts\python.exe -c 'from control_lab import __version__; print(__version__)').Trim()
+          if ($releaseVersion -notmatch '^\d+\.\d+\.\d+$') { throw 'A release requires an explicit stable X.Y.Z version.' }
+          $releaseTag = "v$releaseVersion"
+          if ($env:GITHUB_REF_TYPE -eq 'tag' -and $env:GITHUB_REF_NAME -ne $releaseTag) { throw 'Tag and package version differ.' }
+          if ($env:MANUAL_RELEASE_TAG -and $env:MANUAL_RELEASE_TAG -ne $releaseTag) { throw 'Manual tag and package version differ.' }
+          if ($env:CREATE_DRAFT -eq 'true') {
+            if (-not $env:MANUAL_RELEASE_TAG) { throw 'Choose an existing release_tag before requesting a draft release.' }
+            $tagCommit = (& git rev-parse --verify "$releaseTag^{commit}").Trim()
+            if ($LASTEXITCODE -ne 0) { throw 'The release tag must already exist.' }
+            $builtCommit = (& git rev-parse HEAD).Trim()
+            if ($tagCommit -ne $builtCommit) { throw 'Select the tagged commit when building a draft release; tag and source differ.' }
+          }
+          "version=$releaseVersion" >> $env:GITHUB_OUTPUT
+          "tag=$releaseTag" >> $env:GITHUB_OUTPUT
+          $isccCommand = Get-Command ISCC.exe -ErrorAction SilentlyContinue
+          $isccPath = if ($isccCommand) { $isccCommand.Source } else { Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Inno Setup 6\ISCC.exe' }
+          if (-not (Test-Path -LiteralPath $isccPath)) { throw 'This Windows runner needs an existing Inno Setup 6 compiler.' }
+          .\scripts\build_windows.ps1 -Installer -Iscc $isccPath
+      - name: Verify packaged CLI and lesson resources
+        run: |
+          .\dist\ControlLab\ControlLabCLI.exe doctor
+          if ($LASTEXITCODE -ne 0) { throw 'Packaged doctor failed.' }
+          .\dist\ControlLab\ControlLabCLI.exe lesson --list
+          if ($LASTEXITCODE -ne 0) { throw 'Packaged lesson resources are missing.' }
+          .\dist\ControlLab\ControlLabCLI.exe evaluate --controller reference --split validation --output-dir logs\ci-packaged-validation
+          if ($LASTEXITCODE -ne 0) { throw 'Packaged validation failed.' }
+      - name: Package the installer, portable ZIP and SHA256SUMS
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Path dist\release -Force | Out-Null
+          $installerName = "ControlLab-Setup-$env:RELEASE_VERSION.exe"
+          Copy-Item -LiteralPath (Join-Path 'dist\installer' $installerName) -Destination (Join-Path 'dist\release' $installerName)
+          $archiveName = "ControlLab-Portable-$env:RELEASE_VERSION-windows-x64.zip"
+          Compress-Archive -Path dist\ControlLab -DestinationPath (Join-Path 'dist\release' $archiveName)
+          $checksumLines = Get-ChildItem -LiteralPath dist\release -File | Sort-Object Name | ForEach-Object {
+            $digest = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            "$digest  $($_.Name)"
+          }
+          $checksumLines | Set-Content -LiteralPath dist\release\SHA256SUMS -Encoding utf8NoBOM
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ControlLab-Windows-${{ steps.version.outputs.version }}
+          path: dist/release/*
+          if-no-files-found: error
+      - name: Create a draft release for maintainer review
+        if: github.ref_type == 'tag' || inputs.create_draft == true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # --verify-tag prevents the client from creating an unreviewed tag.
+          # --draft means users of the updater will not see this candidate yet.
+          $assets = Get-ChildItem -LiteralPath dist\release -File | ForEach-Object { $_.FullName }
+          gh release create $env:RELEASE_TAG @assets --verify-tag --draft --generate-notes --title "ControlLab $env:RELEASE_TAG"
+          if ($LASTEXITCODE -ne 0) { throw 'Draft release creation failed; build artifacts remain available.' }

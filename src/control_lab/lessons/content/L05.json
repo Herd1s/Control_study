@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L05",
+  "title": "让第一条推力指令动起来",
+  "summary": "return 1.0和return 0.0各意味着什么？",
+  "duration_minutes": 50,
+  "prerequisites": [
+    "L04"
+  ],
+  "scenario_id": "upright",
+  "scenario_options": [
+    "upright",
+    "moving_right",
+    "tilt_right",
+    "tilt_left"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "force",
+    "x"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "观察",
+      "instruction": "进入固定“推力 N”模式，看到只需修改一个数字的模板；先读当前场景为全零初态。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先看动作模式的单位。",
+        "力改变运动趋势，并非设置位置。",
+        "依次运行1、-1、0，每次先扶正。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "运行实验",
+      "instruction": "预测 `return 1.0` 的推力方向，再运行一个短观察片段，例如 0.2 秒后自动暂停。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "先看动作模式的单位。",
+        "力改变运动趋势，并非设置位置。",
+        "依次运行1、-1、0，每次先扶正。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "运行实验",
+      "instruction": "重新扶正，仅把 `1.0` 改为 `-1.0`，重复同样时长，比较运动方向。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "先看动作模式的单位。",
+        "力改变运动趋势，并非设置位置。",
+        "依次运行1、-1、0，每次先扶正。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "先预测",
+      "instruction": "重新扶正，改为 `0.0`，解释为何完全静止初态不动。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "先看动作模式的单位。",
+        "力改变运动趋势，并非设置位置。",
+        "依次运行1、-1、0，每次先扶正。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "观察",
+      "instruction": "播放“已经在移动”的预置状态，再给 `0.0`，观察零推力并不会立刻停车。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先看动作模式的单位。",
+        "力改变运动趋势，并非设置位置。",
+        "依次运行1、-1、0，每次先扶正。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "先预测",
+      "instruction": "独立完成“向左轻推”的任务，保存为 `l05_first_force.py`，写一句数值和单位的解释。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "先看动作模式的单位。",
+        "力改变运动趋势，并非设置位置。",
+        "依次运行1、-1、0，每次先扶正。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "return 1.0和return 0.0各意味着什么？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "先看动作模式的单位。",
+        "力改变运动趋势，并非设置位置。",
+        "依次运行1、-1、0，每次先扶正。"
+      ]
+    }
+  ],
+  "template": "templates/l05_exercise.py",
+  "solution": "solutions/l05_exercise.py",
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "return 1.0和return 0.0各意味着什么？",
+  "reference_answer": "推力模式分别是1 N与0 N。0 N不等于速度立即归零。",
+  "objectives": [
+    "return 1.0和return 0.0各意味着什么？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置与课时：** 完成 L04；50 分钟（演示 10、三个数实验 20、独立操作 10、复盘 10）。\n\n**只引入：** 数字、正负号、小数、`return` 返回动作；`def control(state, dt):` 暂作为软件约定的固定外壳，不展开全部函数语法。\n\n**教师问题：** “代码怎样表达向右推？”“零推力是否等于把运动强行停止？”\n\n**学生操作：**\n\n1. 进入固定“推力 N”模式，看到只需修改一个数字的模板；先读当前场景为全零初态。\n2. 预测 `return 1.0` 的推力方向，再运行一个短观察片段，例如 0.2 秒后自动暂停。\n3. 重新扶正，仅把 `1.0` 改为 `-1.0`，重复同样时长，比较运动方向。\n4. 重新扶正，改为 `0.0`，解释为何完全静止初态不动。\n5. 播放“已经在移动”的预置状态，再给 `0.0`，观察零推力并不会立刻停车。\n6. 独立完成“向左轻推”的任务，保存为 `l05_first_force.py`，写一句数值和单位的解释。\n\n**模板与练习：**\n\n```python\ndef control(state, dt):\n    return 1.0  # 单位 N，正数向右推\n```\n\n练习只改 `return` 后面的数；暂时不让学生改物理参数，也不提供无限循环模板。三个实验要求相同起点、相同时长。\n\n**可观察结果：** 正负数改变力的方向；零力不会消除已有惯性。小车实际瞬时运动还受摆杆状态影响，不能把“正推力”定义为“任何时刻车速必为正”。\n\n**误解与分层提示：**\n\n- “返回 1 表示移动 1 米。”提示 1：看模式标题 N；提示 2：这是推力；提示 3：比较 0.1 秒和 0.2 秒后的位移，不相等。\n- “把 `return` 写成中文也行。”提示 1：高亮报错位置；提示 2：Python 关键字需保持固定拼写；提示 3：恢复这一行模板，保留学生数值。\n\n**交付与过关：** 一份可运行文件和三行“数值—方向—现象”记录；能独立给出正、负、零三个有限数值。此课不要求杆保持直立。\n\n**界面显示：** 编辑器首次出现；当前编辑行醒目，保留“运行/停止/扶正”，只显示本课需要的位置或速度反馈和“推力 N”标签。隐藏目标速度、PID 参数、奖励。\n\n**软件与文件计划：** 短函数执行和保存已有；DEV-F03 一课一模板及不覆盖学生文件；DEV-F06 按步数短运行、暂停一致性；DEV-F08 新手报错定位。`lessons/content/L05.json`、`lessons/templates/l05_first_force.py`；在运行中修改代码必须先停止，再作为新实验运行。"
+}

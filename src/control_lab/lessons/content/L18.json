@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L18",
+  "title": "力量已经用尽，为何还在积累——积分饱和与条件积分",
+  "summary": "输出饱和时哪些积分应暂停，哪些应保留？",
+  "duration_minutes": 65,
+  "prerequisites": [
+    "L17"
+  ],
+  "scenario_id": "cart_velocity_windup",
+  "scenario_options": [
+    "cart_velocity",
+    "cart_velocity_windup"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "v",
+    "target_v",
+    "integral",
+    "force",
+    "requested_force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "修改代码",
+      "instruction": "延续单车速度实验台，明确把本课推力上限暂改为 `±1 N`，与正式倒立摆的 `±10 N` 区分。",
+      "activity": "code",
+      "evidence": "在你的代码副本中修改本步骤要求的一处内容。",
+      "completion": {
+        "event": "code.edited"
+      },
+      "hints": [
+        "比较未限幅请求与执行器实际力。",
+        "力已到上限时继续积累会拖慢恢复。",
+        "若candidate>limit且error>0，不接受本次积分增量；负饱和相反。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "观察",
+      "instruction": "目标速度在前 4 秒设为 `4 m/s`，随后降至 `0.3 m/s`。按 L17 的阻力和偏置，前半段目标超出持续推力能力，后一目标在能力范围内。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "比较未限幅请求与执行器实际力。",
+        "力已到上限时继续积累会拖慢恢复。",
+        "若candidate>limit且error>0，不接受本次积分增量；负饱和相反。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "运行实验",
+      "instruction": "先运行没有保护的 PI，观察请求力超过实际力时积分还在增长。只改变目标时刻，不改变初始状态。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "比较未限幅请求与执行器实际力。",
+        "力已到上限时继续积累会拖慢恢复。",
+        "若candidate>limit且error>0，不接受本次积分增量；负饱和相反。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "观察",
+      "instruction": "学生预测目标降低后 I 项还保留什么“记忆”，再观看实际曲线。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "比较未限幅请求与执行器实际力。",
+        "力已到上限时继续积累会拖慢恢复。",
+        "若candidate>limit且error>0，不接受本次积分增量；负饱和相反。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "先预测",
+      "instruction": "先加入积分上限，解释它约束内部状态；再加入条件积分，解释“不再往饱和方向继续积累”。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "比较未限幅请求与执行器实际力。",
+        "力已到上限时继续积累会拖慢恢复。",
+        "若candidate>limit且error>0，不接受本次积分增量；负饱和相反。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "留下记录",
+      "instruction": "对比无保护、仅积分限幅、条件积分三种方案，记录降低目标后的超调和恢复时间。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "比较未限幅请求与执行器实际力。",
+        "力已到上限时继续积累会拖慢恢复。",
+        "若candidate>limit且error>0，不接受本次积分增量；负饱和相反。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "修改代码",
+      "instruction": "恢复正式推力上限并回看参考倒立摆控制器的条件积分代码，明确其 `Ki=0` 时会清零积分，保护机制可以存在但并未实际启用 I。",
+      "activity": "code",
+      "evidence": "在你的代码副本中修改本步骤要求的一处内容。",
+      "completion": {
+        "event": "code.edited"
+      },
+      "hints": [
+        "比较未限幅请求与执行器实际力。",
+        "力已到上限时继续积累会拖慢恢复。",
+        "若candidate>limit且error>0，不接受本次积分增量；负饱和相反。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "输出饱和时哪些积分应暂停，哪些应保留？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "比较未限幅请求与执行器实际力。",
+        "力已到上限时继续积累会拖慢恢复。",
+        "若candidate>limit且error>0，不接受本次积分增量；负饱和相反。"
+      ]
+    }
+  ],
+  "template": "templates/l18_exercise.py",
+  "solution": "solutions/l18_exercise.py",
+  "requires": [
+    "cart_velocity"
+  ],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "输出饱和时哪些积分应暂停，哪些应保留？",
+  "reference_answer": "使饱和更严重的增量暂停，反方向误差允许释放积分；每回合要重置积分。",
+  "objectives": [
+    "输出饱和时哪些积分应暂停，哪些应保留？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置**：完成 L17，理解请求推力与实际推力。建议 60–75 分钟。\n\n**引导问题**：“已经踩到底，速度仍追不上；之后把目标降下来，为什么还会继续往前冲？”\n\n**课堂步骤**：\n\n1. 延续单车速度实验台，明确把本课推力上限暂改为 `±1 N`，与正式倒立摆的 `±10 N` 区分。\n2. 目标速度在前 4 秒设为 `4 m/s`，随后降至 `0.3 m/s`。按 L17 的阻力和偏置，前半段目标超出持续推力能力，后一目标在能力范围内。\n3. 先运行没有保护的 PI，观察请求力超过实际力时积分还在增长。只改变目标时刻，不改变初始状态。\n4. 学生预测目标降低后 I 项还保留什么“记忆”，再观看实际曲线。\n5. 先加入积分上限，解释它约束内部状态；再加入条件积分，解释“不再往饱和方向继续积累”。\n6. 对比无保护、仅积分限幅、条件积分三种方案，记录降低目标后的超调和恢复时间。\n7. 恢复正式推力上限并回看参考倒立摆控制器的条件积分代码，明确其 `Ki=0` 时会清零积分，保护机制可以存在但并未实际启用 I。\n\n**核心模板：教师逐行拆解，不要求第一次整段默写**：\n\n```python\nintegral = 0.0\nelapsed = 0.0\nkp, ki = 2.0, 1.0\nforce_limit = 1.0  # 仅本课速度场景\nintegral_limit = 1.0\n\ndef reset():\n    global integral, elapsed\n    integral = 0.0\n    elapsed = 0.0\n\ndef control(state, dt):\n    global integral, elapsed\n    target_v = 4.0 if elapsed < 4.0 else 0.3\n    error = target_v - state[\"v\"]\n    candidate = max(-integral_limit,\n                    min(integral_limit, integral + error * dt))\n    request = kp * error + ki * candidate\n    unsaturated = abs(request) <= force_limit\n    helps_recover = request * ki * error < 0.0\n    if unsaturated or helps_recover:\n        integral = candidate\n    elapsed += dt\n    return kp * error + ki * integral\n```\n\n环境负责实际执行力限幅。`request` 是使用候选积分计算的请求力；条件里的乘积用于判断本次积分变化是否有助于从饱和中退出。先用正饱和和负饱和各一个数值例子解释，避免让学生把布尔表达式当口令背诵。\n\n**实验条件与对照**：三组均从同样状态运行 12 秒，目标变化时刻统一；目标时间线写入配置。无保护组不截断积分；仅积分限幅组和条件积分组使用 `integral_limit=1.0`（误差单位m/s，积分单位m）。规划阶段独立数值探针已验证本场景可触发该限幅；原候选20不会触发限幅，已舍弃。进入GUI课堂前仍需预运行并固定展示数据，这不是其他模型的通用参数。\n\n**常见误解**：输出限幅不会自动限制积分；积分限幅和条件积分解决的问题有关但并不相同；目标超出物理能力时任何调参都不能保证达到；条件积分也不是对所有控制器都足够的万能方案。\n\n**界面显示顺序**：先显示推力限幅标记 → 请求/实际推力分离 → 积分曲线 → 目标变化指示 → 三方案叠加。保留“恢复 ±10 N 正式配置”的明确操作，不能让限幅修改悄悄污染后续课程。\n\n**验收与产物**：能在轨迹上圈出发生饱和与冻结积分的区间；提交 `l18_anti_windup.py` 和三方案对比。若恢复时间计算条件未满足，显示“本回合未恢复”，不能显示 0 秒。\n\n**拟实现模块**：`lessons/content/L18.json`、`lessons/templates/l18_anti_windup.py`；复用饱和记录器，新增 `ScenarioConfig.target_schedule`、控制器诊断中的积分值与冻结标志。测试正/负饱和、误差反向解饱和、`Ki=0` 三类边界。"
+}

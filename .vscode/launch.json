@@ -1,0 +1,64 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python：我的第一段控制",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "module": "control_lab",
+      "args": ["gui", "--stage", "3", "--code-file", "${workspaceFolder}/examples/first_action.py"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {"PYTHONUTF8": "1"}
+    },
+    {
+      "name": "ControlLab：教学软件",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "module": "control_lab",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {"PYTHONUTF8": "1"}
+    },
+    {
+      "name": "PID：我的控制器",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "program": "${workspaceFolder}/run.py",
+      "args": ["--controller", "student", "--render", "--episodes", "3"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {"PYTHONUTF8": "1"}
+    },
+    {
+      "name": "PID：参考控制器",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "program": "${workspaceFolder}/run.py",
+      "args": ["--controller", "reference", "--render", "--episodes", "3"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {"PYTHONUTF8": "1"}
+    },
+    {
+      "name": "PID：评估我的控制器",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "module": "control_lab",
+      "args": ["evaluate", "--controller", "student", "--split", "validation"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {"PYTHONUTF8": "1"}
+    }
+  ]
+}

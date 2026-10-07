@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=77,<83", "wheel>=0.45,<0.47"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "control-lab"
+dynamic = ["version"]
+description = "A local teaching lab from PID control to reinforcement learning"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "gymnasium==1.2.0",
+  "numpy==2.2.6",
+]
+
+[project.optional-dependencies]
+desktop = ["gymnasium[classic-control]==1.2.0", "pygame==2.6.1", "PySide6==6.9.3"]
+rl = ["stable-baselines3==2.9.0", "torch==2.9.1"]
+dev = ["pytest>=8.3,<10", "build>=1.2,<2"]
+packaging = ["pyinstaller==6.22.0"]
+
+[project.scripts]
+control-lab = "control_lab.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {attr = "control_lab.__version__"}
+
+[tool.setuptools.package-data]
+control_lab = ["templates/*.py", "resources/*.png", "lessons/content/*.json", "lessons/templates/*.py", "lessons/solutions/*.py", "evaluation/assets/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

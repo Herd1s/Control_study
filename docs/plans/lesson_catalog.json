@@ -1,0 +1,596 @@
+{
+  "schema_version": 1,
+  "document_kind": "planning_catalog_not_runtime_config",
+  "created_date": "2026-10-07",
+  "status": "proposed",
+  "current_application_version": "0.1.0",
+  "notes": [
+    "三页当前原型不等于32节完整课程已实现。",
+    "路径planned_content_path是未来源代码位置；teaching_spec相对docs/plans。",
+    "M6安装更新为跨课程软件工作，不分配新课号。",
+    "学生课时不含训练等待和课后作业；开发排期与学生学习时长分开。"
+  ],
+  "lessons": [
+    {
+      "id": "L01",
+      "title": "自由拖动，感受平衡",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [],
+      "milestones": [
+        "M0",
+        "M1"
+      ],
+      "class_minutes": {
+        "min": 50,
+        "max": 50
+      },
+      "teaching_spec": "../curriculum/01_FOUNDATIONS.md",
+      "planned_content_path": "src/control_lab/lessons/content/L01.json"
+    },
+    {
+      "id": "L02",
+      "title": "复位、暂停与扰动",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L01"
+      ],
+      "milestones": [
+        "M0",
+        "M1"
+      ],
+      "class_minutes": {
+        "min": 50,
+        "max": 50
+      },
+      "teaching_spec": "../curriculum/01_FOUNDATIONS.md",
+      "planned_content_path": "src/control_lab/lessons/content/L02.json"
+    },
+    {
+      "id": "L03",
+      "title": "位置与速度",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L02"
+      ],
+      "milestones": [
+        "M1"
+      ],
+      "class_minutes": {
+        "min": 55,
+        "max": 55
+      },
+      "teaching_spec": "../curriculum/01_FOUNDATIONS.md",
+      "planned_content_path": "src/control_lab/lessons/content/L03.json"
+    },
+    {
+      "id": "L04",
+      "title": "角度与角速度",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L03"
+      ],
+      "milestones": [
+        "M1"
+      ],
+      "class_minutes": {
+        "min": 55,
+        "max": 55
+      },
+      "teaching_spec": "../curriculum/01_FOUNDATIONS.md",
+      "planned_content_path": "src/control_lab/lessons/content/L04.json"
+    },
+    {
+      "id": "L05",
+      "title": "第一条推力指令",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L04"
+      ],
+      "milestones": [
+        "M2"
+      ],
+      "class_minutes": {
+        "min": 50,
+        "max": 50
+      },
+      "teaching_spec": "../curriculum/01_FOUNDATIONS.md",
+      "planned_content_path": "src/control_lab/lessons/content/L05.json"
+    },
+    {
+      "id": "L06",
+      "title": "变量与单位",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L05"
+      ],
+      "milestones": [
+        "M2"
+      ],
+      "class_minutes": {
+        "min": 50,
+        "max": 50
+      },
+      "teaching_spec": "../curriculum/01_FOUNDATIONS.md",
+      "planned_content_path": "src/control_lab/lessons/content/L06.json"
+    },
+    {
+      "id": "L07",
+      "title": "条件判断与死区",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L06"
+      ],
+      "milestones": [
+        "M2"
+      ],
+      "class_minutes": {
+        "min": 55,
+        "max": 55
+      },
+      "teaching_spec": "../curriculum/01_FOUNDATIONS.md",
+      "planned_content_path": "src/control_lab/lessons/content/L07.json"
+    },
+    {
+      "id": "L08",
+      "title": "反馈函数与固定步长",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L07"
+      ],
+      "milestones": [
+        "M2"
+      ],
+      "class_minutes": {
+        "min": 55,
+        "max": 55
+      },
+      "teaching_spec": "../curriculum/01_FOUNDATIONS.md",
+      "planned_content_path": "src/control_lab/lessons/content/L08.json"
+    },
+    {
+      "id": "L09",
+      "title": "时间、记忆与重置",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L08"
+      ],
+      "milestones": [
+        "M2"
+      ],
+      "class_minutes": {
+        "min": 55,
+        "max": 55
+      },
+      "teaching_spec": "../curriculum/01_FOUNDATIONS.md",
+      "planned_content_path": "src/control_lab/lessons/content/L09.json"
+    },
+    {
+      "id": "L10",
+      "title": "曲线、记录与调试",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L09"
+      ],
+      "milestones": [
+        "M2"
+      ],
+      "class_minutes": {
+        "min": 60,
+        "max": 60
+      },
+      "teaching_spec": "../curriculum/01_FOUNDATIONS.md",
+      "planned_content_path": "src/control_lab/lessons/content/L10.json"
+    },
+    {
+      "id": "L11",
+      "title": "目标速度与推力（可选）",
+      "status": "planned",
+      "optional": true,
+      "prerequisites": [
+        "L08"
+      ],
+      "milestones": [
+        "M2"
+      ],
+      "class_minutes": {
+        "min": 50,
+        "max": 50
+      },
+      "teaching_spec": "../curriculum/01_FOUNDATIONS.md",
+      "planned_content_path": "src/control_lab/lessons/content/L11.json"
+    },
+    {
+      "id": "L12",
+      "title": "第一条角度反馈规则",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L10"
+      ],
+      "milestones": [
+        "M2"
+      ],
+      "class_minutes": {
+        "min": 55,
+        "max": 55
+      },
+      "teaching_spec": "../curriculum/01_FOUNDATIONS.md",
+      "planned_content_path": "src/control_lab/lessons/content/L12.json"
+    },
+    {
+      "id": "L13",
+      "title": "比例P与符号",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L12"
+      ],
+      "milestones": [
+        "M3"
+      ],
+      "class_minutes": {
+        "min": 60,
+        "max": 75
+      },
+      "teaching_spec": "../curriculum/02_FEEDBACK_CONTROL.md",
+      "planned_content_path": "src/control_lab/lessons/content/L13.json"
+    },
+    {
+      "id": "L14",
+      "title": "P参数扫描、振荡与饱和",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L13"
+      ],
+      "milestones": [
+        "M3"
+      ],
+      "class_minutes": {
+        "min": 60,
+        "max": 75
+      },
+      "teaching_spec": "../curriculum/02_FEEDBACK_CONTROL.md",
+      "planned_content_path": "src/control_lab/lessons/content/L14.json"
+    },
+    {
+      "id": "L15",
+      "title": "角速度反馈与PD",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L14"
+      ],
+      "milestones": [
+        "M3"
+      ],
+      "class_minutes": {
+        "min": 75,
+        "max": 90
+      },
+      "teaching_spec": "../curriculum/02_FEEDBACK_CONTROL.md",
+      "planned_content_path": "src/control_lab/lessons/content/L15.json"
+    },
+    {
+      "id": "L16",
+      "title": "位置和速度反馈回中",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L15"
+      ],
+      "milestones": [
+        "M3"
+      ],
+      "class_minutes": {
+        "min": 75,
+        "max": 90
+      },
+      "teaching_spec": "../curriculum/02_FEEDBACK_CONTROL.md",
+      "planned_content_path": "src/control_lab/lessons/content/L16.json"
+    },
+    {
+      "id": "L17",
+      "title": "持续偏差与积分I",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L16"
+      ],
+      "milestones": [
+        "M4"
+      ],
+      "class_minutes": {
+        "min": 75,
+        "max": 90
+      },
+      "teaching_spec": "../curriculum/02_FEEDBACK_CONTROL.md",
+      "planned_content_path": "src/control_lab/lessons/content/L17.json"
+    },
+    {
+      "id": "L18",
+      "title": "积分饱和与条件积分",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L17"
+      ],
+      "milestones": [
+        "M4"
+      ],
+      "class_minutes": {
+        "min": 60,
+        "max": 75
+      },
+      "teaching_spec": "../curriculum/02_FEEDBACK_CONTROL.md",
+      "planned_content_path": "src/control_lab/lessons/content/L18.json"
+    },
+    {
+      "id": "L19",
+      "title": "完整控制器与状态重置",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L18"
+      ],
+      "milestones": [
+        "M4"
+      ],
+      "class_minutes": {
+        "min": 75,
+        "max": 90
+      },
+      "teaching_spec": "../curriculum/02_FEEDBACK_CONTROL.md",
+      "planned_content_path": "src/control_lab/lessons/content/L19.json"
+    },
+    {
+      "id": "L20",
+      "title": "测量噪声、滤波与微分冲击",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L19"
+      ],
+      "milestones": [
+        "M4"
+      ],
+      "class_minutes": {
+        "min": 75,
+        "max": 90
+      },
+      "teaching_spec": "../curriculum/02_FEEDBACK_CONTROL.md",
+      "planned_content_path": "src/control_lab/lessons/content/L20.json"
+    },
+    {
+      "id": "L21",
+      "title": "传统控制公平比较",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L20"
+      ],
+      "milestones": [
+        "M4"
+      ],
+      "class_minutes": {
+        "min": 75,
+        "max": 90
+      },
+      "teaching_spec": "../curriculum/02_FEEDBACK_CONTROL.md",
+      "planned_content_path": "src/control_lab/lessons/content/L21.json"
+    },
+    {
+      "id": "L22",
+      "title": "个人控制项目",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L21"
+      ],
+      "milestones": [
+        "M4"
+      ],
+      "class_minutes": {
+        "min": 120,
+        "max": 150
+      },
+      "teaching_spec": "../curriculum/02_FEEDBACK_CONTROL.md",
+      "planned_content_path": "src/control_lab/lessons/content/L22.json"
+    },
+    {
+      "id": "L23",
+      "title": "随机策略与强化学习概念",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L21"
+      ],
+      "milestones": [
+        "M5"
+      ],
+      "class_minutes": {
+        "min": 50,
+        "max": 50
+      },
+      "teaching_spec": "../curriculum/03_RL_AND_TITA.md",
+      "planned_content_path": "src/control_lab/lessons/content/L23.json"
+    },
+    {
+      "id": "L24",
+      "title": "奖励设计与回报",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L23",
+        "L10"
+      ],
+      "milestones": [
+        "M5"
+      ],
+      "class_minutes": {
+        "min": 60,
+        "max": 60
+      },
+      "teaching_spec": "../curriculum/03_RL_AND_TITA.md",
+      "planned_content_path": "src/control_lab/lessons/content/L24.json"
+    },
+    {
+      "id": "L25",
+      "title": "环境接口与训练准备",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L23",
+        "L24"
+      ],
+      "milestones": [
+        "M5"
+      ],
+      "class_minutes": {
+        "min": 60,
+        "max": 60
+      },
+      "teaching_spec": "../curriculum/03_RL_AND_TITA.md",
+      "planned_content_path": "src/control_lab/lessons/content/L25.json"
+    },
+    {
+      "id": "L26",
+      "title": "第一次PPO训练",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L25"
+      ],
+      "milestones": [
+        "M5"
+      ],
+      "class_minutes": {
+        "min": 60,
+        "max": 60
+      },
+      "teaching_spec": "../curriculum/03_RL_AND_TITA.md",
+      "planned_content_path": "src/control_lab/lessons/content/L26.json"
+    },
+    {
+      "id": "L27",
+      "title": "模型保存、回放与继续训练",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L26"
+      ],
+      "milestones": [
+        "M5"
+      ],
+      "class_minutes": {
+        "min": 60,
+        "max": 60
+      },
+      "teaching_spec": "../curriculum/03_RL_AND_TITA.md",
+      "planned_content_path": "src/control_lab/lessons/content/L27.json"
+    },
+    {
+      "id": "L28",
+      "title": "PID与强化学习公平比较",
+      "status": "planned",
+      "optional": false,
+      "prerequisites": [
+        "L22",
+        "L27"
+      ],
+      "milestones": [
+        "M5"
+      ],
+      "class_minutes": {
+        "min": 60,
+        "max": 60
+      },
+      "teaching_spec": "../curriculum/03_RL_AND_TITA.md",
+      "planned_content_path": "src/control_lab/lessons/content/L28.json"
+    },
+    {
+      "id": "L29",
+      "title": "延迟、噪声与模型变化",
+      "status": "planned",
+      "optional": true,
+      "prerequisites": [
+        "L28",
+        "L20"
+      ],
+      "milestones": [
+        "M7"
+      ],
+      "class_minutes": {
+        "min": 60,
+        "max": 60
+      },
+      "teaching_spec": "../curriculum/03_RL_AND_TITA.md",
+      "planned_content_path": "src/control_lab/lessons/content/L29.json"
+    },
+    {
+      "id": "L30",
+      "title": "倒立摆到TITA概念映射",
+      "status": "planned",
+      "optional": true,
+      "prerequisites": [
+        "L28"
+      ],
+      "milestones": [
+        "M7"
+      ],
+      "class_minutes": {
+        "min": 50,
+        "max": 50
+      },
+      "teaching_spec": "../curriculum/03_RL_AND_TITA.md",
+      "planned_content_path": "src/control_lab/lessons/content/L30.json"
+    },
+    {
+      "id": "L31",
+      "title": "TITA官方仿真复现",
+      "status": "planned",
+      "optional": true,
+      "prerequisites": [
+        "L30"
+      ],
+      "milestones": [
+        "M7"
+      ],
+      "class_minutes": {
+        "min": 120,
+        "max": 120
+      },
+      "teaching_spec": "../curriculum/03_RL_AND_TITA.md",
+      "planned_content_path": "src/control_lab/lessons/content/L31.json"
+    },
+    {
+      "id": "L32",
+      "title": "迁移报告与实机前准备",
+      "status": "planned",
+      "optional": true,
+      "prerequisites": [
+        "L29",
+        "L31"
+      ],
+      "milestones": [
+        "M7"
+      ],
+      "class_minutes": {
+        "min": 120,
+        "max": 120
+      },
+      "teaching_spec": "../curriculum/03_RL_AND_TITA.md",
+      "planned_content_path": "src/control_lab/lessons/content/L32.json"
+    }
+  ]
+}

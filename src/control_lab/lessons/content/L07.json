@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L07",
+  "title": "条件判断与死区",
+  "summary": "死区内返回0是否会让车立即停止？",
+  "duration_minutes": 55,
+  "prerequisites": [
+    "L06"
+  ],
+  "scenario_id": "position_right",
+  "scenario_options": [
+    "position_right",
+    "position_left",
+    "upright",
+    "moving_right"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "x",
+    "v",
+    "force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "观察",
+      "instruction": "先用中文写规则：“位置大于 0.2 m 时向左推，小于 −0.2 m 时向右推，其他时候不给力”。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "检查位置落在哪个区间。",
+        "所有分支都需要返回有限动作。",
+        "x>0.2返回-1，x<-0.2返回1，其余返回0。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "运行实验",
+      "instruction": "将右边条件填入模板，检查冒号与下一行缩进；用右侧初态短运行验证方向。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "检查位置落在哪个区间。",
+        "所有分支都需要返回有限动作。",
+        "x>0.2返回-1，x<-0.2返回1，其余返回0。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "修改代码",
+      "instruction": "补上左边条件，用左侧初态验证；保留杆也会运动的真实画面。",
+      "activity": "code",
+      "evidence": "在你的代码副本中修改本步骤要求的一处内容。",
+      "completion": {
+        "event": "code.edited"
+      },
+      "hints": [
+        "检查位置落在哪个区间。",
+        "所有分支都需要返回有限动作。",
+        "x>0.2返回-1，x<-0.2返回1，其余返回0。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "观察",
+      "instruction": "在中心测试默认 `return 0.0`，确认两个条件都不成立时仍返回有效动作。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "检查位置落在哪个区间。",
+        "所有分支都需要返回有限动作。",
+        "x>0.2返回-1，x<-0.2返回1，其余返回0。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "观察",
+      "instruction": "把中心区间缩为 ±0.02 m，再扩大到 ±0.3 m，比较切换频繁程度与允许偏离范围。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "检查位置落在哪个区间。",
+        "所有分支都需要返回有限动作。",
+        "x>0.2返回-1，x<-0.2返回1，其余返回0。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "先预测",
+      "instruction": "用同一个移动初态观察越过中心的情况，解释位置规则为什么可能来不及刹车。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "检查位置落在哪个区间。",
+        "所有分支都需要返回有限动作。",
+        "x>0.2返回-1，x<-0.2返回1，其余返回0。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "留下记录",
+      "instruction": "保存代码，并标出“哪一段条件触发了哪一个动作”。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "检查位置落在哪个区间。",
+        "所有分支都需要返回有限动作。",
+        "x>0.2返回-1，x<-0.2返回1，其余返回0。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "死区内返回0是否会让车立即停止？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "检查位置落在哪个区间。",
+        "所有分支都需要返回有限动作。",
+        "x>0.2返回-1，x<-0.2返回1，其余返回0。"
+      ]
+    }
+  ],
+  "template": "templates/l07_exercise.py",
+  "solution": "solutions/l07_exercise.py",
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "死区内返回0是否会让车立即停止？",
+  "reference_answer": "不会；死区是不给力的范围，已有速度仍会使车移动。位置开关规则也不是摆杆平衡控制器。",
+  "objectives": [
+    "死区内返回0是否会让车立即停止？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置与课时：** 完成 L06；55 分钟（纸面规则 10、编程 20、试验 15、复盘 10）。\n\n**只引入：** `if`、`elif`、`return` 的分支、大小比较、缩进、死区。此课用位置开关控制学习语法，不宣称它能平衡杆。\n\n**教师问题：** “如果小车已经偏到右边，要把它往哪里拉回？”“在中心附近一点点测量变化就左右切换，会怎样？”\n\n**学生操作：**\n\n1. 先用中文写规则：“位置大于 0.2 m 时向左推，小于 −0.2 m 时向右推，其他时候不给力”。\n2. 将右边条件填入模板，检查冒号与下一行缩进；用右侧初态短运行验证方向。\n3. 补上左边条件，用左侧初态验证；保留杆也会运动的真实画面。\n4. 在中心测试默认 `return 0.0`，确认两个条件都不成立时仍返回有效动作。\n5. 把中心区间缩为 ±0.02 m，再扩大到 ±0.3 m，比较切换频繁程度与允许偏离范围。\n6. 用同一个移动初态观察越过中心的情况，解释位置规则为什么可能来不及刹车。\n7. 保存代码，并标出“哪一段条件触发了哪一个动作”。\n\n**模板与练习：**\n\n```python\ndef control(state, dt):\n    position = state[\"x\"]\n    if position > 0.2:\n        return -1.0\n    elif position < -0.2:\n        return 1.0\n    return 0.0\n```\n\n练习先填空后独立重写一条分支。死区的边界、方向和数值都能由测试状态验证，无需真的等车跑过所有位置。\n\n**可观察结果：** 程序能按观测选择动作；死区内零推力不等于车保持不动；只靠位置开关控制，车可能振荡、杆也可能倒下。这是本课可接受结果。\n\n**误解与分层提示：**\n\n- “返回负力会立刻让负速度出现。”提示 1：同时看当前速度和动作；提示 2：力先改变运动趋势；提示 3：回放刹车再反向的片段。\n- “只有条件成立才需要返回。”提示 1：用 `x=0` 试算；提示 2：软件每次都需要一个动作；提示 3：补默认 `return 0.0`。\n- “倒杆说明 if 写错了。”提示 1：先检查每个分支方向；提示 2：程序逻辑对，不代表规则足以平衡；提示 3：说明角度反馈将在 L12 出现。\n\n**交付与过关：** 对 `x=−0.3、0、+0.3` 三个测试状态返回 `+1、0、−1 N`；说明死区是什么、为什么这还不是平衡控制。测试只检查分支任务，不能判定控制器稳定。\n\n**界面显示：** 增加“用这个状态试算一次”卡，点击后只计算动作，不推进当前仿真；输出方向箭头与活动分支高亮。隐藏 PID 名词及强化学习内容。\n\n**软件与文件计划：** DEV-F07 纯函数状态试算与练习检查；DEV-F08 缩进提示；DEV-F03 课程分支高亮。`lessons/content/L07.json`、`lessons/templates/l07_deadband.py`；试算使用隔离的一次性代码会话，不能改变正在运行实验的记忆。"
+}

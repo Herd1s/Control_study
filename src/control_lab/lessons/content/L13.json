@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "content_version": 1,
+  "lesson_id": "L13",
+  "title": "倒得越多，就推得越多——比例 P 与方向",
+  "summary": "kp=60、theta=.05 rad时输出多少，为什么？",
+  "duration_minutes": 65,
+  "prerequisites": [
+    "L12"
+  ],
+  "scenario_id": "tilt_right",
+  "scenario_options": [
+    "tilt_right",
+    "upright",
+    "tilt_left"
+  ],
+  "input_mode": "force_n",
+  "visible_signals": [
+    "theta",
+    "force"
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "title": "观察",
+      "instruction": "暂停在 `theta=+0.05 rad` 的初始画面，让学生先画出小车应移动的方向。再换成 `-0.05 rad`，确认答案反向。",
+      "activity": "observe",
+      "evidence": "在需要观察的时刻暂停，保留当前画面。",
+      "completion": {
+        "event": "simulation.paused"
+      },
+      "hints": [
+        "先判断正负，再算大小。",
+        "这里误差采用theta-0。",
+        "force = kp * theta，不要混用度。"
+      ]
+    },
+    {
+      "id": "step_02",
+      "title": "留下记录",
+      "instruction": "用已学的条件控制作为起点，例如 `theta>0` 就给 `+1 N`，否则给 `-1 N`。记录小角度和较大角度时动作都一样的局限。",
+      "activity": "record",
+      "evidence": "完成这一轮实验后，保存实验轨迹和代码。",
+      "completion": {
+        "event": "experiment.saved"
+      },
+      "hints": [
+        "先判断正负，再算大小。",
+        "这里误差采用theta-0。",
+        "force = kp * theta，不要混用度。"
+      ]
+    },
+    {
+      "id": "step_03",
+      "title": "观察",
+      "instruction": "把条件改成乘法 `force = kp * theta`。先不给 P 的英文缩写，称为“偏得越多，推得越多的规则”。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先判断正负，再算大小。",
+        "这里误差采用theta-0。",
+        "force = kp * theta，不要混用度。"
+      ]
+    },
+    {
+      "id": "step_04",
+      "title": "先预测",
+      "instruction": "手算 `kp=60`、`theta=0.05` 时输出 `3 N`；先在预测框写下答案，再按单步验证。增加“符号×大小”的力箭头。",
+      "activity": "predict",
+      "evidence": "写下你的预测或解释，再点击“保存我的观察”。",
+      "completion": {
+        "event": "prediction.submitted",
+        "field": "value"
+      },
+      "hints": [
+        "先判断正负，再算大小。",
+        "这里误差采用theta-0。",
+        "force = kp * theta，不要混用度。"
+      ]
+    },
+    {
+      "id": "step_05",
+      "title": "观察",
+      "instruction": "比较 `kp=20、40、60` 三次实验，只改一个数字，每次重置到同一非零初始状态。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先判断正负，再算大小。",
+        "这里误差采用theta-0。",
+        "force = kp * theta，不要混用度。"
+      ]
+    },
+    {
+      "id": "step_06",
+      "title": "运行实验",
+      "instruction": "在复制出的错误案例里试一次 `-kp*theta`，观察与预测是否一致，立即恢复正确符号；不把“失败越快”作为学生能力评价。",
+      "activity": "experiment",
+      "evidence": "运行这份代码，观察本次动作和结果。",
+      "completion": {
+        "event": "code.run"
+      },
+      "hints": [
+        "先判断正负，再算大小。",
+        "这里误差采用theta-0。",
+        "force = kp * theta，不要混用度。"
+      ]
+    },
+    {
+      "id": "step_07",
+      "title": "观察",
+      "instruction": "最后才介绍“比例反馈 P”，学生写一句“它看什么、返回什么、正负号为什么这样选”。",
+      "activity": "observe",
+      "evidence": "完成上面的观察或外部操作后，点击“我已观察并完成操作”。",
+      "completion": {
+        "event": "step.acknowledged"
+      },
+      "hints": [
+        "先判断正负，再算大小。",
+        "这里误差采用theta-0。",
+        "force = kp * theta，不要混用度。"
+      ]
+    },
+    {
+      "id": "reflection",
+      "title": "说说你的发现",
+      "instruction": "kp=60、theta=.05 rad时输出多少，为什么？",
+      "activity": "reflect",
+      "evidence": "提交自己的解释；软件只记录非空答案，正确性由自评或教师确认。",
+      "completion": {
+        "event": "reflection.submitted",
+        "field": "reflection"
+      },
+      "hints": [
+        "先判断正负，再算大小。",
+        "这里误差采用theta-0。",
+        "force = kp * theta，不要混用度。"
+      ]
+    }
+  ],
+  "template": "templates/l13_exercise.py",
+  "solution": "solutions/l13_exercise.py",
+  "requires": [],
+  "availability": "built_in",
+  "editor_kind": "controller",
+  "reflection": "kp=60、theta=.05 rad时输出多少，为什么？",
+  "reference_answer": "输出+3 N，镜像倾角输出-3 N。kp单位N/rad；增益不是推力本身。",
+  "objectives": [
+    "kp=60、theta=.05 rad时输出多少，为什么？",
+    "保存真实观察并说明本次结论的适用条件。"
+  ],
+  "notes": "**前置**：会修改 `return`、读取 `state[\"theta\"]`，理解正负方向；不要求微积分。建议 60–75 分钟。\n\n**引导问题**：“杆稍微向右倾和明显向右倾，应该给同样大小的推力吗？”\n\n**课堂步骤**：\n\n1. 暂停在 `theta=+0.05 rad` 的初始画面，让学生先画出小车应移动的方向。再换成 `-0.05 rad`，确认答案反向。\n2. 用已学的条件控制作为起点，例如 `theta>0` 就给 `+1 N`，否则给 `-1 N`。记录小角度和较大角度时动作都一样的局限。\n3. 把条件改成乘法 `force = kp * theta`。先不给 P 的英文缩写，称为“偏得越多，推得越多的规则”。\n4. 手算 `kp=60`、`theta=0.05` 时输出 `3 N`；先在预测框写下答案，再按单步验证。增加“符号×大小”的力箭头。\n5. 比较 `kp=20、40、60` 三次实验，只改一个数字，每次重置到同一非零初始状态。\n6. 在复制出的错误案例里试一次 `-kp*theta`，观察与预测是否一致，立即恢复正确符号；不把“失败越快”作为学生能力评价。\n7. 最后才介绍“比例反馈 P”，学生写一句“它看什么、返回什么、正负号为什么这样选”。\n\n**学生代码**：\n\n```python\nkp = 60.0  # 课堂参考起点；单位 N/rad\n\ndef control(state, dt):\n    theta = state[\"theta\"]\n    force = kp * theta\n    return force\n```\n\n**实验条件与对照**：先固定 `[0, 0, 0.05, 0]`，再做镜像 `[0, 0, -0.05, 0]`；比较固定推力规则与 P。短时观察允许失败，不要求仅靠 P 长期稳定。代码返回请求力，环境再限幅；同时记录两者。\n\n**常见误解**：`kp` 不是推力本身；角度 0.05 不是 0.05°；零输出不等于小车会立即停止；把所有反馈写成“目标减实际”后仍沿用原正号，会改变控制方向。\n\n**界面显示顺序**：先保留动画与左右箭头 → 只亮起角度读数 → 显示请求推力 → 显示一行乘法 → 最后出现 `P` 标签。暂不显示积分和其他增益面板。\n\n**验收与产物**：正确预测正负初始倾角的第一步推力；完成 3 行参数—现象记录；提交 `l13_p.py` 与一句符号解释。存活时间不作为本课硬门槛。\n\n**拟实现模块**：`src/control_lab/lessons/content/L13.json` 的引导与镜像初始条件、`lessons/templates/l13_p.py` 代码模板；复用统一场景执行器与“单步预测”组件。对应测试：镜像状态的 P 输出反号，界面 rad/° 标签不混用。下文短路径均相对于 `src/control_lab/`。"
+}
