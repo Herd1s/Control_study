@@ -5,3 +5,8 @@
 *.json text eol=lf
 *.cmd text eol=crlf
 *.ps1 text eol=crlf
+# Unity writes empty YAML values with a trailing space; preserve generated assets.
+*.meta whitespace=-blank-at-eol
+*.asset whitespace=-blank-at-eol
+*.mat whitespace=-blank-at-eol
+*.unity whitespace=-blank-at-eol

@@ -1,0 +1,157 @@
+{
+  "date": "2026-11-22",
+  "version": "0.2.0",
+  "unityVersion": "6000.5.7f1",
+  "reportPathBase": "Documentation directory",
+  "windowsPlayerBuilt": true,
+  "finalBuildLog": "../Logs/build-20261122-214002.log",
+  "managedAssemblySha256": "c9d8d0d26f02bc6fbe0ab57caf6ef2ae03ea708feec6cb37febf3ef3992023b2",
+  "sourceCheck": {
+    "runtimeFiles": 16,
+    "editorFiles": 3,
+    "passed": true,
+    "report": "../Logs/Verification/source-check/result.json"
+  },
+  "playerInteractionChecks": [
+    {
+      "scope": "settings-800x600",
+      "passed": true,
+      "checks": 44,
+      "sessions": 5,
+      "runtimeErrorCount": 0,
+      "report": "../Logs/Verification/settings-800x600/result.json"
+    },
+    {
+      "scope": "settings-1366x768",
+      "passed": true,
+      "checks": 44,
+      "sessions": 5,
+      "runtimeErrorCount": 0,
+      "report": "../Logs/Verification/settings-1366x768/result.json"
+    },
+    {
+      "scope": "progress-800x600",
+      "passed": true,
+      "checks": 42,
+      "sessions": 9,
+      "runtimeErrorCount": 0,
+      "report": "../Logs/Verification/progress-800x600/result.json"
+    },
+    {
+      "scope": "progress-1366x768",
+      "passed": true,
+      "checks": 42,
+      "sessions": 9,
+      "runtimeErrorCount": 0,
+      "report": "../Logs/Verification/progress-1366x768/result.json"
+    },
+    {
+      "scope": "studio-800x600",
+      "passed": true,
+      "checks": 37,
+      "sessions": 2,
+      "runtimeErrorCount": 0,
+      "report": "../Logs/Verification/studio-800x600/result.json"
+    },
+    {
+      "scope": "player-1366x768",
+      "passed": true,
+      "checks": 28,
+      "sessions": 0,
+      "runtimeErrorCount": 0,
+      "report": "../Logs/Verification/player-1366x768/result.json"
+    }
+  ],
+  "totalPlayerInteractionChecks": 237,
+  "preferencesCheck": {
+    "scope": "preferences-check",
+    "passed": true,
+    "checks": 35,
+    "sessions": 0,
+    "runtimeErrorCount": 0,
+    "report": "../Logs/Verification/preferences-check/result.json"
+  },
+  "updaterContracts": {
+    "scope": "update-check",
+    "passed": true,
+    "checks": 46,
+    "sessions": 0,
+    "runtimeErrorCount": 0,
+    "report": "../Logs/Verification/update-check/result.json"
+  },
+  "liveGitHubCheck": {
+    "requested": true,
+    "passed": true,
+    "expectedState": "NoRelease",
+    "state": "NoRelease",
+    "status": "尚无 Unity 正式安装包，可以继续使用当前版本。"
+  },
+  "dotnetPhysicsReplay": {
+    "passed": true,
+    "runtime": ".NET 9.0.14",
+    "utc": "2026-11-22T13:40:54.2151679Z",
+    "fixturePath": "../Tools/PhysicsCheck/Fixtures/physics-golden.json",
+    "modelSha256": "777dc0d730760352afdd531fe2ee839c922e08bb0acf35b29b2cc98e9bf21b77",
+    "tolerance": 1e-10,
+    "cases": 19,
+    "operations": 3848,
+    "numericComparisons": 30784,
+    "lifecycleComparisons": 19240,
+    "invariantChecks": 7,
+    "maxAbsoluteError": 0,
+    "worstLocation": "none",
+    "failure": ""
+  },
+  "physicsModelUnchanged": true,
+  "unityEditorPhysicsRerun": false,
+  "installerPackage": {
+    "utc": "2026-11-22T13:45:28.8622098Z",
+    "passed": true,
+    "buildShell": "Windows PowerShell 5.1",
+    "version": "0.2.0",
+    "installer": "../Builds/Releases/0.2.0/ControlLab-Unity-Setup-0.2.0.exe",
+    "installerBytes": 25667957,
+    "installerSha256": "d8c4b371aee02a7c36cdb2db97fa50b8dfbee0c68b49b0e0c6a41172e27aa2b8",
+    "portableZip": "../Builds/Releases/0.2.0/ControlLab-Unity-Portable-0.2.0-windows-x64.zip",
+    "portableBytes": 34958138,
+    "portableEntryCount": 153,
+    "portableRuntimeSha256": "c9d8d0d26f02bc6fbe0ab57caf6ef2ae03ea708feec6cb37febf3ef3992023b2",
+    "buildRuntimeSha256": "c9d8d0d26f02bc6fbe0ab57caf6ef2ae03ea708feec6cb37febf3ef3992023b2",
+    "manifestMatchesInstaller": true,
+    "checksums": [
+      {
+        "name": "ControlLab-Unity-Setup-0.2.0.exe",
+        "sha256": "d8c4b371aee02a7c36cdb2db97fa50b8dfbee0c68b49b0e0c6a41172e27aa2b8",
+        "passed": true
+      },
+      {
+        "name": "ControlLab-Unity-Portable-0.2.0-windows-x64.zip",
+        "sha256": "0a055c1fb1c3d54053bc9085ff26392b7c8a69f5f1da5f909e3ad4ef543e8b0c",
+        "passed": true
+      },
+      {
+        "name": "unity-update.json",
+        "sha256": "b48669ff1f73755c8244ebf38677f718986818543ffc37a37a0c5c49e0a3768c",
+        "passed": true
+      }
+    ],
+    "published": false
+  },
+  "installerRuntimeValidation": {
+    "passed": true,
+    "checks": 22,
+    "fromVersion": "0.1.0",
+    "toVersion": "0.2.0",
+    "waitForOldPlayer": true,
+    "automaticRestartVerified": true,
+    "profileBytesPreserved": true,
+    "defaultUserDataUnchanged": true,
+    "qaInstallationUninstalled": true,
+    "report": "../Logs/Verification/installer-20261122T134833709532Z/result.json"
+  },
+  "publicUnityReleasePublished": false,
+  "remoteDownloadInstallRoundTripVerified": false,
+  "screenshotSource": "Unity ScreenCapture, real Windows Player",
+  "historicalSummary": "verification-summary-v0.1.0.json",
+  "notes": "Current interaction scope is six suites totaling 237 checks. Historical 212 and post-retirement 69 counts are not added. No GitHub release was published."
+}

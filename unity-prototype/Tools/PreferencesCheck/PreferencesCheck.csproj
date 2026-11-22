@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="../../Assets/ControlLab/Scripts/AppPreferencesStore.cs" Link="AppPreferencesStore.cs" />
+    <Compile Include="../../Assets/ControlLab/Scripts/LearningProgressStore.cs" Link="LearningProgressStore.cs" />
+  </ItemGroup>
+</Project>

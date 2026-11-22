@@ -1,0 +1,100 @@
+#lesson-one #topbar { right: 144px; }
+#lesson-one.compact #topbar { right: 132px; }
+#lesson-one #settings-button { position: absolute; top: 28px; right: 38px; width: 82px; min-width: 82px; height: 36px; padding: 0 12px; margin: 3px 0; border-radius: 18px; }
+#lesson-one.compact #settings-button { top: 20px; right: 26px; }
+#settings-mask { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(27,39,55,0.20); justify-content: center; align-items: center; color: rgb(29,29,31); font-size: 18px; }
+#settings-panel { width: 1040px; height: 620px; border-radius: 28px; border-width: 1px; border-color: rgb(224,230,237); background-color: white; overflow: hidden; }
+#settings-header { height: 80px; min-height: 80px; padding: 0 28px; flex-direction: row; justify-content: space-between; align-items: center; border-bottom-width: 1px; border-bottom-color: rgb(228,232,238); }
+#settings-identity { flex-direction: row; align-items: center; }
+#settings-brand-mark { width: 40px; height: 40px; border-radius: 13px; margin: 0 14px 0 0; -unity-text-align: middle-center; background-color: rgb(0,102,204); color: white; font-size: 26px; -unity-font-style: bold; }
+#settings-title { font-size: 28px; -unity-font-style: bold; margin: 0; }
+#settings-body { flex-grow: 1; min-height: 0; flex-direction: row; }
+#settings-navigation { width: 190px; min-width: 190px; padding: 24px 16px 20px; background-color: rgb(250,251,252); border-right-width: 1px; border-right-color: rgb(228,232,238); }
+.settings-navigation-button { height: 52px; min-height: 52px; margin: 0 0 9px 0; padding: 0 18px; background-color: rgba(255,255,255,0); border-width: 1px; border-color: rgba(255,255,255,0); border-radius: 15px; font-size: 19px; color: rgb(85,99,113); -unity-text-align: middle-left; transition-property: background-color, color; transition-duration: 140ms; }
+.settings-navigation-button:hover { background-color: rgb(237,242,248); }
+.settings-navigation-button.selected { background-color: rgb(232,241,252); color: rgb(0,102,204); -unity-font-style: bold; }
+.settings-navigation-button:focus { border-color: rgb(121,174,232); }
+#settings-tab-about { margin-top: auto; margin-bottom: 0; }
+#settings-content { flex-grow: 1; min-width: 0; padding: 28px 34px; }
+.settings-page { flex-grow: 1; min-height: 0; }
+.settings-heading { flex-shrink: 0; margin-bottom: 20px; }
+.settings-page-title { margin: 0; font-size: 28px; -unity-font-style: bold; white-space: normal; }
+.settings-lead { margin: 7px 0 0 0; font-size: 18px; color: rgb(105,116,130); white-space: normal; }
+.settings-card { flex-shrink: 0; padding: 20px; margin-bottom: 18px; border-width: 1px; border-color: rgb(228,232,238); border-radius: 21px; background-color: white; }
+.settings-soft-card { flex-shrink: 0; padding: 20px; border-radius: 21px; background-color: rgb(245,247,250); }
+.settings-card-title { font-size: 20px; white-space: normal; margin: 0; }
+.settings-copy { font-size: 17px; color: rgb(105,116,130); white-space: normal; margin: 7px 0 0 0; }
+.settings-footnote { font-size: 17px; color: rgb(105,116,130); white-space: normal; margin: 10px 0 0 0; flex-shrink: 0; }
+.settings-spacer { flex-grow: 1; min-height: 10px; }
+#settings-progress-row { flex-direction: row; justify-content: space-between; align-items: center; }
+#settings-progress-label { font-size: 20px; margin: 0 12px 0 0; flex-shrink: 1; }
+#settings-mask #settings-remember { width: 78px; min-width: 78px; margin: 0; }
+#settings-checkpoint { max-height: 53px; overflow: hidden; }
+#settings-status { font-size: 17px; white-space: normal; color: rgb(126,72,35); margin: 12px 0 0 0; max-height: 54px; overflow: hidden; flex-shrink: 0; }
+.settings-action, .settings-soft-button { height: 44px; min-height: 44px; padding: 0 20px; margin: 0 10px 0 0; border-radius: 23px; border-width: 1px; border-color: rgba(255,255,255,0); font-size: 18px; -unity-text-align: middle-center; transition-property: background-color, color, scale; transition-duration: 140ms; }
+.settings-action:active, .settings-soft-button:active { scale: 0.98 0.98; }
+.settings-action:focus, .settings-soft-button:focus { border-color: rgb(121,174,232); }
+.settings-primary { background-color: rgb(0,102,204); color: white; }
+.settings-primary:hover { background-color: rgb(8,118,223); }
+.settings-secondary { background-color: white; border-color: rgb(211,224,239); color: rgb(0,102,204); }
+.settings-secondary:hover { background-color: rgb(240,246,253); }
+.settings-soft-button { background-color: rgb(240,245,251); color: rgb(0,102,204); margin: 0; font-size: 17px; }
+.settings-soft-button:hover { background-color: rgb(228,239,252); }
+.settings-action:disabled { color: rgb(148,158,169); background-color: rgb(238,241,245); border-color: rgb(223,229,236); }
+#settings-cart-card { flex-direction: row; align-items: center; min-height: 194px; padding: 18px 20px; }
+#settings-cart-art { width: 248px; min-width: 248px; height: 150px; margin-right: 22px; }
+#settings-cart-rail { position: absolute; left: 4px; right: 4px; bottom: 13px; height: 4px; border-radius: 2px; background-color: rgb(215,225,237); }
+#settings-cart-body { position: absolute; left: 22px; top: 38px; width: 204px; height: 78px; border-radius: 24px; background-color: rgb(8,120,232); }
+#settings-cart-top { position: absolute; left: 48px; top: 32px; width: 152px; height: 14px; border-radius: 7px; }
+#settings-cart-skin { position: absolute; left: 33px; right: 33px; top: 18px; height: 48px; border-radius: 13px; overflow: hidden; -unity-background-scale-mode: scale-to-fit; }
+.settings-cart-wheel { position: absolute; top: 95px; width: 44px; height: 44px; border-radius: 22px; background-color: rgb(52,67,84); align-items: center; justify-content: center; }
+#settings-cart-wheel-0 { left: 43px; }
+#settings-cart-wheel-1 { right: 43px; }
+.settings-cart-hub { width: 23px; height: 23px; border-radius: 12px; background-color: rgb(200,210,222); }
+#settings-cart-details { flex-grow: 1; min-width: 0; align-items: flex-start; }
+#settings-cart-name { margin: 0; font-size: 24px; -unity-font-style: bold; white-space: normal; max-height: 70px; overflow: hidden; }
+#settings-cart-summary { margin-bottom: 17px; }
+#settings-version-row { flex-shrink: 0; flex-direction: row; align-items: center; margin-bottom: 16px; }
+#settings-version-mark { width: 58px; height: 58px; margin: 0 16px 0 0; border-radius: 17px; background-color: rgb(240,245,251); color: rgb(0,102,204); font-size: 32px; -unity-font-style: bold; -unity-text-align: middle-center; }
+#settings-version-name { font-size: 21px; }
+#settings-update-card { padding: 17px 20px; margin-bottom: 15px; }
+#settings-update-status { font-size: 19px; max-height: 55px; overflow: hidden; }
+#settings-update-notes { max-height: 78px; overflow: hidden; }
+#settings-update-progress { height: 7px; min-height: 7px; border-radius: 4px; background-color: rgb(229,236,244); margin-top: 13px; overflow: hidden; }
+#settings-update-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 4px; background-color: rgb(0,102,204); }
+#settings-update-actions { flex-direction: row; flex-shrink: 0; }
+#settings-about-data { font-size: 18px; white-space: normal; color: rgb(105,116,130); margin: 24px 0 0 0; }
+#settings-project-link { align-self: flex-start; }
+#settings-mask.settings-compact #settings-panel { border-radius: 23px; }
+#settings-mask.settings-compact #settings-header { height: 66px; min-height: 66px; padding: 0 22px; }
+#settings-mask.settings-compact #settings-brand-mark { width: 36px; height: 36px; border-radius: 12px; font-size: 24px; }
+#settings-mask.settings-compact #settings-title { font-size: 26px; }
+#settings-mask.settings-compact #settings-navigation { width: 164px; min-width: 164px; padding: 18px 11px 16px; }
+#settings-mask.settings-compact .settings-navigation-button { height: 49px; min-height: 49px; padding: 0 14px; font-size: 18px; }
+#settings-mask.settings-compact #settings-content { padding: 22px 24px; }
+#settings-mask.settings-compact .settings-heading { margin-bottom: 17px; }
+#settings-mask.settings-compact .settings-page-title { font-size: 26px; }
+#settings-mask.settings-compact .settings-lead { font-size: 17px; margin-top: 5px; }
+#settings-mask.settings-compact .settings-card { padding: 17px; margin-bottom: 15px; }
+#settings-mask.settings-compact .settings-soft-card { padding: 17px; }
+#settings-mask.settings-compact .settings-action { height: 42px; min-height: 42px; font-size: 17px; padding: 0 16px; margin-right: 8px; }
+#settings-mask.settings-compact #settings-progress-label { font-size: 19px; }
+#settings-mask.settings-compact #settings-cart-card { min-height: 176px; padding: 14px 16px; }
+#settings-mask.settings-compact #settings-cart-art { width: 210px; min-width: 210px; margin-right: 16px; }
+#settings-mask.settings-compact #settings-cart-body { left: 14px; width: 182px; }
+#settings-mask.settings-compact #settings-cart-top { left: 39px; width: 132px; }
+#settings-mask.settings-compact #settings-cart-wheel-0 { left: 31px; }
+#settings-mask.settings-compact #settings-cart-wheel-1 { right: 31px; }
+#settings-mask.settings-compact #settings-cart-name { font-size: 22px; max-height: 62px; }
+#settings-mask.settings-compact #settings-cart-summary { margin-bottom: 12px; }
+#settings-mask.settings-compact #settings-updates-lead { display: none; }
+#settings-mask.settings-compact #settings-updates-heading { margin-bottom: 12px; }
+#settings-mask.settings-compact #settings-version-row { margin-bottom: 12px; }
+#settings-mask.settings-compact #settings-version-mark { width: 44px; height: 44px; border-radius: 14px; font-size: 28px; margin-right: 13px; }
+#settings-mask.settings-compact #settings-version-name { font-size: 19px; }
+#settings-mask.settings-compact #settings-current-version { margin-top: 3px; }
+#settings-mask.settings-compact #settings-update-card { padding: 14px 17px; margin-bottom: 12px; }
+#settings-mask.settings-compact #settings-update-status { font-size: 18px; max-height: 48px; }
+#settings-mask.settings-compact #settings-update-notes { max-height: 60px; }
+#settings-mask.settings-compact #settings-update-note { margin-top: 4px; }
+#settings-mask.settings-compact #settings-about-data { font-size: 17px; }

@@ -1,4 +1,4 @@
 {
-  "folders": [{"path": "."}],
-  "settings": {}
+  "folders": [{ "name": "ControlLab Unity", "path": "unity-prototype" }],
+  "settings": { "files.encoding": "utf8" }
 }

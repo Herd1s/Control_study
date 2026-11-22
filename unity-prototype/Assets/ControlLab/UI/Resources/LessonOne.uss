@@ -1,0 +1,117 @@
+#lesson-one {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+    color: rgb(29, 29, 31);
+    font-size: 18px;
+}
+#topbar {
+    position: absolute;
+    top: 28px; left: 38px; right: 38px;
+    height: 42px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+#brand { flex-direction: row; align-items: center; }
+#brand-mark {
+    width: 34px; height: 34px;
+    border-radius: 11px;
+    background-color: rgb(0, 102, 204);
+    color: white;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    font-size: 22px;
+    margin-right: 11px;
+}
+#brand-name { font-size: 20px; -unity-font-style: bold; }
+#lesson-caption { font-size: 16px; color: rgb(110, 110, 115); }
+#hero {
+    position: absolute;
+    top: 104px; left: 0; right: 0;
+    align-items: center;
+}
+#headline {
+    font-size: 36px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin: 0;
+}
+#guidance {
+    margin-top: 12px;
+    font-size: 18px;
+    color: rgb(110, 110, 115);
+    -unity-text-align: middle-center;
+}
+#footer {
+    position: absolute;
+    left: 0; right: 0; bottom: 34px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.pill {
+    height: 50px;
+    min-width: 132px;
+    margin-left: 5px; margin-right: 5px;
+    padding-left: 23px; padding-right: 23px;
+    padding-top: 0; padding-bottom: 0;
+    border-radius: 25px;
+    border-width: 1px;
+    font-size: 17px;
+    -unity-text-align: middle-center;
+    transition-property: background-color, border-color, color, scale;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+.primary { background-color: rgb(0, 102, 204); border-color: rgb(0, 102, 204); color: white; }
+.primary:hover { background-color: rgb(0, 115, 222); border-color: rgb(0, 115, 222); scale: 1.025 1.025; }
+.primary:active { background-color: rgb(0, 85, 170); border-color: rgb(0, 85, 170); scale: 0.97 0.97; }
+.secondary { background-color: rgba(255, 255, 255, .95); border-color: rgb(214, 220, 229); color: rgb(0, 102, 204); }
+.secondary:hover { background-color: rgb(233, 242, 252); border-color: rgb(183, 208, 237); scale: 1.025 1.025; }
+.secondary:active { background-color: rgb(219, 233, 249); scale: 0.97 0.97; }
+.quiet { background-color: rgba(255,255,255,0); border-color: rgba(255,255,255,0); color: rgb(83, 108, 139); }
+.quiet:hover, .quiet.selected { background-color: rgba(225, 233, 244, .85); color: rgb(0, 102, 204); }
+.pill:focus { border-width: 2px; border-color: rgb(108, 167, 228); padding-left: 22px; padding-right: 22px; }
+.pill:disabled { color: rgb(151, 158, 168); background-color: rgb(238, 240, 244); border-color: rgb(225, 229, 235); scale: 1 1; }
+#explanation {
+    position: absolute;
+    top: 104px;
+    left: 50%;
+    width: 620px;
+    translate: -50% 0;
+    padding: 12px 20px;
+    background-color: rgba(255, 255, 255, .97);
+    border-width: 1px;
+    border-color: rgb(225, 229, 235);
+    border-radius: 22px;
+}
+#concepts { flex-direction: row; justify-content: center; align-items: center; margin-bottom: 10px; }
+.concept {
+    height: 36px;
+    min-width: 142px;
+    margin: 0 3px;
+    padding: 0 14px;
+    border-radius: 18px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0);
+    background-color: rgb(242, 245, 249);
+    color: rgb(83, 108, 139);
+    font-size: 17px;
+    -unity-text-align: middle-center;
+    transition-property: background-color, color, scale;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+}
+.concept:hover { background-color: rgb(226, 237, 250); color: rgb(0, 102, 204); }
+.concept:active { scale: 0.97 0.97; }
+.concept.selected { background-color: rgb(0, 102, 204); color: white; }
+.concept:focus { border-color: rgb(108, 167, 228); }
+#explanation-text { font-size: 17px; margin: 0; -unity-text-align: middle-center; white-space: normal; }
+#lesson-one.compact #topbar { top: 20px; left: 26px; right: 26px; }
+#lesson-one.compact #hero { top: 88px; }
+#lesson-one.compact #headline { font-size: 29px; }
+#lesson-one.compact #guidance { font-size: 17px; margin-top: 8px; }
+#lesson-one.compact #footer { bottom: 25px; }
+#lesson-one.compact .pill { min-width: 118px; height: 48px; border-radius: 24px; padding-left: 18px; padding-right: 18px; }
+#lesson-one.compact #explanation { top: 88px; padding: 10px 14px; }

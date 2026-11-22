@@ -1,0 +1,36 @@
+#studio-root { position: absolute; left: 0; top: 0; right: 0; bottom: 0; color: rgb(29,29,31); font-size: 17px; }
+#studio-panel { position: absolute; top: 90px; right: 30px; bottom: 24px; width: 420px; padding: 20px; border-radius: 26px; background-color: rgba(255,255,255,0.97); border-width: 1px; border-color: rgb(226,231,237); }
+#studio-title { font-size: 26px; -unity-font-style: bold; margin: 0 0 10px 0; }
+#studio-name { height: 36px; min-height: 36px; margin: 0 0 10px 0; }
+#studio-name > .unity-base-field__label { min-width: 40px; margin-right: 10px; font-size: 17px; }
+#studio-name .unity-text-field__input { border-radius: 12px; padding: 5px 10px; font-size: 18px; background-color: rgb(245,247,250); border-color: rgb(218,224,232); }
+.studio-row { flex-direction: row; align-items: center; flex-shrink: 0; }
+#studio-body-colors { height: 28px; margin-bottom: 10px; }
+#studio-color-label { min-width: 40px; margin: 0 10px 0 0; }
+.studio-swatch { width: 26px; height: 26px; min-width: 26px; min-height: 26px; border-radius: 13px; padding: 0; margin: 0 5px 0 0; border-width: 2px; border-color: rgba(70,80,96,0.15); transition-property: scale, border-color; transition-duration: 120ms; }
+.studio-swatch:hover { scale: 1.1 1.1; }
+.studio-swatch.selected, .studio-swatch:focus { border-color: rgb(0,102,204); border-width: 3px; }
+.studio-button { height: 30px; min-height: 30px; padding: 0 12px; margin: 0 6px 0 0; border-radius: 15px; border-width: 1px; border-color: rgb(216,224,234); background-color: rgb(247,249,252); color: rgb(60,80,106); font-size: 17px; -unity-text-align: middle-center; transition-property: background-color, scale; transition-duration: 140ms; }
+.studio-button:hover { background-color: rgb(229,239,251); }
+.studio-button:active { scale: 0.97 0.97; }
+.studio-button.selected { background-color: rgb(0,102,204); border-color: rgb(0,102,204); color: white; }
+.studio-button:disabled { color: rgb(157,164,174); background-color: rgb(244,246,249); }
+.studio-custom { width: 28px; min-width: 28px; padding: 0; font-size: 22px; }
+#studio-photo-actions { height: 30px; margin-bottom: 8px; }
+.studio-canvas { height: 141px; min-height: 141px; flex-shrink: 0; margin-bottom: 8px; border-width: 1px; border-color: rgb(187,203,223); border-radius: 14px; -unity-background-scale-mode: stretch-to-fill; overflow: hidden; }
+.studio-canvas:focus { border-color: rgb(0,102,204); }
+#studio-paint-tools { height: 32px; margin-bottom: 6px; }
+#studio-paint-tools .studio-button { padding-left: 9px; padding-right: 9px; }
+#studio-paint-tools .studio-custom { padding: 0; }
+.ink-swatch { width: 22px; height: 22px; min-width: 22px; min-height: 22px; border-radius: 11px; margin-right: 4px; }
+#studio-drawing-actions { height: 30px; margin-bottom: 4px; }
+.studio-size { width: 32px; min-width: 32px; padding: 0; margin-right: 4px; }
+#studio-actions-spacer { flex-grow: 1; }
+#studio-status { font-size: 17px; height: 24px; min-height: 24px; margin: 0 0 8px 0; color: rgb(101,112,128); white-space: nowrap; }
+.studio-primary { height: 46px; min-height: 46px; margin: auto 0 0 0; border-radius: 23px; background-color: rgb(0,102,204); border-color: rgb(0,102,204); color: white; font-size: 18px; }
+.studio-primary:hover { background-color: rgb(0,115,222); }
+#studio-root.compact #studio-panel { top: 90px; right: 24px; width: 380px; padding: 14px 16px; border-radius: 22px; }
+#studio-root.compact #studio-title { font-size: 24px; margin-bottom: 6px; }
+#studio-root.compact #studio-name { margin-bottom: 8px; }
+#studio-root.compact #studio-body-colors { margin-bottom: 8px; }
+#studio-root.compact .studio-canvas { height: 129px; min-height: 129px; }

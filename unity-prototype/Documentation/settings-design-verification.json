@@ -1,0 +1,11 @@
+{
+  "date": "2026-11-22",
+  "artifact": "settings-design.html",
+  "scope": "Interactive HTML design proposal; not the implemented Unity settings UI",
+  "passed": true,
+  "layouts": { "sizes": [[800,600],[1366,768]], "pages": ["learning","cart","updates"], "checks": 6, "clippedControls": 0, "scrollingRequired": false },
+  "interactions": ["resume preference toggle", "cart name and color edit then return", "simulated update result"],
+  "updateNetworkRequests": false,
+  "screenshotMethod": "Playwright with animations completed for capture",
+  "screenshots": ["settings-design-preview.png","settings-design-cart.png","settings-design-updates.png"]
+}

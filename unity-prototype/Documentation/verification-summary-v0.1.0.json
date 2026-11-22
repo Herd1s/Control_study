@@ -1,0 +1,150 @@
+{
+  "date": "2026-11-22",
+  "unityVersion": "6000.5.7f1",
+  "windowsPlayerBuilt": true,
+  "windowsPlayerSha256": "D05C5848F7CC2EB32FF6016F54762EE3C666A69B862BE297DF2390830C1EA8CF",
+  "unityEditorPhysics": {
+    "passed": true,
+    "cases": 19,
+    "operations": 3848,
+    "maxAbsoluteError": 1.865174681370263e-14,
+    "tolerance": 1e-10,
+    "modelSha256": "777dc0d730760352afdd531fe2ee839c922e08bb0acf35b29b2cc98e9bf21b77",
+    "reusedUnchangedModelReport": true
+  },
+  "windowsPlayerChecks": [
+    {
+      "width": 1366,
+      "height": 768,
+      "passed": true,
+      "checks": 28,
+      "report": "../Logs/Verification/player-1366x768/result.json",
+      "runtimeErrorCount": 0,
+      "playerExitCode": 0
+    },
+    {
+      "width": 800,
+      "height": 600,
+      "passed": true,
+      "checks": 28,
+      "report": "../Logs/Verification/player-800x600/result.json",
+      "runtimeErrorCount": 0,
+      "playerExitCode": 0
+    }
+  ],
+  "screenshotSource": "Unity ScreenCapture, real Windows Player",
+  "managedAssemblySha256": "31FCDFCC4B2113E6CFB5FB36BC4AF49CF9BB1777FD38A28E263BC32ED2A03BDC",
+  "physicsModelUnchanged": true,
+  "finalBuildLog": "../Logs/build-20261122-211120.log",
+  "sourceCheck": {
+    "runtimeFiles": 11,
+    "editorFiles": 3,
+    "passed": true
+  },
+  "studioChecks": [
+    {
+      "width": 1366,
+      "height": 768,
+      "passed": true,
+      "checks": 37,
+      "report": "../Logs/Verification/studio-1366x768/result.json",
+      "runtimeErrorCount": 0,
+      "sessions": 2,
+      "arrivalSamples": 54
+    },
+    {
+      "width": 800,
+      "height": 600,
+      "passed": true,
+      "checks": 37,
+      "report": "../Logs/Verification/studio-800x600/result.json",
+      "runtimeErrorCount": 0,
+      "sessions": 2,
+      "arrivalSamples": 54
+    }
+  ],
+  "totalPlayerInteractionChecks": 212,
+  "progressChecks": [
+    {
+      "width": 1366,
+      "height": 768,
+      "passed": true,
+      "checks": 41,
+      "report": "../Logs/Verification/progress-1366x768/result.json",
+      "runtimeErrorCount": 0,
+      "sessions": 8
+    },
+    {
+      "width": 800,
+      "height": 600,
+      "passed": true,
+      "checks": 41,
+      "report": "../Logs/Verification/progress-800x600/result.json",
+      "runtimeErrorCount": 0,
+      "sessions": 8
+    }
+  ],
+  "progressStoreCheck": {
+    "passed": true,
+    "checks": 28,
+    "runtime": ".NET with JsonUtility test adapter; separate from actual Unity Player checks",
+    "report": "../Logs/Verification/progress-store-check/result.json"
+  },
+  "reportPathBase": "Documentation directory",
+  "standaloneMigration": {
+    "status": "verified",
+    "historicalPlayerInteractionChecks": 212,
+    "evidenceDirectory": "../Logs/Verification",
+    "frozenPhysicsReference": "../Tools/PhysicsCheck/Fixtures/physics-golden.json",
+    "notes": "Legacy Python project retired. Historical report internals keep original source paths. Unity independently rebuilt; system Python ran 69 focused Player checks after cleanup. The original 212-check suite was not fully rerun. Frozen reference integrity and .NET physics replay passed; Unity Editor numerical replay was not rerun.",
+    "historicalFullFunctionalBuildLog": "../Logs/build-20261122-205419.log",
+    "frozenReferenceIntegrity": {
+      "passed": true,
+      "report": "../Logs/Verification/frozen-reference-check.json",
+      "sha256": "f59e0bd53e059048c30547c914eceb844308ceffdd350a303353749efae92261"
+    },
+    "dotnetPhysicsReplay": {
+      "passed": true,
+      "runtime": ".NET 9.0.14",
+      "utc": "2026-11-22T13:16:13.3244570Z",
+      "cases": 19,
+      "operations": 3848,
+      "numericComparisons": 30784,
+      "lifecycleComparisons": 19240,
+      "invariantChecks": 7,
+      "maxAbsoluteError": 0,
+      "report": "../Logs/Verification/physics-verification-dotnet.json"
+    },
+    "sourceCheck": {
+      "passed": true,
+      "runtimeFiles": 11,
+      "editorFiles": 3,
+      "report": "../Logs/Verification/source-check/result.json"
+    },
+    "windowsPlayerBuild": {
+      "passed": true,
+      "log": "../Logs/build-20261122-211120.log"
+    },
+    "focusedPlayerChecks": [
+      {
+        "width": 800,
+        "height": 600,
+        "scope": "settings and exit resume",
+        "passed": true,
+        "checks": 41,
+        "sessions": 8,
+        "report": "../Logs/Verification/progress-800x600/result.json"
+      },
+      {
+        "width": 1366,
+        "height": 768,
+        "scope": "first chapter regression",
+        "passed": true,
+        "checks": 28,
+        "playerExitCode": 0,
+        "report": "../Logs/Verification/player-1366x768/result.json"
+      }
+    ],
+    "totalFocusedPlayerInteractionChecks": 69
+  }
+}

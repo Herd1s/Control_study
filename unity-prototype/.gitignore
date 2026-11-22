@@ -1,0 +1,14 @@
+/Library/
+/Temp/
+/Obj/
+/Logs/
+/UserSettings/
+/Builds/
+/.vs/
+/*.csproj
+/*.sln
+/*.slnx
+
+/output/
+/Tools/PhysicsCheck/bin/
+/Tools/PhysicsCheck/obj/

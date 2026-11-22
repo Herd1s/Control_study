@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ControlLab · 设置界面草案</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root{--blue:#0066cc;--ink:#1d1d1f;--muted:#697482;--line:#e4e8ee;--soft:#f5f7fa;--car:#0878e8}
+    *{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden}
+    body{font-family:"Microsoft YaHei UI","PingFang SC",system-ui,sans-serif;font-size:18px;color:var(--ink);background:radial-gradient(ellipse at 20% 8%,#fff 10%,#f4f6f9 70%)}
+    button,input,a{font:inherit}button{cursor:pointer}button:disabled{cursor:wait;opacity:.6}button,a,input{-webkit-tap-highlight-color:transparent}
+    button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #8dc1f6;outline-offset:3px}
+    button{transition:background .16s ease,transform .16s ease,color .16s ease}button:active:not(:disabled){transform:scale(.98)}
+    .canvas{height:100dvh;padding:22px 28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+    .draft-bar{width:100%;max-width:1040px;display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:40px;color:var(--muted);font-size:17px}
+    .draft-label{display:flex;align-items:center;gap:10px;white-space:nowrap}.draft-dot{width:8px;height:8px;border-radius:50%;background:#88a9c9}
+    .quiet-button{border:1px solid #d9e1eb;background:rgba(255,255,255,.85);border-radius:20px;padding:8px 17px;font-size:17px;color:#46627f;white-space:nowrap}
+    .quiet-button:hover{background:#edf4fc}
+    .window{width:100%;max-width:1040px;flex:1;max-height:620px;min-height:0;display:flex;flex-direction:column;background:#fff;border:1px solid #e0e6ed;border-radius:28px;box-shadow:0 20px 65px #24405c0b;overflow:hidden}
+    .window-header{height:82px;flex-shrink:0;border-bottom:1px solid var(--line);padding:0 28px;display:flex;align-items:center;justify-content:space-between}
+    .identity{display:flex;align-items:center;gap:14px}.mark{height:40px;width:40px;border-radius:13px;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700;font-size:26px}.window-title{font-size:28px;font-weight:650;letter-spacing:.02em}
+    .return-button{border:0;background:#f0f5fb;color:var(--blue);border-radius:22px;padding:10px 18px;font-size:17px}.return-button:hover{background:#e4effc}
+    .window-body{display:flex;flex:1;min-height:0}.sidebar{width:190px;flex-shrink:0;padding:25px 16px 20px;border-right:1px solid var(--line);display:flex;flex-direction:column;background:#fafbfc}
+    .nav-items{display:flex;flex-direction:column;gap:9px}.nav-button{height:52px;width:100%;padding:0 17px;display:flex;align-items:center;gap:12px;border:0;border-radius:15px;background:transparent;text-align:left;color:#556371;font-size:19px;white-space:nowrap}
+    .nav-button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}.nav-button:hover{background:#edf2f8}.nav-button.active{background:#e8f1fc;color:var(--blue);font-weight:650}.nav-about{margin-top:auto}
+    .content{padding:31px 36px;flex:1;min-width:0;min-height:0;position:relative}.view{height:100%;display:flex;flex-direction:column;gap:22px;animation:appear .2s ease-out}.view[hidden],.window[hidden],.plan[hidden]{display:none}
+    h1,h2,h3,p{margin:0}h2{font-size:28px;font-weight:650;line-height:1.4}.lead{margin-top:8px;font-size:18px;line-height:1.6;color:var(--muted)}
+    .card{border:1px solid var(--line);border-radius:21px;background:#fff;overflow:hidden}.card-pad{padding:23px}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:20px}.setting-title{font-size:20px;font-weight:500}.hint{font-size:17px;line-height:1.65;color:var(--muted);margin-top:8px}
+    .switch{width:57px;height:33px;border:0;border-radius:20px;padding:4px;background:#aeb6c0;flex-shrink:0;position:relative}.switch::before{content:"";display:block;width:25px;height:25px;background:white;border-radius:50%;box-shadow:0 1px 4px #0002;transition:transform .18s ease}.switch[aria-checked="true"]{background:var(--blue)}.switch[aria-checked="true"]::before{transform:translateX(24px)}
+    .checkpoint{padding:20px 23px;background:var(--soft);border-radius:20px;display:flex;gap:16px;align-items:center}.checkpoint-icon{height:43px;width:43px;display:grid;place-items:center;background:#fff;border-radius:14px;color:var(--blue);font-size:21px;flex-shrink:0}.checkpoint-title{font-size:19px;font-weight:500}.checkpoint-text{margin-top:5px;font-size:17px;color:var(--muted)}
+    .soft-note{font-size:17px;line-height:1.7;color:var(--muted)}.spacer{flex:1;min-height:0}.primary{border:0;background:var(--blue);color:#fff;min-height:44px;padding:10px 23px;border-radius:23px;font-size:18px;white-space:nowrap}.primary:hover{background:#0876df}.secondary{border:1px solid #d3e0ef;background:#fff;color:var(--blue);min-height:44px;padding:9px 21px;border-radius:23px;font-size:18px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}.secondary:hover{background:#f0f6fd}
+    .actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.cart-card{padding:18px 24px;background:linear-gradient(145deg,#f8fbff,#f2f6fa);border-radius:23px;display:flex;align-items:center;gap:25px;min-height:190px}.cart-image{width:265px;max-width:52%;height:150px;flex-shrink:1}.car-name{font-size:24px;font-weight:600;overflow-wrap:anywhere}.cart-summary{font-size:17px;color:var(--muted);margin:10px 0 20px;line-height:1.6}.cart-editor{gap:17px}.editor-grid{display:flex;gap:24px;align-items:center}.editor-preview{width:210px;min-width:140px;max-width:42%}.editor-fields{flex:1;min-width:0}.field-label{display:block;font-size:18px;margin:0 0 8px}input{width:100%;height:44px;border:1px solid #d7e0ec;border-radius:13px;background:#f7f9fc;padding:0 13px;font-size:18px;color:var(--ink)}.swatches{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.swatch{width:29px;height:29px;border-radius:50%;background:var(--swatch);border:3px solid transparent;box-shadow:0 0 0 1px #0001}.swatch[aria-pressed="true"]{border-color:#fff;box-shadow:0 0 0 2px var(--blue)}
+    .saved-message{font-size:17px;color:#31745b;line-height:1.6;min-height:27px}.version-row{display:flex;align-items:center;gap:17px}.version-mark{background:#f0f5fb;color:var(--blue);border-radius:18px;height:65px;width:65px;display:grid;place-items:center;font-size:35px;font-weight:650;flex-shrink:0}.version-name{font-size:22px;font-weight:600}.version-number{margin-top:5px;color:var(--muted);font-size:18px}.update-box{padding:21px 24px;border:1px solid var(--line);border-radius:21px}.update-title{font-size:20px;font-weight:500;line-height:1.5}.update-copy{font-size:17px;color:var(--muted);line-height:1.7;margin-top:8px}.about-brand{font-size:32px;font-weight:650;letter-spacing:.01em}.about-copy{font-size:18px;line-height:1.8;color:var(--muted);max-width:560px}
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#24364e;color:#fff;padding:12px 21px;border-radius:16px;box-shadow:0 7px 25px #0002;font-size:17px;max-width:calc(100% - 48px);line-height:1.5;z-index:10;pointer-events:none}.toast[hidden]{display:none}
+    .plan{width:100%;max-width:1040px;flex:1;min-height:0;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:25px;padding:32px 40px;font-size:18px;line-height:1.85;scrollbar-gutter:stable}.plan h1{font-size:30px;line-height:1.5;margin-bottom:14px}.plan h2{font-size:24px;margin:28px 0 10px}.plan h3{font-size:20px;margin:20px 0 6px}.plan p{margin:10px 0}.plan ul,.plan ol{margin:9px 0;padding-left:25px}.plan li{padding-left:3px;margin:7px 0}.plan code{font:17px ui-monospace,Consolas,monospace;background:#f2f5f8;padding:2px 5px;border-radius:5px;overflow-wrap:anywhere}.plan a{color:var(--blue);text-underline-offset:4px}.plan table{width:100%;border-collapse:collapse;font-size:17px;margin:15px 0}.plan th,.plan td{padding:11px 13px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.plan th{background:#f7f9fc}.plan .callout{background:#edf5fe;border-radius:16px;padding:16px 20px;color:#345575}.plan .meta{color:var(--muted);font-size:17px}
+    @keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:900px),(max-height:690px){.canvas{padding:16px 22px;gap:10px}.draft-bar{min-height:35px}.window{border-radius:23px}.window-header{height:68px;padding:0 23px}.window-title{font-size:26px}.mark{height:36px;width:36px;font-size:24px}.sidebar{width:168px;padding:18px 12px 16px}.nav-button{padding:0 13px;gap:10px;font-size:18px;height:49px}.content{padding:24px 25px}.view{gap:17px}h2{font-size:26px}.lead{margin-top:5px}.card-pad{padding:19px}.checkpoint{padding:17px 19px}.cart-card{padding:14px 18px;gap:17px;min-height:174px}.cart-image{height:134px;width:220px}.car-name{font-size:22px}.cart-summary{margin:7px 0 14px}.update-box{padding:18px 20px}.plan{padding:24px 27px}.editor-grid{gap:16px}.cart-editor{gap:14px}}
+    @media(max-width:680px){.canvas{padding:12px;gap:8px}.draft-label{white-space:normal;font-size:17px}.draft-dot{display:none}.draft-bar{gap:8px}.quiet-button{padding:7px 11px}.sidebar{width:122px;padding:12px 7px}.nav-button{font-size:17px;padding:0 10px;gap:7px}.nav-button svg{display:none}.content{padding:19px 17px}.window-header{padding:0 17px}.setting-title{font-size:18px}.checkpoint{padding:15px}.checkpoint-icon{display:none}.cart-card{gap:7px;padding:12px}.cart-image{width:140px}.cart-summary{margin-bottom:10px}.primary,.secondary{font-size:17px;padding-left:15px;padding-right:15px}.editor-preview{display:none}.plan{padding:20px}.plan table{display:block;overflow:auto}}
+    @media(prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+<main class="canvas">
+  <div class="draft-bar"><div class="draft-label"><span class="draft-dot"></span><span>设置界面草案 · 更新结果为演示</span></div><button class="quiet-button" id="plan-button" type="button">实施规划</button></div>
+  <section class="window" id="settings-window" aria-label="设置界面设计预览">
+    <header class="window-header"><div class="identity"><div class="mark" aria-hidden="true">C</div><span class="window-title">设置</span></div><button class="return-button" id="return-course" type="button">返回课程</button></header>
+    <div class="window-body">
+      <nav class="sidebar" aria-label="设置分类"><div class="nav-items" role="tablist" aria-orientation="vertical">
+        <button class="nav-button active" id="tab-learning" type="button" role="tab" aria-selected="true" aria-controls="view-learning" data-view="learning"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5c3-1.5 5.4-1.5 8 0 2.6-1.5 5-1.5 8 0v14c-3-1.5-5.4-1.5-8 0-2.6-1.5-5-1.5-8 0zM12 5.5v14"/></svg>学习</button>
+        <button class="nav-button" id="tab-cart" type="button" role="tab" aria-selected="false" aria-controls="view-cart" data-view="cart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l2 5v6H3v-6zM3 12h18M7 7l1-3h8l1 3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>我的小车</button>
+        <button class="nav-button" id="tab-updates" type="button" role="tab" aria-selected="false" aria-controls="view-updates" data-view="updates"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 8a8 8 0 0 0-14-1M5 4v4h4M5 16a8 8 0 0 0 14 1M19 20v-4h-4"/></svg>软件更新</button>
+      </div><button class="nav-button nav-about" id="tab-about" type="button" aria-controls="view-about" data-view="about"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v.2"/></svg>关于</button></nav>
+      <div class="content">
+        <section class="view" id="view-learning" role="tabpanel" aria-labelledby="tab-learning">
+          <div><h2>按自己的节奏学习</h2><p class="lead">随时离开，下次接着探索。</p></div>
+          <div class="card card-pad"><div class="setting-row"><span class="setting-title">下次继续上次进度</span><button class="switch" id="remember-switch" type="button" role="switch" aria-checked="true" aria-label="下次继续上次进度"></button></div><p class="hint" id="remember-description">打开软件时，回到上次的页面与讲解。</p></div>
+          <div class="checkpoint"><div class="checkpoint-icon" aria-hidden="true">↗</div><div><div class="checkpoint-title">第一章 · 自由探索</div><div class="checkpoint-text">上次看到「重力与力矩」· 示例</div></div></div>
+          <div class="spacer"></div><p class="soft-note">小车装扮与学习记录始终保留。</p>
+        </section>
+        <section class="view" id="view-cart" role="tabpanel" aria-labelledby="tab-cart" hidden>
+          <div><h2>一辆属于你的小车</h2><p class="lead">换个颜色，给探索添一点自己的风格。</p></div>
+          <div class="cart-card"><svg class="cart-image" viewBox="0 0 300 180" aria-label="小车外观示例"><defs><linearGradient id="body-light" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><ellipse cx="150" cy="148" rx="115" ry="9" fill="#dbe4ef"/><path d="M28 151h244" stroke="#d7e1ed" stroke-width="4" stroke-linecap="round"/><rect x="44" y="54" width="212" height="85" rx="26" fill="var(--car)"/><rect x="44" y="54" width="212" height="85" rx="26" fill="url(#body-light)"/><rect x="71" y="48" width="158" height="17" rx="7" fill="var(--car)"/><rect x="71" y="48" width="158" height="17" rx="7" fill="#fff" opacity=".5"/><rect x="86" y="78" width="128" height="35" rx="12" fill="#fff" opacity=".13"/><path d="m126 96 14 10 31-18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/><circle cx="88" cy="134" r="25" fill="#344354"/><circle cx="212" cy="134" r="25" fill="#344354"/><circle cx="88" cy="134" r="13" fill="#c8d2de"/><circle cx="212" cy="134" r="13" fill="#c8d2de"/></svg><div><div class="car-name" id="cart-name-preview">我的小车</div><p class="cart-summary">颜色、照片与自由涂鸦</p><button class="primary" id="edit-cart" type="button">编辑外观</button></div></div>
+          <p class="saved-message" id="cart-save-status" aria-live="polite"></p><div class="spacer"></div><p class="soft-note">修改外观后，返回正在学习的课程。</p>
+        </section>
+        <section class="view cart-editor" id="view-editor" aria-label="小车外观编辑示例" hidden>
+          <div><h2>编辑小车外观</h2><p class="lead">这是改名与配色的交互示例。</p></div>
+          <div class="editor-grid"><svg class="editor-preview" viewBox="0 0 300 180" aria-label="编辑中的小车"><ellipse cx="150" cy="148" rx="115" ry="9" fill="#e4eaf2"/><rect x="44" y="54" width="212" height="85" rx="26" fill="var(--car)"/><rect x="71" y="48" width="158" height="17" rx="7" fill="var(--car)"/><rect x="71" y="48" width="158" height="17" rx="7" fill="#fff" opacity=".5"/><path d="m126 96 14 10 31-18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="88" cy="134" r="25" fill="#344354"/><circle cx="212" cy="134" r="25" fill="#344354"/><circle cx="88" cy="134" r="13" fill="#c8d2de"/><circle cx="212" cy="134" r="13" fill="#c8d2de"/></svg><div class="editor-fields"><label class="field-label" for="cart-name-input">名字</label><input id="cart-name-input" maxlength="16" value="我的小车" autocomplete="off"><div class="swatches" aria-label="小车颜色"><button class="swatch" type="button" style="--swatch:#0878e8" data-color="#0878e8" aria-label="蓝色" aria-pressed="true"></button><button class="swatch" type="button" style="--swatch:#39a88d" data-color="#39a88d" aria-label="绿色" aria-pressed="false"></button><button class="swatch" type="button" style="--swatch:#e28c45" data-color="#e28c45" aria-label="橙色" aria-pressed="false"></button><button class="swatch" type="button" style="--swatch:#c65c72" data-color="#c65c72" aria-label="玫瑰色" aria-pressed="false"></button><button class="swatch" type="button" style="--swatch:#8b79c7" data-color="#8b79c7" aria-label="紫色" aria-pressed="false"></button><button class="swatch" type="button" style="--swatch:#596879" data-color="#596879" aria-label="灰色" aria-pressed="false"></button></div></div></div>
+          <div class="checkpoint"><div><div class="checkpoint-title">照片与涂鸦</div><p class="hint">正式界面复用已有装扮编辑器。</p></div></div><div class="spacer"></div><div class="actions"><button class="primary" id="save-cart" type="button">保存并返回</button><button class="secondary" id="cancel-cart" type="button">取消</button></div>
+        </section>
+        <section class="view" id="view-updates" role="tabpanel" aria-labelledby="tab-updates" hidden>
+          <div><h2>让探索继续生长</h2><p class="lead">有新版本时，由你决定何时更新。</p></div>
+          <div class="version-row"><div class="version-mark" aria-hidden="true">C</div><div><div class="version-name">ControlLab Unity</div><div class="version-number">当前原型 · 0.1.0</div></div></div>
+          <div class="update-box" aria-live="polite"><div class="update-title" id="update-title">准备好时，检查一下更新</div><p class="update-copy" id="update-description">演示状态 · 尚未请求 GitHub。</p></div>
+          <div class="actions"><button class="primary" id="check-update" type="button">检查更新（演示）</button><a class="secondary" href="https://github.com/Herd1s/Control_study" target="_blank" rel="noopener noreferrer">查看项目</a></div><div class="spacer"></div><p class="soft-note">更新由 GitHub Releases 分发，学习资料留在本机。</p>
+        </section>
+        <section class="view" id="view-about" aria-labelledby="tab-about" hidden>
+          <div class="version-row"><div class="version-mark" aria-hidden="true">C</div><div><div class="about-brand">ControlLab</div><div class="version-number">从亲手感受，到理解控制。</div></div></div>
+          <p class="about-copy">这是一份本地可点击的设置设计草案。开关、改名和配色只在本次预览中演示，不会修改已安装的软件。</p>
+          <div class="checkpoint"><div><div class="checkpoint-title">Unity 原型 · 0.1.0</div><p class="hint">本草案尚未接入 Unity，也不会联网检查或安装更新。</p></div></div>
+          <div class="spacer"></div><div class="actions"><button class="secondary" id="about-plan" type="button">查看实施规划</button><a class="secondary" href="https://github.com/Herd1s/Control_study" target="_blank" rel="noopener noreferrer">GitHub 项目</a></div>
+        </section>
+      </div>
+    </div>
+  </section>
+  <article class="plan" id="implementation-plan" hidden aria-label="设置界面实施规划" tabindex="-1">
+    <h1>ControlLab 设置界面实施规划</h1>
+    <p class="meta">2026-11-22 · 设计草案与实施范围 · Unity 作为后续唯一主线</p>
+    <div class="callout">本页是规划交付。上方设置预览可以点击，但尚未改动 Unity 生产界面，也没有接入真实更新服务。更新按钮显示的是明确标注的演示结果。</div>
+    <h2>1. 页面与默认行为</h2>
+    <p>设置采用固定的三类导航：学习、我的小车、软件更新；关于置于侧栏底部。800×600 与 1366×768 中，设置预览完整显示，不依赖滚动。每页只放当前有用的操作，不添加尚未接通的占位开关。</p>
+    <table><thead><tr><th>页面</th><th>首批内容</th><th>默认行为</th></tr></thead><tbody><tr><td>学习</td><td>下次继续上次进度、当前学习位置</td><td>默认开启；关闭只改变启动入口，已有学习记录与外观保留。</td></tr><tr><td>我的小车</td><td>外观预览、名字、编辑外观</td><td>复用现有照片与涂鸦编辑器；课程中编辑后返回原位置。</td></tr><tr><td>软件更新</td><td>当前版本、检查更新、更新说明、下载与安装状态</td><td>首版手动检查、下载和安装。打开设置不自动联网，不打断实验。</td></tr><tr><td>关于</td><td>版本、项目链接、本地资料说明</td><td>不用学生填写仓库地址、登录 GitHub 或输入访问令牌。</td></tr></tbody></table>
+    <p>沿用白、灰、蓝和圆角按钮。正文与说明不小于 17 px；分类切换使用短淡入，尊重系统“减少动态效果”偏好。开关即时保存，不再添加一个全局“保存设置”步骤。正式软件打开设置时暂停实验，关闭后恢复，并拦截背景鼠标与键盘操作。</p>
+    <h2>2. 启动偏好与学习记录分开</h2>
+    <p>现有 Unity 实现将 <code>rememberProgress</code> 和页面位置放在 <code>LearningProgress</code> 中，关闭开关会保存 <code>hasProgress=false</code>。随着课程增加，这个语义应调整为“是否自动继续”，而不是删除历史记录。</p>
+    <ul><li><code>AppPreferencesStore</code> 保存启动偏好和未来明确需要的应用设置。</li><li><code>LearningProgressStore</code> 保存章节、页面、讲解主题及展开状态。以后按课程实际实现增加稳定的 <code>lessonId</code>、<code>stepId</code>，不保存不存在的课程入口。</li><li><code>CartProfileStore</code> 继续保存名字、颜色、照片与涂鸦，关闭自动继续不影响这些资料。</li><li>迁移读取现有偏好与进度，保持原来的开关值；新增独立偏好文件后记录版本，写入前备份，迁移失败保留原数据。</li><li>返回第一章时，小车居中、杆竖直静止，等待学员操作；不恢复上次退出时的速度、跌倒或拖动状态。</li></ul>
+    <p>页面、主题和设置改变时保存进度；正常退出、窗口失焦时保存装扮草稿。未来 Python 作业与代码另设自动保存，不应因为关闭“下次继续”而停止保存。当前 Unity 尚未迁移后续 Python 课程，不提前显示虚构的完成百分比。</p>
+    <h2>3. 更换皮肤不改变学习位置</h2>
+    <p>现有 <code>ShowStudio()</code> 会重置实验并把保存页面改为 Studio，完成后固定进入入场动画。设置中的“编辑外观”需要区分两种进入方式：</p>
+    <table><thead><tr><th>模式</th><th>完成按钮</th><th>完成后</th></tr></thead><tbody><tr><td><code>Onboarding</code> 首次创建</td><td>完成，进入第一章</td><td>小车从左侧驶到中央，再开始第一章。</td></tr><tr><td><code>Customize</code> 中途修改</td><td>保存并返回</td><td>保存外观，返回原课程与讲解位置，不再次播放入场。</td></tr></tbody></table>
+    <p><code>CartStudio</code> 接收进入模式和返回位置。编辑期间不覆盖原课程检查点；正常退出时保存新外观，下次仍依据启动偏好进入原课程或首页。照片与涂鸦继续分层，移除照片不会清除绘画。</p>
+    <p>本 HTML 仅演示名字与六种颜色，编辑入口尚未连接 Unity。正式实现复用已有照片选择器、笔刷、橡皮和撤销，不建立第二套绘画工具。是否支持“放弃修改”需与草稿自动保存一致：若提供取消，进入中途编辑时先记录外观快照，取消明确恢复该快照。</p>
+    <h2>4. GitHub 更新流程</h2>
+    <p>界面使用“软件更新”作为学生入口；GitHub 是分发来源。当前 Unity 原型版本为 0.1.0；清理前核验的旧 Python/Qt 代码版本为 0.2.4。既有旧发布工作流构建的是 Python 产品，不能把旧安装包当作 Unity 更新。</p>
+    <ol><li>用户点击检查更新，后台读取发布信息，不冻结设置窗口。</li><li>只选择符合本产品与平台的正式版本；显示版本、简短说明和下载大小。</li><li>用户点击下载，显示进度与取消；临时文件完整下载后核对大小和 SHA256。</li><li>校验通过后显示“安装并重新打开”；用户点击后先完成学习资料保存，失败则留在软件内说明。</li><li>由独立安装器在 Unity 退出后执行替换，避免覆盖正在运行的文件。安装结束启动新版，新版读取原用户资料并恢复学习位置。</li><li>只有安装完成记录与新版首次启动核对通过，才显示更新完成；启动安装器不等于升级成功。</li></ol>
+    <h3>发布身份与安装边界</h3>
+    <ul><li>Unity 建议使用 <code>productId=controllab-unity</code>、<code>platform=windows-x64</code>、独立 <code>unity-vX.Y.Z</code> 标签与 <code>ControlLab-Unity-Setup-X.Y.Z.exe</code> 资产。发布清单包含版本、资产名、大小和 SHA256。</li><li>客户端核对产品、平台、版本、资产来源与校验值；草稿和预发布版本不向普通学生推送。不能简单把整个仓库的最新 Release 当成当前产品的更新。</li><li>旧 Python 客户端目前使用全仓库 <code>releases/latest</code>。在统一发布渠道前，应明确 Unity 专用更新清单，并处理旧客户端对最新版本的读取，防止混用；删除本地旧版不自动迁移远端发布。</li><li>安装器使用稳定的产品安装身份和目录；程序文件与用户资料分开。更新、卸载和版本迁移不能顺带清空学习资料。</li><li>HTTPS 与 SHA256 校验文件传输和内容一致性，不等同发布者数字签名。正式分发前单独确定 Windows 签名方案，未签名时不得声称已签名。</li></ul>
+    <h3>用户能理解的状态</h3>
+    <table><thead><tr><th>状态</th><th>界面表达</th></tr></thead><tbody><tr><td>尚未检查</td><td>显示当前版本与“检查更新”。</td></tr><tr><td>已经最新</td><td>成功读取并筛选后，确认没有更高的匹配版本。</td></tr><tr><td>暂无匹配发布</td><td>已成功读取发布信息，但没有当前 Unity 平台的正式安装包；当前原型仍可使用。</td></tr><tr><td>404 / 不可访问</td><td>“暂时无法读取发布信息，请稍后重试或查看项目。”不能仅凭 404 武断认定没有发布。</td></tr><tr><td>网络中断 / 超时 / 限流</td><td>明确说明连接暂不可用，提供重试；保留现有软件和学习数据。</td></tr><tr><td>文件不完整 / 校验失败</td><td>停止安装并允许重新下载，不把错误当作成功。</td></tr><tr><td>取消下载</td><td>回到可下载状态，不影响已经安装的版本。</td></tr><tr><td>安装未完成</td><td>保留日志与已验证安装包，提供重试；实际回滚能力需由安装器方案验证。</td></tr></tbody></table>
+    <p>本草案的“检查更新”不会发出网络请求；它只演示“尚无 Unity 正式安装包”这一状态，不代表 GitHub 仓库当前情况。</p>
+    <h2>5. 代码职责规划</h2>
+    <table><thead><tr><th>组件</th><th>职责</th></tr></thead><tbody><tr><td><code>SettingsPanel</code></td><td>分类、卡片、控件、状态文案与小窗口布局。</td></tr><tr><td><code>SettingsController</code></td><td>设置页导航、暂停与恢复、皮肤编辑返回上下文。</td></tr><tr><td><code>AppPreferencesStore</code></td><td>独立偏好、旧格式迁移、原子保存与备份。</td></tr><tr><td><code>LearningProgressStore</code></td><td>章节检查点与版本兼容；独立于启动偏好。</td></tr><tr><td><code>CartStudio / CartProfileStore</code></td><td>沿用现有编辑与存储，增加首次创建及中途修改模式。</td></tr><tr><td><code>UnityReleaseClient</code></td><td>解析 Unity 专用发布身份、版本与错误状态。</td></tr><tr><td><code>UpdateDownloadService</code></td><td>后台下载、取消、大小及 SHA256 校验。</td></tr><tr><td><code>InstallerLauncher</code></td><td>保存资料、退出交接、安装记录与重启恢复。</td></tr></tbody></table>
+    <h2>6. 三阶段交付与验收</h2>
+    <h3>第一阶段 · 统一设置与外观入口</h3>
+    <p>将三个分区接入 Unity，复用现有保存能力；实现首次创建和中途修改的不同返回流程。更新页先准确说明尚未接入的能力，不放置看似可安装的假按钮。</p>
+    <p>验收：两种窗口尺寸无需滚动；设置屏蔽背景操作；关闭后继续原实验；中途修改皮肤返回原课程；正常退出及重启保留外观与讲解；开关变化即时保存。</p>
+    <h3>第二阶段 · 数据分离与真实更新发现</h3>
+    <p>拆分偏好与学习记录，完成旧格式迁移；实现 Unity 专用发布信息读取和状态展示，提供经过产品筛选的真实版本说明。</p>
+    <p>验收：关闭自动继续不丢课程记录；迁移和损坏回退不破坏原文件；没有匹配发布、404、超时、限流与已有最新版本分别显示；旧 Python 资产不会被选择；操作取消与界面关闭后没有悬挂任务。</p>
+    <h3>第三阶段 · 安装包与软件内升级</h3>
+    <p>建立 Unity Windows 安装器和发布清单，完成下载校验、退出交接、安装与重启；发布前生成候选产物并验收。</p>
+    <p>验收：在干净 Windows 环境测试首次安装、覆盖升级、取消、文件校验失败、安装中断、重启恢复与资料保留。分别记录本地测试、GitHub 构建、发布资产与真实安装结果，不能互相替代。</p>
+    <h2>7. 旧版清理范围</h2>
+    <p>用户已明确选择：删除整个本地旧版工程，仅保留 Unity 工程。Unity 因此成为后续唯一主线，工具与说明也应解除对旧 Python 工程、其虚拟环境和发布脚本的依赖。删除与独立化由本次工程整理任务执行；此设计文件自身不会删除文件。</p>
+    <p>这一授权针对本地旧版工程。远端 GitHub Release、标签与发布资产不随本地清理而删除；建立 Unity 新发布通道时仍需隔离旧产品资产。操作系统用户目录中的学习资料与本地工程目录分别核对，避免把工程清理误当成清除个人资料。</p>
+    <h2>参考与本地依据</h2>
+    <ul><li><a href="https://docs.github.com/en/rest/releases/releases" target="_blank" rel="noopener noreferrer">GitHub 官方文档：Releases API</a></li><li><a href="https://docs.github.com/en/rest/releases/assets" target="_blank" rel="noopener noreferrer">GitHub 官方文档：Release assets API</a></li><li>本地依据：现有 <code>LessonOneExperience.Settings.cs</code>、<code>LessonOneExperience.Welcome.cs</code>、<code>CartStudio.cs</code>、<code>LearningProgressStore.cs</code>，以及清理前核验的旧 Python 发布工作流。</li></ul>
+  </article>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script>
+  const panels=[...document.querySelectorAll('.view')];
+  const nav=[...document.querySelectorAll('[data-view]')];
+  let view='learning', planOpen=false, remember=true, cartName='我的小车', cartColor='#0878e8', editingColor=cartColor, toastTimer;
+  const byId=id=>document.getElementById(id);
+  function showView(next){
+    view=next;
+    panels.forEach(panel=>panel.hidden=panel.id!=='view-'+next);
+    nav.forEach(button=>{const active=button.dataset.view===next||(next==='editor'&&button.dataset.view==='cart');button.classList.toggle('active',active);button.setAttribute('aria-selected',String(active));});
+    if(next!=='editor')document.documentElement.style.setProperty('--car',cartColor);
+  }
+  function toast(message){byId('toast').textContent=message;byId('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>byId('toast').hidden=true,3000);}
+  function togglePlan(force){planOpen=typeof force==='boolean'?force:!planOpen;byId('settings-window').hidden=planOpen;byId('implementation-plan').hidden=!planOpen;byId('plan-button').textContent=planOpen?'返回预览':'实施规划';if(planOpen)byId('implementation-plan').focus();}
+  nav.forEach(button=>button.addEventListener('click',()=>showView(button.dataset.view)));
+  byId('plan-button').addEventListener('click',()=>togglePlan());
+  byId('about-plan').addEventListener('click',()=>togglePlan(true));
+  byId('return-course').addEventListener('click',()=>toast('正式版本将返回原课程；当前为独立设计草案。'));
+  byId('remember-switch').addEventListener('click',()=>{remember=!remember;byId('remember-switch').setAttribute('aria-checked',String(remember));byId('remember-description').textContent=remember?'打开软件时，回到上次的页面与讲解。':'下次从首页开始，已有记录仍然保留。';});
+  function selectColor(color){editingColor=color;document.documentElement.style.setProperty('--car',color);document.querySelectorAll('[data-color]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.color===color)));}
+  byId('edit-cart').addEventListener('click',()=>{byId('cart-name-input').value=cartName;selectColor(cartColor);showView('editor');});
+  document.querySelectorAll('[data-color]').forEach(button=>button.addEventListener('click',()=>selectColor(button.dataset.color)));
+  byId('save-cart').addEventListener('click',()=>{cartName=byId('cart-name-input').value.trim()||'我的小车';cartColor=editingColor;byId('cart-name-preview').textContent=cartName;byId('cart-save-status').textContent='示例外观已保存，学习位置保持不变。';showView('cart');});
+  byId('cancel-cart').addEventListener('click',()=>{selectColor(cartColor);showView('cart');});
+  byId('check-update').addEventListener('click',()=>{const button=byId('check-update');button.disabled=true;button.textContent='演示检查中…';byId('update-title').textContent='正在演示更新检查';byId('update-description').textContent='这段演示不会发出网络请求。';setTimeout(()=>{byId('update-title').textContent='尚无 Unity 正式安装包';byId('update-description').textContent='这是演示结果，不代表仓库当前状态。';button.disabled=false;button.textContent='重新演示';},700);});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'){if(planOpen)togglePlan(false);else if(view==='editor'){selectColor(cartColor);showView('cart');}else toast('正式版本按 Esc 关闭设置并返回课程。');}});
+</script>
+</body>
+</html>

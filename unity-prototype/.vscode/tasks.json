@@ -1,0 +1,48 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Unity: Open first lesson",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/Open-in-Unity.ps1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Unity: Check source without Editor",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/Tools/Check-Source.ps1"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Unity: Build Windows prototype",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/Build-Windows.ps1"],
+      "group": {"kind": "build", "isDefault": true},
+      "problemMatcher": []
+    },
+    {
+      "label": "Unity: Build Windows installer",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/Build-Installer.ps1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Unity: Check update pipeline",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/Tools/Check-Updates.ps1"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Unity: Verify physics against frozen reference",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/Tools/Verify-Physics.ps1"],
+      "problemMatcher": "$msCompile"
+    }
+  ]
+}
