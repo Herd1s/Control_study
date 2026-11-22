@@ -6,9 +6,9 @@
 
 ## 直接体验
 
-需要安装到电脑时，运行 [Windows 0.2.0 安装包](Builds/Releases/0.2.0/ControlLab-Unity-Setup-0.2.0.exe)。以下方式可以直接体验本地构建，无需安装。
+从 GitHub 下载 [Windows 0.2.0 安装包](https://github.com/Herd1s/Control_study/releases/download/unity-v0.2.0/ControlLab-Unity-Setup-0.2.0.exe)，安装后打开 ControlLab Unity。也可以下载 [完整便携 ZIP](https://github.com/Herd1s/Control_study/releases/download/unity-v0.2.0/ControlLab-Unity-Portable-0.2.0-windows-x64.zip)，完整解压后运行 `ControlLab Unity.exe`。版本说明与校验文件见 [正式 Release](https://github.com/Herd1s/Control_study/releases/tag/unity-v0.2.0)。运行软件不需要 Unity Editor、Python 或 .NET SDK。
 
-1. 双击本目录的 **`Start-Prototype.cmd`**，或直接打开 `Builds/Windows/ControlLab Unity.exe`。体验现成程序不需要打开 Unity Editor。
+1. 打开安装好的软件。开发者已有本地构建时，也可双击本目录的 **`Start-Prototype.cmd`**，或打开 `Builds/Windows/ControlLab Unity.exe`。
 2. 在首页选择车色、输入名字；也可以添加照片，并在右侧画布上画出自己的车身皮肤。
 3. 点击“完成，进入第一章”。约 2.6 秒的入场动画后，小车停在中央，杆竖直静止。
 4. 抓住小车左右拖动，松手观察；倒下后重新抓住小车，就会在当前位置扶正并开始新一轮。
@@ -62,17 +62,19 @@
 
 ## 在软件中更新
 
+**0.2.0 是首个 Unity 正式发行版。** 历史 Unity 0.1.0 原型未内置本次更新器，请先手动下载安装 0.2.0；原 Unity 装扮和课程记录保留在同一用户目录中。旧 Python/Qt 版使用独立更新通道，也需首次手动安装 Unity，旧版课程代码和学习记录不会自动迁入。以下流程用于 0.2.0 及之后版本获取后续更新。
+
 进入 **设置 → 软件更新 → 检查更新**，从 [Herd1s/Control_study](https://github.com/Herd1s/Control_study) 查询公开 Unity 正式版本。只有手动点击才会联网，不要求学生登录 GitHub。打开设置本身不会检查或下载。
 
 1. 找到较新版本后，点击“下载更新”。界面显示下载进度，可以取消；关闭设置也会取消进行中的检查或下载。
 2. 下载完成并通过文件大小与 SHA256 校验后，点击“安装并重新打开”。软件先保存装扮与学习位置，再退出并交给安装器。
 3. 安装器等待旧程序退出、替换程序文件并重新打开软件。学习资料位于独立的用户目录，继续按原来的设置恢复。若保存失败，软件不会进入安装流程。
 
-更新器只接受 `unity-vX.Y.Z` 的正式发布、对应 Unity 安装器和 `unity-update.json`；草稿、预发布及旧 Python 版本会忽略。尚无符合要求的公开版本时显示“尚无 Unity 正式安装包”。网络不可达、限流或清单校验错误会单独提示，不表示“已经最新”。本地完成此功能不等于已经向 GitHub 发布版本。
+更新器只接受 `unity-vX.Y.Z` 的正式发布、对应 Unity 安装器和 `unity-update.json`；草稿、预发布及旧 Python 版本会忽略。0.2.0 已正式发布；当可查询的发布列表没有符合要求的 Unity 版本时，才显示“尚无 Unity 正式安装包”。网络不可达、限流或清单校验错误会单独提示，不表示“已经最新”。在线升级的实际验收范围见 [验证记录](VALIDATION.md)。
 
-下面是本轮真实 GitHub 检查的界面，发布状态会随仓库后续发布变化：
+本次已用专用低版本验证客户端完成真实 GitHub 下载、安装、自动重启及资料保留检查，详见 [验证记录](VALIDATION.md)。下面是升级后的正式 0.2.0 再次检查的实际界面：
 
-![软件更新：真实查询结果与当前版本](Documentation/settings-update.png)
+![软件更新：正式 0.2.0 检查后显示已是最新版本](Documentation/updates-current.png)
 
 ## 第一章
 
@@ -172,7 +174,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Build-Installer.ps1
 
 ## 独立工程与后续课程
 
-Unity 是目前唯一保留的开发工程。旧版 Python/Qt 应用工程、发布包及其开发环境已退役清理，不再作为启动、构建或验证的依赖。本目录可以单独用 Unity Hub 或 VS Code 打开。Git 仓库继续用于后续 Unity 开发与发布；本次清理没有发布或删除远端 Release。
+Unity 是目前唯一保留的开发工程。旧版 Python/Qt 应用工程、发布包及其开发环境已退役清理，不再作为启动、构建或验证的依赖。本目录可以单独用 Unity Hub 或 VS Code 打开。Git 仓库继续用于后续 Unity 开发与发布；旧版 Git 历史保留，Unity 从独立的 `unity-v0.2.0` 标签开始正式发行。
 
 第一课物理模型最初由旧版 `free-exploration-v1` 移植为独立 C# 实现。松手保留惯性；抓取倒下的小车开始新回合；“再试一次”回中并将角度和速度清零。手动辅助属于自由体验，不等同于后续受推力限制的 PID/RL 评分任务。
 
@@ -186,4 +188,4 @@ Unity 是目前唯一保留的开发工程。旧版 Python/Qt 应用工程、发
 
 ## 上传 GitHub 时
 
-仓库当前以 `unity-prototype` 为唯一应用工程。保留 `Assets` 下的 `.meta` 文件；它们保存场景与脚本的引用关系。工程的 `.gitignore` 已排除 Library、Temp、Logs、Builds 等生成目录。冻结物理参考保存在 `Tools` 中，可随源码检出；日志和运行截图则属于本机验证产物。旧版 Python 发布工作流不再用于本工程，Unity 使用独立的安装包、清单和 `unity-vX.Y.Z` 发布标签。本轮没有推送仓库或发布 Release。
+仓库当前以 `unity-prototype` 为唯一应用工程。保留 `Assets` 下的 `.meta` 文件；它们保存场景与脚本的引用关系。工程的 `.gitignore` 已排除 Library、Temp、Logs、Builds 等生成目录。冻结物理参考保存在 `Tools` 中，可随源码检出；日志和运行截图则属于本机验证产物。旧版 Python 发布工作流不再用于本工程，Unity 使用独立的安装包、清单和 `unity-vX.Y.Z` 发布标签。[Unity 0.2.0](https://github.com/Herd1s/Control_study/releases/tag/unity-v0.2.0) 已发布，后续修改应使用新版本号重新构建与验证。

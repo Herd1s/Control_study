@@ -2,6 +2,10 @@
 
 此目录只维护 Unity 产品。旧 Python 安装包、`v0.x.x` 标签和全仓库 `releases/latest` 不作为 Unity 更新来源。
 
+当前正式版本：[Unity 0.2.0 Release](https://github.com/Herd1s/Control_study/releases/tag/unity-v0.2.0)，可直接下载 [Windows 安装器](https://github.com/Herd1s/Control_study/releases/download/unity-v0.2.0/ControlLab-Unity-Setup-0.2.0.exe) 或 [完整便携 ZIP](https://github.com/Herd1s/Control_study/releases/download/unity-v0.2.0/ControlLab-Unity-Portable-0.2.0-windows-x64.zip)。以下流程用于维护后续版本。
+
+0.2.0 是首个 Unity 正式发行版。历史 Unity 0.1.0 原型没有内置本次更新器，需手动安装 0.2.0；0.2.0 及后续版本才可使用应用内更新。旧 Python/Qt 版也不能通过旧更新器直接迁入 Unity。公开发布完成与线上升级验收分别记录，当前证据见 [验证记录](../../VALIDATION.md)。
+
 ## 生成发布候选
 
 在 Unity 工程根目录运行：
@@ -43,7 +47,7 @@
 
 完成本地源码、Player 交互和安装/覆盖安装验证后，维护者才能上传同一份候选文件并发布 Release。不要复用已发布版本号，也不要以同一标签替换不同二进制。本地构建脚本不会创建远端标签、上传文件或发布版本。
 
-尚无 Unity 正式发布时，软件显示“尚无 Unity 正式安装包”。404、网络超时、请求限流、清单不匹配和校验失败各有独立提示；这些状态不能当作“已经最新”。
+当公开发布列表没有符合要求的 Unity 正式版本时，软件显示“尚无 Unity 正式安装包”；这是 `NoRelease` 分支，曾在 0.2.0 发布前实际验证。当前 0.2.0 已发布。404、网络超时、请求限流、清单不匹配和校验失败各有独立提示；这些状态不能当作“已经最新”。
 
 本轮未配置 Windows 发布者数字签名。HTTPS 与 SHA256 验证来源传输和文件一致性，不等同 Windows 代码签名。
 

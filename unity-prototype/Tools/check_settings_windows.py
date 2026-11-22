@@ -24,7 +24,7 @@ def main():
     parser.add_argument("--width", type=int, default=1366)
     parser.add_argument("--height", type=int, default=768)
     parser.add_argument("--check-github", action="store_true")
-    parser.add_argument("--expect-update-state", default="NoRelease", choices=("NoRelease", "UpToDate", "Available"))
+    parser.add_argument("--expect-update-state", default="UpToDate", choices=("NoRelease", "UpToDate", "Available"))
     args = parser.parse_args()
     project = Path(__file__).resolve().parents[1]
     output = project / "Logs" / "Verification" / f"settings-{args.width}x{args.height}"

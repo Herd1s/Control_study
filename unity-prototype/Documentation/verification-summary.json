@@ -135,7 +135,7 @@
         "passed": true
       }
     ],
-    "published": false
+    "published": true
   },
   "installerRuntimeValidation": {
     "passed": true,
@@ -149,9 +149,20 @@
     "qaInstallationUninstalled": true,
     "report": "../Logs/Verification/installer-20261122T134833709532Z/result.json"
   },
-  "publicUnityReleasePublished": false,
-  "remoteDownloadInstallRoundTripVerified": false,
+  "publicUnityReleasePublished": true,
+  "remoteDownloadInstallRoundTripVerified": true,
   "screenshotSource": "Unity ScreenCapture, real Windows Player",
   "historicalSummary": "verification-summary-v0.1.0.json",
-  "notes": "Current interaction scope is six suites totaling 237 checks. Historical 212 and post-retirement 69 counts are not added. No GitHub release was published."
+  "notes": "The 237 UI, 35 preference, 46 updater contract, and 22 local installer checks are retained as the release-candidate validation. Following publication, 31 real online update checks passed. Historical 212 and post-retirement 69 counts are not added.",
+  "releaseUrl": "https://github.com/Herd1s/Control_study/releases/tag/unity-v0.2.0",
+  "releaseSourceCommit": "e1c53f2453671a85786068a30ddb5365818aefcb",
+  "onlineUpdateValidation": {
+    "passed": true,
+    "checks": 31,
+    "report": "online-update-verification.json",
+    "baselineVersion": "0.1.1",
+    "targetVersion": "0.2.0",
+    "baselineIsDedicatedValidationBuild": true,
+    "repeatCheck": "UpToDate"
+  }
 }

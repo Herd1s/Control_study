@@ -1,0 +1,206 @@
+{
+  "date": "2026-11-22",
+  "passed": true,
+  "releaseUrl": "https://github.com/Herd1s/Control_study/releases/tag/unity-v0.2.0",
+  "sourceCommit": "e1c53f2453671a85786068a30ddb5365818aefcb",
+  "releaseVersion": "0.2.0",
+  "baselineVersion": "0.1.1",
+  "baselineKind": "purpose-built 0.1.1 client with the release updater; not a historical 0.1.0 upgrade",
+  "sourceScope": "The validation client is an isolated copy of the 0.2.0 runtime source with only AppVersion.Current lowered to 0.1.1. Historical 0.1.0 has no updater.",
+  "publicRelease": true,
+  "authenticatedDownloadsRequired": false,
+  "checks": [
+    {
+      "name": "read the real published GitHub Unity manifest",
+      "passed": true
+    },
+    {
+      "name": "installed the actual dedicated 0.1.1 validation client",
+      "passed": true
+    },
+    {
+      "name": "validation client loads the isolated lesson and skin",
+      "passed": true
+    },
+    {
+      "name": "validation-client-prepare exits normally without runtime errors",
+      "passed": true
+    },
+    {
+      "name": "runtime identifies itself as the dedicated 0.1.1 client",
+      "passed": true
+    },
+    {
+      "name": "opening settings does not manufacture an available update",
+      "passed": true
+    },
+    {
+      "name": "real GitHub check offers the published target version",
+      "passed": true
+    },
+    {
+      "name": "package downloaded by the actual client matches published GitHub SHA256 and byte count",
+      "passed": true
+    },
+    {
+      "name": "actual successful download leaves no partial package",
+      "passed": true
+    },
+    {
+      "name": "checking and downloading do not change saved course or appearance bytes",
+      "passed": true
+    },
+    {
+      "name": "clicking Install makes the app save and exit itself normally; QA sent no close message",
+      "passed": true
+    },
+    {
+      "name": "online-update-client exits normally without runtime errors",
+      "passed": true
+    },
+    {
+      "name": "actual updater records its pending handoff before restart",
+      "passed": true
+    },
+    {
+      "name": "the install action saves the complete original lesson and skin before process exit",
+      "passed": true
+    },
+    {
+      "name": "the real downloaded installer starts a new Player at the same isolated installed path",
+      "passed": true
+    },
+    {
+      "name": "actual app-to-installer-to-app handoff preserves the exact isolated PROFILEDIR",
+      "passed": true
+    },
+    {
+      "name": "newly restarted app creates a real confirmed installation receipt and consumes pending state",
+      "passed": true
+    },
+    {
+      "name": "actual GitHub installation deploys the released DLL and matching installed marker",
+      "passed": true
+    },
+    {
+      "name": "actual updater generated an installer log inside its isolated update cache",
+      "passed": true
+    },
+    {
+      "name": "real installer verified old process exit before replacement",
+      "passed": true
+    },
+    {
+      "name": "automatically restarted released app closes normally",
+      "passed": true
+    },
+    {
+      "name": "confirmed automatic restart preserves every saved learning and skin byte",
+      "passed": true
+    },
+    {
+      "name": "released app restores the same learning position and startup preference",
+      "passed": true
+    },
+    {
+      "name": "released app restores the same named cart, photo and drawing",
+      "passed": true
+    },
+    {
+      "name": "installed runtime About page reports the released version",
+      "passed": true
+    },
+    {
+      "name": "a second real GitHub check from the released app reports UpToDate",
+      "passed": true
+    },
+    {
+      "name": "released-client exits normally without runtime errors",
+      "passed": true
+    },
+    {
+      "name": "entire online update and repeat check preserve checkpoint, preferences, photo and drawing bytes",
+      "passed": true
+    },
+    {
+      "name": "native uninstall clears only the online QA copy and its stable AppId registration",
+      "passed": true
+    },
+    {
+      "name": "native uninstall leaves the isolated learning profile and receipts available for review",
+      "passed": true
+    },
+    {
+      "name": "default student learning/profile data remains unchanged",
+      "passed": true
+    }
+  ],
+  "checkCount": 31,
+  "updateStateHistory": [
+    {
+      "utc": "2026-11-22T14:02:29.150038+00:00",
+      "state": "Checking",
+      "status": "正在检查新版本…"
+    },
+    {
+      "utc": "2026-11-22T14:02:32.922829+00:00",
+      "state": "Available",
+      "status": "发现新版本 0.2.0 · 24.5 MB"
+    },
+    {
+      "utc": "2026-11-22T14:02:33.173217+00:00",
+      "state": "Downloading",
+      "status": "正在下载安装包…"
+    },
+    {
+      "utc": "2026-11-22T14:02:39.688345+00:00",
+      "state": "Ready",
+      "status": "下载完成，学习资料会在安装前保存。"
+    },
+    {
+      "utc": "2026-11-22T14:02:59.192713+00:00",
+      "state": "Checking",
+      "status": "正在检查新版本…"
+    },
+    {
+      "utc": "2026-11-22T14:03:01.751430+00:00",
+      "state": "UpToDate",
+      "status": "你正在使用最新的 Unity 正式版本。"
+    }
+  ],
+  "downloadManifest": {
+    "schema": 1,
+    "productId": "controllab-unity",
+    "platform": "windows-x64",
+    "version": "0.2.0",
+    "assetName": "ControlLab-Unity-Setup-0.2.0.exe",
+    "size": 25667957,
+    "sha256": "d8c4b371aee02a7c36cdb2db97fa50b8dfbee0c68b49b0e0c6a41172e27aa2b8"
+  },
+  "confirmedReceipt": {
+    "productId": "controllab-unity",
+    "schema": 1,
+    "sha256": "d8c4b371aee02a7c36cdb2db97fa50b8dfbee0c68b49b0e0c6a41172e27aa2b8",
+    "status": "confirmed-on-restart",
+    "utc": "2026-11-22T14:02:40.1052133Z",
+    "version": "0.2.0"
+  },
+  "installedRuntimeSha256": "c9d8d0d26f02bc6fbe0ab57caf6ef2ae03ea708feec6cb37febf3ef3992023b2",
+  "savedLearningAndSkinBytesPreserved": true,
+  "defaultUserDataUnchanged": true,
+  "qaInstallationUninstalled": true,
+  "repeatCheckResult": "UpToDate",
+  "detailedReport": "../Logs/Verification/online-update-20261122T140209744234Z/result.json",
+  "screenshots": [
+    "updates-available.png",
+    "updates-ready.png",
+    "updates-current.png"
+  ],
+  "baselineSourceComparison": {
+    "runtimeFiles": 16,
+    "changedFiles": [
+      "AppVersion.cs"
+    ],
+    "onlyVersionConstantChanged": true
+  }
+}

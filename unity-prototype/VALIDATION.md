@@ -2,6 +2,30 @@
 
 记录日期：2026-11-22。当前 0.2.0 接入学习、我的小车、软件更新三页和“关于”，开关偏好与课程记录独立保存，支持课程中换肤返回及 GitHub 更新交接。以下先记录本次功能的检查方法与证据入口，再保留此前 212 项完整检查和工程清理后的 69 项定向回归；历史数量不代表本次版本已经重新执行对应检查。
 
+## 正式发布与在线验收状态
+
+[Unity 0.2.0 正式 Release](https://github.com/Herd1s/Control_study/releases/tag/unity-v0.2.0) 已发布，包含安装器、完整便携 ZIP、更新清单与校验文件。标签 `unity-v0.2.0` 对应源码提交 [`e1c53f2453671a85786068a30ddb5365818aefcb`](https://github.com/Herd1s/Control_study/commit/e1c53f2453671a85786068a30ddb5365818aefcb)。
+
+发布后的真实界面在线更新流程 **31 项检查全部通过**。测试使用本地构建的 **0.1.1 专用低版本验证客户端**，内置本次更新器，从公开 GitHub 下载正式 0.2.0 安装包并完成实际升级；0.1.1 仅供验收，不是历史发行版本。公开摘要见 [online-update-verification.json](Documentation/online-update-verification.json)，完整本机证据见 [在线升级报告](Logs/Verification/online-update-20261122T140209744234Z/result.json)。下文保留的 `NoRelease` 是首次正式发布前的历史查询结果。
+
+| 在线流程 | 实际结果 |
+| --- | --- |
+| 查询与下载 | 真实界面点击检查，公开 GitHub 返回 `Available`；点击下载进入 `Downloading`，文件大小与公开清单 SHA256 一致后进入 `Ready` |
+| 安装交接 | 点击“安装并重新打开”后，应用保存资料并自行正常退出；测试没有发送关闭消息代替退出。实际下载的安装器确认旧进程关闭后替换程序，并自动启动新版 |
+| 新版确认 | 真实 0.2.0 程序启动后生成 `last-update.json`，状态为 `confirmed-on-restart`，消耗待安装记录；程序集与正式发布构建一致 |
+| 数据保留 | 学习记录、继续学习偏好、小车名字、照片和绘画保存内容逐字节一致；新版恢复原讲解和小车外观 |
+| 再次检查与清理 | 新版再次查询公开 GitHub 得到 `UpToDate`；QA 程序通过原生卸载清理，隔离资料保留，日常学员资料未改变 |
+
+三个受检查会话正常退出，运行异常列表为空，未强制终止。该结果与发布前的 237 项界面检查、35 项偏好检查、46 项更新契约和 22 项本地安装检查分别统计。
+
+![专用低版本验证客户端发现正式 0.2.0 更新](Documentation/updates-available.png)
+
+![正式安装包下载与校验完成，等待点击安装](Documentation/updates-ready.png)
+
+![升级后的正式 0.2.0 再次检查，显示已是最新版本](Documentation/updates-current.png)
+
+0.2.0 是首个 Unity 正式发行版。历史 Unity 0.1.0 原型没有本次应用内更新器，实际使用时需手动安装 0.2.0，后续更新才从软件内操作。本地以 0.1.0 为起点的安装器覆盖测试不表示历史 0.1.0 已经具备在线升级入口。
+
 ## 0.2.0 设置与更新的验证范围
 
 | 功能 | 本次需要核对的行为 |
@@ -19,9 +43,9 @@
 
 偏好存储检查在 .NET 下链接实际存储源码，用 `JsonUtility` 测试适配器核对文件迁移、开关变化、备份和写入失败；实际 Unity 序列化由 Player 的迁移、退出和重启检查补充。更新契约检查执行实际客户端与传输代码，安装器执行由捕获器代替；这些测试不会执行测试下载载荷，不能替代真正安装器验收。
 
-真实 GitHub 检查单独记录，不将超时、限流、404 或校验失败计为成功。当前服务器没有符合要求的 Unity 正式发布时，预期状态为 `NoRelease`；“尚无 Unity 正式安装包”是正常查询结果。仓库将来发布 Unity 版本后，应按实际版本调整预期状态。
+真实 GitHub 检查单独记录，不将超时、限流、404 或校验失败计为成功。首次发布前，服务器没有符合要求的 Unity 正式版本，预期状态为 `NoRelease`，“尚无 Unity 正式安装包”当时是正常查询结果。0.2.0 发布后，同版本客户端的检查预期为 `UpToDate`；后续测试应按客户端与实际发布版本调整预期。
 
-本次已通过 237 项 Windows 实际交互检查：新设置 44×2 项、退出恢复 42×2 项、800×600 装扮回归 37 项、1366×768 第一章回归 28 项。各会话均正常退出，运行日志无异常。另有 35 项偏好存储、46 项更新器契约检查通过；实际 Unity 界面与独立客户端均成功查询 GitHub，结果为 `NoRelease`。
+发布前已通过 237 项 Windows 实际交互检查：新设置 44×2 项、退出恢复 42×2 项、800×600 装扮回归 37 项、1366×768 第一章回归 28 项。各会话均正常退出，运行日志无异常。另有 35 项偏好存储、46 项更新器契约检查通过；当时实际 Unity 界面与独立客户端均成功查询 GitHub，结果为 `NoRelease`。这些记录不代替发布后的在线流程验收。
 
 16 个运行时文件、3 个 Editor 文件通过源码检查，零错误、零告警；最终 Player 构建日志是 `Logs/build-20261122-214002.log`。独立 .NET 物理重放通过 19 组、3848 次操作，最大绝对误差为 0；物理模型未改，Unity Editor 数值验证未重复执行。Windows PowerShell 5.1 实际生成安装器与完整便携 ZIP，清单、文件 SHA256 和 ZIP 内程序集均核对一致。当前汇总见 [verification-summary.json](Documentation/verification-summary.json)。
 
@@ -29,7 +53,7 @@
 
 实际安装与覆盖升级的 22 项检查全部通过：在独立目录安装 0.1.0，启动旧 Player 后运行 0.2.0 安装器，确认旧进程存活时不替换文件；正常退出后替换真实程序集、登记新版并自动打开新进程。含中文和空格的隔离资料目录被正确传递，学习进度、偏好、照片和绘画保存内容逐字节一致，新版“关于”显示 0.2.0，实验可操作。最后原生卸载清除了测试程序及注册项，保留测试资料，日常用户资料未变化。首轮清理断言曾早于 Inno 自删除完成；修正检查工具等待后置条件后，完整重跑通过，产品代码未因此修改。
 
-尚无公开 Unity Release，本次没有推送、打标签或发布。真实 GitHub 查询已验证，下载与校验错误路径通过契约测试，安装器等待、覆盖及重启通过真实安装验证；从 GitHub 下载正式安装包再完成升级的整条在线流程仍需正式发布后验证。
+上述安装与数据保留记录来自发布前的本地验证：下载与校验错误路径通过契约测试，安装器等待、覆盖及重启通过真实安装验证。正式发布后，从 GitHub 下载正式安装包再完成升级的 31 项在线流程检查也已通过，独立证据见本页首节。
 
 | 证据 | 文件 |
 | --- | --- |
@@ -242,7 +266,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Build-Windows.ps1
 随后使用已安装的系统 Python 执行真实窗口测试。四个工具仅使用 Python 标准库，不需要旧虚拟环境、PySide6、Gymnasium 或强化学习依赖。测试会移动鼠标并切换窗口焦点，执行时保持桌面可用：
 
 ```powershell
-python .\Tools\check_settings_windows.py --width 1366 --height 768 --check-github --expect-update-state NoRelease
+python .\Tools\check_settings_windows.py --width 1366 --height 768 --check-github --expect-update-state UpToDate
 python .\Tools\check_settings_windows.py --width 800 --height 600
 python .\Tools\check_progress_windows.py --width 1366 --height 768
 python .\Tools\check_progress_windows.py --width 800 --height 600
@@ -252,7 +276,7 @@ python .\Tools\check_player_windows.py --width 1366 --height 768
 python .\Tools\check_player_windows.py --width 800 --height 600
 ```
 
-四个工具每次创建新的隔离资料目录，必须串行运行，避免争抢鼠标和窗口焦点。设置与装扮工具在测试内部重启 Player；装扮工具会验证默认恢复第一章后仍可返回装扮修改。第一章回归工具通过界面点击“完成，进入第一章”，等待入场完成后再执行原有检查。若仓库已有符合条件的正式版本，将 `--expect-update-state` 调整为实际预期的 `UpToDate` 或 `Available`；省略 `--check-github` 只运行本地界面检查，不算完成网络验证。
+四个工具每次创建新的隔离资料目录，必须串行运行，避免争抢鼠标和窗口焦点。设置与装扮工具在测试内部重启 Player；装扮工具会验证默认恢复第一章后仍可返回装扮修改。第一章回归工具通过界面点击“完成，进入第一章”，等待入场完成后再执行原有检查。以上 `UpToDate` 对应当前 0.2.0 客户端和 0.2.0 正式发布；仓库有更新版本时，将 `--expect-update-state` 调整为 `Available`。只有没有符合条件的公开 Unity 版本时才使用 `NoRelease`；省略 `--check-github` 只运行本地界面检查，不算完成网络验证。
 
 偏好及更新器独立检查需要 .NET SDK，不启动 Unity，也不操作桌面：
 
@@ -267,5 +291,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Tools\Check-Updates.ps1 -L
 ## 尚未覆盖的范围
 
 - 其他电脑、显卡、系统缩放和系统字体组合的兼容性。
-- 经 GitHub 正式发布后的跨版本在线安装全流程；本地安装器和客户端测试不等于已完成线上分发。当前仓库是否存在适配的正式安装包，以本轮网络报告为准。
 - 学生 Python 编程、PID、强化学习及后续课程的数据记录。这些不在第一课自由探索原型中，本轮结果不代表它们已经迁移或通过验收。
